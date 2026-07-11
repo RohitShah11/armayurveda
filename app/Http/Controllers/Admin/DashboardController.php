@@ -7,6 +7,7 @@ use App\Models\FundRequest;
 use App\Models\MainWalletTransaction;
 use App\Models\EarningWalletTransaction;
 use App\Models\MemberKyc;
+use App\Models\PackagePurchase;
 use App\Models\User;
 use App\Models\ZenithPoolLevelIncome;
 use App\Models\ZenithPoolNode;
@@ -165,6 +166,53 @@ class DashboardController extends Controller
             ->withQueryString();
 
         return view('admin.earn-transactions.index', compact('transactions'));
+    }
+
+    public function packagePurchases(Request $request)
+    {
+        $purchasesQuery = PackagePurchase::query()
+            ->with(['user', 'package'])
+            ->when($request->filled('status'), fn ($query) => $query->where('status', $request->status))
+            ->when($request->filled('package'), fn ($query) => $query->where('package_name', $request->package))
+            ->when($request->filled('from_date'), fn ($query) => $query->whereDate('purchase_date', '>=', $request->from_date))
+            ->when($request->filled('to_date'), fn ($query) => $query->whereDate('purchase_date', '<=', $request->to_date))
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->search;
+
+                $query->where(function ($inner) use ($search) {
+                    $inner->where('package_name', 'like', "%{$search}%")
+                        ->orWhere('status', 'like', "%{$search}%")
+                        ->orWhereHas('user', function ($userQuery) use ($search) {
+                            $userQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%")
+                                ->orWhere('mobile', 'like', "%{$search}%")
+                                ->orWhere('member_id', 'like', "%{$search}%");
+                        });
+                });
+            });
+
+        $totalPurchases = (clone $purchasesQuery)->count();
+        $totalAmount = (clone $purchasesQuery)->sum('package_price');
+        $completedPurchases = (clone $purchasesQuery)->where('status', 'Completed')->count();
+        $packageNames = PackagePurchase::query()
+            ->whereNotNull('package_name')
+            ->distinct()
+            ->orderBy('package_name')
+            ->pluck('package_name');
+
+        $purchases = $purchasesQuery
+            ->orderByDesc('purchase_date')
+            ->orderByDesc('id')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('admin.package-purchases.index', compact(
+            'purchases',
+            'totalPurchases',
+            'totalAmount',
+            'completedPurchases',
+            'packageNames'
+        ));
     }
 
     public function zenithPool(Request $request)

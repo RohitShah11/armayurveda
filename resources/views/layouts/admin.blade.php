@@ -60,6 +60,9 @@
   <a href="{{ route('admin.earn-transactions.index') }}" class="{{ request()->routeIs('admin.earn-transactions.*') ? 'active' : '' }}">
     <i class="fa fa-coins"></i>Earning Transactions
   </a>
+  <a href="{{ route('admin.package-purchases.index') }}" class="{{ request()->routeIs('admin.package-purchases.*') ? 'active' : '' }}">
+    <i class="fa fa-box-open"></i>Package Purchases
+  </a>
   <a href="{{ route('admin.zenith-pool.index') }}" class="{{ request()->routeIs('admin.zenith-pool.*') ? 'active' : '' }}">
     <i class="fa fa-sitemap"></i>Zenith Pool
   </a>

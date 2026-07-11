@@ -8,7 +8,7 @@ use App\Http\Controllers\MemberController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 
-// ── Public routes ──────────────────────────────
+// Public routes
 Route::get('/', function(){
     return view('front.index');
 })->name('index');
@@ -53,6 +53,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::patch('/kyc/{kyc}', [AdminDashboardController::class, 'updateKyc'])->name('kyc.update');
         Route::get('/transactions', [AdminDashboardController::class, 'transactions'])->name('transactions.index');
         Route::get('/earn-transactions', [AdminDashboardController::class, 'earningTransactions'])->name('earn-transactions.index');
+        Route::get('/package-purchases', [AdminDashboardController::class, 'packagePurchases'])->name('package-purchases.index');
         Route::get('/zenith-pool', [AdminDashboardController::class, 'zenithPool'])->name('zenith-pool.index');
         Route::get('/zenith-pool/tree', [AdminDashboardController::class, 'zenithPoolTree'])->name('zenith-pool.tree');
         Route::get('/funds', [AdminDashboardController::class, 'funds'])->name('funds.index');
@@ -60,7 +61,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 });
 
-// ── Authenticated routes ───────────────────────
+// Authenticated routes
 Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
