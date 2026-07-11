@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+
+#[Fillable(['name', 'email', 'mobile', 'password', 'status', 'earning_wallet', 'last_login_at'])]
+#[Hidden(['password', 'remember_token'])]
+class Admin extends Authenticatable
+{
+    use Notifiable;
+
+    protected function casts(): array
+    {
+        return [
+            'password' => 'hashed',
+            'earning_wallet' => 'decimal:2',
+            'last_login_at' => 'datetime',
+        ];
+    }
+}
