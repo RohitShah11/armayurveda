@@ -49,4 +49,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(ZenithPoolNode::class);
     }
+
+    public function sponsorPoolNodes()
+    {
+        return $this->hasMany(SponsorPoolNode::class);
+    }
+
+    public function triggeredSponsorPoolNodes()
+    {
+        return $this->hasMany(SponsorPoolNode::class, 'purchaser_id');
+    }
 }

@@ -66,6 +66,9 @@
   <a href="{{ route('admin.zenith-pool.index') }}" class="{{ request()->routeIs('admin.zenith-pool.*') ? 'active' : '' }}">
     <i class="fa fa-sitemap"></i>Zenith Pool
   </a>
+  <a href="{{ route('admin.sponsor-pool.index') }}" class="{{ request()->routeIs('admin.sponsor-pool.*') ? 'active' : '' }}">
+    <i class="fa fa-network-wired"></i>Sponsor Pool
+  </a>
 
   <form method="POST" action="{{ route('admin.logout') }}">
     @csrf

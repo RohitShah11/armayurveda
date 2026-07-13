@@ -8,6 +8,8 @@ use App\Models\MainWalletTransaction;
 use App\Models\EarningWalletTransaction;
 use App\Models\MemberKyc;
 use App\Models\PackagePurchase;
+use App\Models\SponsorPoolLevelIncome;
+use App\Models\SponsorPoolNode;
 use App\Models\User;
 use App\Models\ZenithPoolLevelIncome;
 use App\Models\ZenithPoolNode;
@@ -354,6 +356,182 @@ class DashboardController extends Controller
             for ($position = 1; $position <= 4; $position++) {
                 $children[] = $actualChildren->has($position)
                     ? $this->buildZenithPoolTree($actualChildren->get($position), $depth + 1, $maxDepth)
+                    : [
+                        'node' => null,
+                        'owner' => null,
+                        'label' => 'Empty Slot',
+                        'sub_label' => 'Position '.$position,
+                        'type' => 'empty',
+                        'depth' => $depth + 1,
+                        'children' => [],
+                    ];
+            }
+        }
+
+        $owner = $node->user ?: $node->admin;
+
+        return [
+            'node' => $node,
+            'owner' => $owner,
+            'label' => $owner?->name ?? 'Unknown',
+            'sub_label' => $node->user?->member_id ?? $node->admin?->email ?? 'Pool Node #'.$node->id,
+            'type' => $node->admin_id ? 'admin' : 'member',
+            'depth' => $depth,
+            'children' => $children,
+            'completed_levels' => $node->levelIncomes->pluck('level')->sort()->values(),
+        ];
+    }
+
+    public function sponsorPool(Request $request)
+    {
+        $nodesQuery = SponsorPoolNode::query()
+            ->with(['user', 'purchaser', 'admin', 'parent.user', 'parent.admin', 'packagePurchase', 'levelIncomes'])
+            ->withCount('children')
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->search;
+
+                $query->where(function ($inner) use ($search) {
+                    $inner->where('id', $search)
+                        ->orWhereHas('user', function ($userQuery) use ($search) {
+                            $userQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('member_id', 'like', "%{$search}%")
+                                ->orWhere('mobile', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('purchaser', function ($purchaserQuery) use ($search) {
+                            $purchaserQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('member_id', 'like', "%{$search}%")
+                                ->orWhere('mobile', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('admin', function ($adminQuery) use ($search) {
+                            $adminQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->when($request->filled('depth'), fn ($query) => $query->where('depth', $request->depth))
+            ->when($request->filled('status'), function ($query) use ($request) {
+                if ($request->status === 'completed') {
+                    $query->has('levelIncomes');
+                }
+
+                if ($request->status === 'pending') {
+                    $query->doesntHave('levelIncomes');
+                }
+            });
+
+        $nodes = (clone $nodesQuery)
+            ->orderBy('depth')
+            ->orderBy('id')
+            ->paginate(25)
+            ->withQueryString();
+
+        $levelIncomes = SponsorPoolLevelIncome::query()
+            ->with(['node.user', 'node.admin'])
+            ->latest('paid_at')
+            ->latest('id')
+            ->take(20)
+            ->get();
+
+        $rootNode = SponsorPoolNode::whereNull('parent_id')->with('admin')->first();
+        $totalNodes = SponsorPoolNode::count();
+        $memberNodes = SponsorPoolNode::whereNotNull('user_id')->count();
+        $paidLevels = SponsorPoolLevelIncome::count();
+        $totalPaid = (float) SponsorPoolLevelIncome::sum('amount');
+        $adminIncome = (float) SponsorPoolLevelIncome::whereNotNull('admin_id')->sum('amount');
+        $maxDepth = (int) SponsorPoolNode::max('depth');
+
+        $depthStats = SponsorPoolNode::query()
+            ->select('depth', DB::raw('count(*) as total'))
+            ->groupBy('depth')
+            ->orderBy('depth')
+            ->get();
+
+        return view('admin.sponsor-pool.index', compact(
+            'nodes',
+            'levelIncomes',
+            'rootNode',
+            'totalNodes',
+            'memberNodes',
+            'paidLevels',
+            'totalPaid',
+            'adminIncome',
+            'maxDepth',
+            'depthStats'
+        ));
+    }
+
+    public function sponsorPoolTree(Request $request)
+    {
+        $focusNode = null;
+
+        if ($request->filled('node')) {
+            $focusNode = SponsorPoolNode::with(['user', 'purchaser', 'admin'])->find($request->node);
+        }
+
+        $rootNode = $focusNode ?: SponsorPoolNode::whereNull('parent_id')->with(['user', 'purchaser', 'admin'])->first();
+        $tree = $rootNode ? $this->buildSponsorPoolTree($rootNode, 0, 4) : null;
+
+        $searchNodes = SponsorPoolNode::query()
+            ->with(['user', 'purchaser', 'admin'])
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->search;
+
+                $query->where(function ($inner) use ($search) {
+                    $inner->where('id', $search)
+                        ->orWhereHas('user', function ($userQuery) use ($search) {
+                            $userQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('member_id', 'like', "%{$search}%")
+                                ->orWhere('mobile', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('purchaser', function ($purchaserQuery) use ($search) {
+                            $purchaserQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('member_id', 'like', "%{$search}%")
+                                ->orWhere('mobile', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('admin', function ($adminQuery) use ($search) {
+                            $adminQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->orderBy('depth')
+            ->orderBy('id')
+            ->take(20)
+            ->get();
+
+        $totalNodes = SponsorPoolNode::count();
+        $memberNodes = SponsorPoolNode::whereNotNull('user_id')->count();
+        $maxDepth = (int) SponsorPoolNode::max('depth');
+
+        return view('admin.sponsor-pool.tree', compact(
+            'tree',
+            'rootNode',
+            'searchNodes',
+            'totalNodes',
+            'memberNodes',
+            'maxDepth'
+        ));
+    }
+
+    private function buildSponsorPoolTree(SponsorPoolNode $node, int $depth, int $maxDepth): array
+    {
+        $node->loadMissing(['user', 'purchaser', 'admin', 'levelIncomes']);
+
+        $children = [];
+
+        if ($depth < $maxDepth) {
+            $actualChildren = SponsorPoolNode::query()
+                ->with(['user', 'purchaser', 'admin', 'levelIncomes'])
+                ->where('parent_id', $node->id)
+                ->orderBy('position')
+                ->get()
+                ->keyBy('position');
+
+            for ($position = 1; $position <= 4; $position++) {
+                $children[] = $actualChildren->has($position)
+                    ? $this->buildSponsorPoolTree($actualChildren->get($position), $depth + 1, $maxDepth)
                     : [
                         'node' => null,
                         'owner' => null,

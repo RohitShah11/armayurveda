@@ -56,6 +56,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/package-purchases', [AdminDashboardController::class, 'packagePurchases'])->name('package-purchases.index');
         Route::get('/zenith-pool', [AdminDashboardController::class, 'zenithPool'])->name('zenith-pool.index');
         Route::get('/zenith-pool/tree', [AdminDashboardController::class, 'zenithPoolTree'])->name('zenith-pool.tree');
+        Route::get('/sponsor-pool', [AdminDashboardController::class, 'sponsorPool'])->name('sponsor-pool.index');
+        Route::get('/sponsor-pool/tree', [AdminDashboardController::class, 'sponsorPoolTree'])->name('sponsor-pool.tree');
         Route::get('/funds', [AdminDashboardController::class, 'funds'])->name('funds.index');
         Route::patch('/funds/{fund}', [AdminDashboardController::class, 'updateFund'])->name('funds.update');
     });

@@ -10,6 +10,7 @@ use App\Models\PackagePurchase;
 use App\Models\User;
 use App\Models\ZenithPoolLevelIncome;
 use App\Models\ZenithPoolNode;
+use App\Services\SponsorPoolService;
 use App\Services\ZenithPoolService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -125,7 +126,10 @@ class DashboardController extends Controller
                     'transaction_date' => now(),
                 ]);
 
-                app(ZenithPoolService::class)->enterPool($user->fresh(), $packagePurchase);
+                $freshUser = $user->fresh();
+
+                app(ZenithPoolService::class)->enterPool($freshUser, $packagePurchase);
+                app(SponsorPoolService::class)->enterSponsorFromPurchase($freshUser, $packagePurchase);
             }
 
             $commissionLevels = PackageCommissionLevel::query()

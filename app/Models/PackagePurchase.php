@@ -27,4 +27,9 @@ class PackagePurchase extends Model
     {
         return $this->belongsTo(Package::class);
     }
+
+    public function sponsorPoolNode()
+    {
+        return $this->hasOne(SponsorPoolNode::class);
+    }
 }
