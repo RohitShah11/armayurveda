@@ -50,6 +50,11 @@ class User extends Authenticatable
         return $this->hasOne(ZenithPoolNode::class);
     }
 
+    public function directTreeNode()
+    {
+        return $this->hasOne(DirectTreeNode::class);
+    }
+
     public function sponsorPoolNodes()
     {
         return $this->hasMany(SponsorPoolNode::class);

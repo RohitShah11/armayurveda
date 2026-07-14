@@ -32,4 +32,9 @@ class PackagePurchase extends Model
     {
         return $this->hasOne(SponsorPoolNode::class);
     }
+
+    public function directTreeNode()
+    {
+        return $this->hasOne(DirectTreeNode::class);
+    }
 }

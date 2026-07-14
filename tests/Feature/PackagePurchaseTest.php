@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\Admin;
+use App\Models\DirectTreeNode;
 use App\Models\Package;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -10,6 +12,18 @@ use Tests\TestCase;
 class PackagePurchaseTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Admin::create([
+            'name' => 'Super Admin',
+            'email' => 'admin@armayurveda.test',
+            'password' => 'admin12345',
+            'status' => 'Active',
+        ]);
+    }
 
     public function test_user_can_purchase_basic_package_from_wallet(): void
     {
@@ -43,6 +57,13 @@ class PackagePurchaseTest extends TestCase
             'user_id' => $user->id,
             'transaction_type' => 'Debit',
             'particular' => 'Package purchase',
+        ]);
+
+        $root = DirectTreeNode::whereNull('parent_id')->first();
+        $this->assertDatabaseHas('direct_tree_nodes', [
+            'user_id' => $user->id,
+            'parent_id' => $root->id,
+            'depth' => 1,
         ]);
     }
 
@@ -90,25 +111,65 @@ class PackagePurchaseTest extends TestCase
         $level2Sponsor->refresh();
 
         $this->assertSame(3001.00, (float) $user->main_wallet);
-        $this->assertSame(200.00, (float) $level1Sponsor->main_wallet);
-        $this->assertSame(100.00, (float) $level2Sponsor->main_wallet);
+        $this->assertSame(200.00, (float) $level1Sponsor->earning_wallet);
+        $this->assertSame(100.00, (float) $level2Sponsor->earning_wallet);
         $this->assertDatabaseHas('package_purchases', [
             'user_id' => $user->id,
             'package_id' => $basic->id,
             'package_name' => 'Basic Package',
             'package_price' => '1999.00',
         ]);
-        $this->assertDatabaseHas('main_wallet_transactions', [
+        $this->assertDatabaseHas('earning_wallet_transactions', [
             'user_id' => $level1Sponsor->id,
-            'transaction_type' => 'Credit',
-            'particular' => 'Level commission',
+            'type' => 'Credit',
+            'description' => 'Level 1 commission for Basic Package',
             'amount' => '200.00',
         ]);
-        $this->assertDatabaseHas('main_wallet_transactions', [
+        $this->assertDatabaseHas('earning_wallet_transactions', [
             'user_id' => $level2Sponsor->id,
-            'transaction_type' => 'Credit',
-            'particular' => 'Level commission',
+            'type' => 'Credit',
+            'description' => 'Level 2 commission for Basic Package',
             'amount' => '100.00',
+        ]);
+    }
+
+    public function test_package_purchase_places_member_under_sponsor_in_direct_tree(): void
+    {
+        $basic = Package::create([
+            'name' => 'Basic Package',
+            'slug' => 'basic-package',
+            'price' => 1999,
+            'category' => 'Basic',
+            'description' => 'Starter package',
+            'image' => null,
+        ]);
+
+        $sponsor = User::factory()->create([
+            'member_id' => 'ARM2001',
+            'sponsor_id' => null,
+            'main_wallet' => 5000,
+        ]);
+
+        $user = User::factory()->create([
+            'member_id' => 'ARM2002',
+            'sponsor_id' => 'ARM2001',
+            'main_wallet' => 5000,
+        ]);
+
+        $this->actingAs($sponsor)->post(route('package.purchase.store'), [
+            'package_id' => $basic->id,
+        ])->assertRedirect();
+
+        $this->actingAs($user)->post(route('package.purchase.store'), [
+            'package_id' => $basic->id,
+        ])->assertRedirect();
+
+        $sponsorNode = DirectTreeNode::where('user_id', $sponsor->id)->first();
+
+        $this->assertDatabaseHas('direct_tree_nodes', [
+            'user_id' => $user->id,
+            'parent_id' => $sponsorNode->id,
+            'depth' => $sponsorNode->depth + 1,
         ]);
     }
 }

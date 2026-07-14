@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\DirectTreeNode;
 use App\Models\FundRequest;
 use App\Models\MainWalletTransaction;
 use App\Models\EarningWalletTransaction;
@@ -555,6 +556,135 @@ class DashboardController extends Controller
             'depth' => $depth,
             'children' => $children,
             'completed_levels' => $node->levelIncomes->pluck('level')->sort()->values(),
+        ];
+    }
+
+    public function directTree(Request $request)
+    {
+        $nodesQuery = DirectTreeNode::query()
+            ->with(['user', 'admin', 'parent.user', 'parent.admin', 'packagePurchase'])
+            ->withCount('children')
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->search;
+
+                $query->where(function ($inner) use ($search) {
+                    $inner->where('id', $search)
+                        ->orWhereHas('user', function ($userQuery) use ($search) {
+                            $userQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('member_id', 'like', "%{$search}%")
+                                ->orWhere('mobile', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('admin', function ($adminQuery) use ($search) {
+                            $adminQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->when($request->filled('depth'), fn ($query) => $query->where('depth', $request->depth));
+
+        $nodes = (clone $nodesQuery)
+            ->orderBy('depth')
+            ->orderBy('position')
+            ->orderBy('id')
+            ->paginate(25)
+            ->withQueryString();
+
+        $rootNode = DirectTreeNode::whereNull('parent_id')->with('admin')->first();
+        $totalNodes = DirectTreeNode::count();
+        $memberNodes = DirectTreeNode::whereNotNull('user_id')->count();
+        $maxDepth = (int) DirectTreeNode::max('depth');
+
+        $depthStats = DirectTreeNode::query()
+            ->select('depth', DB::raw('count(*) as total'))
+            ->groupBy('depth')
+            ->orderBy('depth')
+            ->get();
+
+        return view('admin.direct-tree.index', compact(
+            'nodes',
+            'rootNode',
+            'totalNodes',
+            'memberNodes',
+            'maxDepth',
+            'depthStats'
+        ));
+    }
+
+    public function directTreeView(Request $request)
+    {
+        $focusNode = null;
+
+        if ($request->filled('node')) {
+            $focusNode = DirectTreeNode::with(['user', 'admin'])->find($request->node);
+        }
+
+        $rootNode = $focusNode ?: DirectTreeNode::whereNull('parent_id')->with(['user', 'admin'])->first();
+        $tree = $rootNode ? $this->buildDirectTree($rootNode, 0, 4) : null;
+
+        $searchNodes = DirectTreeNode::query()
+            ->with(['user', 'admin'])
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->search;
+
+                $query->where(function ($inner) use ($search) {
+                    $inner->where('id', $search)
+                        ->orWhereHas('user', function ($userQuery) use ($search) {
+                            $userQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('member_id', 'like', "%{$search}%")
+                                ->orWhere('mobile', 'like', "%{$search}%");
+                        })
+                        ->orWhereHas('admin', function ($adminQuery) use ($search) {
+                            $adminQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->orderBy('depth')
+            ->orderBy('id')
+            ->take(20)
+            ->get();
+
+        $totalNodes = DirectTreeNode::count();
+        $memberNodes = DirectTreeNode::whereNotNull('user_id')->count();
+        $maxDepth = (int) DirectTreeNode::max('depth');
+
+        return view('admin.direct-tree.tree', compact(
+            'tree',
+            'rootNode',
+            'searchNodes',
+            'totalNodes',
+            'memberNodes',
+            'maxDepth'
+        ));
+    }
+
+    private function buildDirectTree(DirectTreeNode $node, int $depth, int $maxDepth): array
+    {
+        $node->loadMissing(['user', 'admin']);
+
+        $children = [];
+
+        if ($depth < $maxDepth) {
+            $children = DirectTreeNode::query()
+                ->with(['user', 'admin'])
+                ->where('parent_id', $node->id)
+                ->orderBy('position')
+                ->get()
+                ->map(fn (DirectTreeNode $child) => $this->buildDirectTree($child, $depth + 1, $maxDepth))
+                ->all();
+        }
+
+        $owner = $node->user ?: $node->admin;
+
+        return [
+            'node' => $node,
+            'owner' => $owner,
+            'label' => $owner?->name ?? 'Unknown',
+            'sub_label' => $node->user?->member_id ?? $node->admin?->email ?? 'Direct Node #'.$node->id,
+            'type' => $node->admin_id ? 'admin' : 'member',
+            'depth' => $depth,
+            'children' => $children,
         ];
     }
     

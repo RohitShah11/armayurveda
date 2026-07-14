@@ -10,6 +10,7 @@ use App\Models\PackagePurchase;
 use App\Models\User;
 use App\Models\ZenithPoolLevelIncome;
 use App\Models\ZenithPoolNode;
+use App\Services\DirectTreeService;
 use App\Services\SponsorPoolService;
 use App\Services\ZenithPoolService;
 use Illuminate\Http\Request;
@@ -105,6 +106,8 @@ class DashboardController extends Controller
                 'remarks' => $package->name,
                 'transaction_date' => now(),
             ]);
+
+            app(DirectTreeService::class)->enterFromPurchase($user->fresh(), $packagePurchase);
 
             if (strtolower($package->category) === 'zenith') {
                 $rewardAmount = 250.00;

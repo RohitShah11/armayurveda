@@ -58,6 +58,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/zenith-pool/tree', [AdminDashboardController::class, 'zenithPoolTree'])->name('zenith-pool.tree');
         Route::get('/sponsor-pool', [AdminDashboardController::class, 'sponsorPool'])->name('sponsor-pool.index');
         Route::get('/sponsor-pool/tree', [AdminDashboardController::class, 'sponsorPoolTree'])->name('sponsor-pool.tree');
+        Route::get('/direct-tree', [AdminDashboardController::class, 'directTree'])->name('direct-tree.index');
+        Route::get('/direct-tree/tree', [AdminDashboardController::class, 'directTreeView'])->name('direct-tree.tree');
         Route::get('/funds', [AdminDashboardController::class, 'funds'])->name('funds.index');
         Route::patch('/funds/{fund}', [AdminDashboardController::class, 'updateFund'])->name('funds.update');
     });
