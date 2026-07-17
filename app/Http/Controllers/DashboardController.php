@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Models\ZenithPoolLevelIncome;
 use App\Models\ZenithPoolNode;
 use App\Services\DirectTreeService;
+use App\Services\RankRewardService;
 use App\Services\SponsorPoolService;
 use App\Services\ZenithPoolService;
 use Illuminate\Http\Request;
@@ -108,6 +109,7 @@ class DashboardController extends Controller
             ]);
 
             app(DirectTreeService::class)->enterFromPurchase($user->fresh(), $packagePurchase);
+            app(RankRewardService::class)->processFromPurchase($user->fresh(), $packagePurchase);
 
             if (strtolower($package->category) === 'zenith') {
                 $rewardAmount = 250.00;
@@ -316,6 +318,19 @@ class DashboardController extends Controller
     public function incomeZenithTeam()       { return view('pages.zenith-team'); }
     public function incomeSponsorPool()      { return view('pages.sponsor-pool'); }
     public function incomeBusinessExpansion(){ return view('pages.business-expansion'); }
+    public function incomeRankReward(RankRewardService $rankRewardService)
+    {
+        $user = Auth::user();
+        $progress = $user
+            ? $rankRewardService->progressFor($user)
+            : ['business' => 0, 'current_rank' => null, 'next_rank' => null, 'remaining' => 0];
+        $rankRewards = $user
+            ? $user->rankRewards()->orderByDesc('rank')->get()
+            : collect();
+        $rankPlan = $rankRewardService->ranks();
+
+        return view('pages.rank-reward', compact('progress', 'rankRewards', 'rankPlan'));
+    }
     public function zenithPackage()      { return view('pages.zenith-package'); }
     public function products()           { return view('pages.products'); }
     public function plan()               { return view('pages.plan'); }

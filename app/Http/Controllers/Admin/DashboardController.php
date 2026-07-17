@@ -12,8 +12,10 @@ use App\Models\PackagePurchase;
 use App\Models\SponsorPoolLevelIncome;
 use App\Models\SponsorPoolNode;
 use App\Models\User;
+use App\Models\UserRankReward;
 use App\Models\ZenithPoolLevelIncome;
 use App\Models\ZenithPoolNode;
+use App\Services\RankRewardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -562,7 +564,7 @@ class DashboardController extends Controller
     public function directTree(Request $request)
     {
         $nodesQuery = DirectTreeNode::query()
-            ->with(['user', 'admin', 'parent.user', 'parent.admin', 'packagePurchase'])
+            ->with(['user.rankRewards', 'admin', 'parent.user', 'parent.admin', 'packagePurchase'])
             ->withCount('children')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->search;
@@ -686,6 +688,47 @@ class DashboardController extends Controller
             'depth' => $depth,
             'children' => $children,
         ];
+    }
+
+    public function rankRewards(Request $request, RankRewardService $rankRewardService)
+    {
+        $rewardsQuery = UserRankReward::query()
+            ->with('user')
+            ->when($request->filled('rank'), fn ($query) => $query->where('rank', $request->rank))
+            ->when($request->filled('from_date'), fn ($query) => $query->whereDate('qualified_at', '>=', $request->from_date))
+            ->when($request->filled('to_date'), fn ($query) => $query->whereDate('qualified_at', '<=', $request->to_date))
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->search;
+
+                $query->where(function ($inner) use ($search) {
+                    $inner->where('rank_name', 'like', "%{$search}%")
+                        ->orWhere('additional_reward', 'like', "%{$search}%")
+                        ->orWhereHas('user', function ($userQuery) use ($search) {
+                            $userQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('member_id', 'like', "%{$search}%")
+                                ->orWhere('mobile', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                        });
+                });
+            });
+
+        $totalRewards = (clone $rewardsQuery)->count();
+        $totalPaid = (float) (clone $rewardsQuery)->sum('reward_amount');
+        $highestRank = (int) UserRankReward::max('rank');
+        $latestRewards = $rewardsQuery
+            ->orderByDesc('qualified_at')
+            ->orderByDesc('id')
+            ->paginate(20)
+            ->withQueryString();
+        $rankPlan = $rankRewardService->ranks();
+
+        return view('admin.rank-rewards.index', compact(
+            'latestRewards',
+            'rankPlan',
+            'totalRewards',
+            'totalPaid',
+            'highestRank'
+        ));
     }
     
     public function funds(Request $request)

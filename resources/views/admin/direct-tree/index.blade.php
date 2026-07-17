@@ -101,6 +101,7 @@
           <th>Depth</th>
           <th>Direct Position</th>
           <th>Directs</th>
+          <th>Current Rank</th>
           <th>Package Purchase</th>
           <th>Joined</th>
         </tr>
@@ -110,6 +111,7 @@
           @php
             $owner = $node->user ?: $node->admin;
             $parentOwner = $node->parent?->user ?: $node->parent?->admin;
+            $currentRank = $node->user?->rankRewards?->sortByDesc('rank')->first();
           @endphp
           <tr>
             <td><span class="tree-indent" style="--depth: {{ min($node->depth, 8) }}"></span><strong>#{{ $node->id }}</strong></td>
@@ -127,6 +129,14 @@
             <td>{{ $node->parent_id ? $node->position : '-' }}</td>
             <td>{{ $node->children_count }}</td>
             <td>
+              @if($currentRank)
+                <span class="badge bg-success">Rank {{ $currentRank->rank }}</span><br>
+                <small>{{ $currentRank->rank_name }}</small>
+              @else
+                -
+              @endif
+            </td>
+            <td>
               @if($node->packagePurchase)
                 {{ $money($node->packagePurchase->package_price) }}<br>
                 <small class="text-muted">{{ optional($node->packagePurchase->purchase_date)->format('d M Y') }}</small>
@@ -137,7 +147,7 @@
             <td>{{ optional($node->joined_at)->format('d M Y h:i A') ?? '-' }}</td>
           </tr>
         @empty
-          <tr><td colspan="8" class="text-center text-muted py-4">No direct tree members found.</td></tr>
+          <tr><td colspan="9" class="text-center text-muted py-4">No direct tree members found.</td></tr>
         @endforelse
       </tbody>
     </table>

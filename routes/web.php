@@ -60,6 +60,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/sponsor-pool/tree', [AdminDashboardController::class, 'sponsorPoolTree'])->name('sponsor-pool.tree');
         Route::get('/direct-tree', [AdminDashboardController::class, 'directTree'])->name('direct-tree.index');
         Route::get('/direct-tree/tree', [AdminDashboardController::class, 'directTreeView'])->name('direct-tree.tree');
+        Route::get('/rank-rewards', [AdminDashboardController::class, 'rankRewards'])->name('rank-rewards.index');
         Route::get('/funds', [AdminDashboardController::class, 'funds'])->name('funds.index');
         Route::patch('/funds/{fund}', [AdminDashboardController::class, 'updateFund'])->name('funds.update');
     });
@@ -121,6 +122,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/income/zenith-team',          [DashboardController::class, 'incomeZenithTeam'])->name('income.zenith-team');
     Route::get('/income/sponsor-pool',         [DashboardController::class, 'incomeSponsorPool'])->name('income.sponsor-pool');
     Route::get('/income/business-expansion',   [DashboardController::class, 'incomeBusinessExpansion'])->name('income.business-expansion');
+    Route::get('/income/rank-reward',          [DashboardController::class, 'incomeRankReward'])->name('income.rank-reward');
     Route::get('/income/zenith-package',       [DashboardController::class, 'zenithPackage'])->name('income.zenith-package');
 
     // Other

@@ -100,6 +100,7 @@
     <a href="{{ route('income.zenith-team') }}"        class="{{ request()->routeIs('income.zenith-team')        ? 'active':'' }}">Zenith Team Package Commission</a>
     <a href="{{ route('income.sponsor-pool') }}"       class="{{ request()->routeIs('income.sponsor-pool')       ? 'active':'' }}">Sponsor Global Pool Income</a>
     <a href="{{ route('income.business-expansion') }}" class="{{ request()->routeIs('income.business-expansion') ? 'active':'' }}">Business Expansion Incentive Bonus</a>
+    <a href="{{ route('income.rank-reward') }}"        class="{{ request()->routeIs('income.rank-reward')        ? 'active':'' }}">Rank & Reward</a>
   </div>
 
   <form method="POST" action="{{ route('logout') }}">

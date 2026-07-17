@@ -72,6 +72,9 @@
   <a href="{{ route('admin.direct-tree.index') }}" class="{{ request()->routeIs('admin.direct-tree.*') ? 'active' : '' }}">
     <i class="fa fa-diagram-project"></i>Direct Tree
   </a>
+  <a href="{{ route('admin.rank-rewards.index') }}" class="{{ request()->routeIs('admin.rank-rewards.*') ? 'active' : '' }}">
+    <i class="fa fa-trophy"></i>Rank & Reward
+  </a>
 
   <form method="POST" action="{{ route('admin.logout') }}">
     @csrf

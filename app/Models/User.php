@@ -64,4 +64,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(SponsorPoolNode::class, 'purchaser_id');
     }
+
+    public function rankRewards()
+    {
+        return $this->hasMany(UserRankReward::class);
+    }
 }
