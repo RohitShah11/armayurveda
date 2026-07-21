@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('particular');
             $table->text('remarks')->nullable();
             $table->timestamp('transaction_date')->nullable();
-            $table->string('created_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
             $table->timestamps();
         });
     }

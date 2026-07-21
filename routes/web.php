@@ -2,11 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicProductController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductOrderController;
 
 // Public routes
 Route::get('/', function(){
@@ -18,9 +23,8 @@ Route::get('/plan', function () {
 Route::get('/about', function () {
     return view('front.about');
 })->name('about');
-Route::get('/products', function () {
-    return view('front.products');
-})->name('products');
+Route::get('/products', [PublicProductController::class, 'index'])->name('products');
+Route::get('/products/{product:slug}', [PublicProductController::class, 'show'])->name('products.show');
 Route::get('/gallery', function () {
     return view('front.gallery');
 })->name('gallery');
@@ -63,6 +67,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/rank-rewards', [AdminDashboardController::class, 'rankRewards'])->name('rank-rewards.index');
         Route::get('/funds', [AdminDashboardController::class, 'funds'])->name('funds.index');
         Route::patch('/funds/{fund}', [AdminDashboardController::class, 'updateFund'])->name('funds.update');
+        Route::resource('categories', CategoryController::class)->except('show');
+        Route::resource('products', ProductController::class)->except('show');
+        Route::get('/product-orders', [ProductOrderController::class, 'index'])->name('product-orders.index');
+        Route::patch('/product-orders/{productOrder}', [ProductOrderController::class, 'update'])->name('product-orders.update');
     });
 });
 
@@ -126,5 +134,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/income/zenith-package',       [DashboardController::class, 'zenithPackage'])->name('income.zenith-package');
 
     // Other
+    Route::get('/repurchase', [CatalogController::class, 'categories'])->name('catalog.index');
+    Route::get('/repurchase/category/{category:slug}', [CatalogController::class, 'products'])->name('catalog.category');
+    Route::get('/repurchase/product/{product:slug}', [CatalogController::class, 'show'])->name('catalog.show');
+    Route::post('/repurchase/product/{product:slug}/purchase', [CatalogController::class, 'purchase'])->name('catalog.purchase');
+    Route::get('/repurchase-orders', [CatalogController::class, 'orders'])->name('catalog.orders');
     Route::get('/sportmortex', [DashboardController::class, 'sportmortex'])->name('sportmortex');
 });

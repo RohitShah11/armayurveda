@@ -43,6 +43,13 @@
     <a href="{{ route('package.purchase') }}" class="{{ request()->routeIs('package.purchase') ? 'active':'' }}">Purchase Package</a>
   </div>
 
+  <a href="{{ route('catalog.index') }}" class="{{ request()->routeIs('catalog.index','catalog.category','catalog.show','catalog.purchase') ? 'active':'' }}">
+    <i class="fa fa-cart-arrow-down"></i> Repurchase
+  </a>
+  <a href="{{ route('catalog.orders') }}" class="{{ request()->routeIs('catalog.orders') ? 'active':'' }}">
+    <i class="fa fa-receipt"></i> My Repurchase Orders
+  </a>
+
   <a data-bs-toggle="collapse" href="#rechargeMenu">
     <i class="fa fa-mobile-screen"></i> Recharge <i class="fa fa-angle-down ms-auto"></i>
   </a>

@@ -63,6 +63,15 @@
   <a href="{{ route('admin.package-purchases.index') }}" class="{{ request()->routeIs('admin.package-purchases.*') ? 'active' : '' }}">
     <i class="fa fa-box-open"></i>Package Purchases
   </a>
+  <a href="{{ route('admin.categories.index') }}" class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+    <i class="fa fa-layer-group"></i>Categories
+  </a>
+  <a href="{{ route('admin.products.index') }}" class="{{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+    <i class="fa fa-box"></i>Products
+  </a>
+  <a href="{{ route('admin.product-orders.index') }}" class="{{ request()->routeIs('admin.product-orders.*') ? 'active' : '' }}">
+    <i class="fa fa-cart-shopping"></i>Repurchase Orders
+  </a>
   <a href="{{ route('admin.zenith-pool.index') }}" class="{{ request()->routeIs('admin.zenith-pool.*') ? 'active' : '' }}">
     <i class="fa fa-sitemap"></i>Zenith Pool
   </a>
@@ -100,6 +109,9 @@
   </div>
 
   <main class="admin-page">
+    @if($errors->any())
+      <div class="alert alert-danger"><strong>Please correct the following:</strong><ul class="mb-0 mt-2">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
+    @endif
     @yield('content')
   </main>
 </div>
