@@ -305,6 +305,7 @@
   </div>
 </div>
 
+@if($members->isNotEmpty())
 <div class="modal fade" id="viewModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content rounded-4 border-0">
@@ -421,4 +422,5 @@
         </div>
     </div>
 </div>
+@endif
 @endsection

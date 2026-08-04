@@ -13,7 +13,6 @@
 .package-body h5{color:var(--primary);font-weight:900}
 .price{font-size:24px;font-weight:900;color:var(--primary)}
 .mrp{text-decoration:line-through;color:#777}
-.badge-basic{background:#fff3cd;color:#856404}
 .badge-zenith{background:#e8f5ff;color:#0d6efd}
 .btn-main{background:var(--primary);color:#fff;border-radius:25px;font-weight:700;padding:10px 24px}
 .btn-main:hover{background:var(--dark);color:#fff}
@@ -26,6 +25,7 @@
 
 @section('content')
 
+<div class="page-body">
 <div class="row g-4 mb-4">
       <div class="col-lg-4">
         <div class="card-box">
@@ -38,60 +38,29 @@
         <div class="card-box">
           <h6>Current Package</h6>
           <h3 class="fw-bold" id="currentPackage">{{ $currentPackage ?? 'Not Purchased' }}</h3>
-          <small id="packageNote">{{ $currentPackage ? 'You already have an active package.' : 'Please purchase Basic Package first.' }}</small>
+          <small id="packageNote">{{ $currentPackage ? 'Your current package is active.' : 'No package has been purchased yet.' }}</small>
         </div>
       </div>
       <div class="col-lg-4">
         <div class="card-box">
-          <h6>Next Eligible Package</h6>
-          <h3 class="fw-bold text-primary" id="nextPackage">{{ $currentPackage ? 'Upgrade Available' : 'Basic Package' }}</h3>
-          <small>Choose any one product from available package products.</small>
+          <h6>Available Package</h6>
+          <h3 class="fw-bold text-primary" id="nextPackage">Zenith Package</h3>
+          <small>Choose an available Zenith package product.</small>
         </div>
       </div>
     </div>
 
     <div class="alert-note mb-4">
-      <b>Package Flow:</b> First time user will see only <b>Basic Package</b>. After purchasing Basic Package, Basic section will hide and <b>Zenith Package</b> will appear.
+      <b>Package:</b> Zenith Package is available directly. The purchase amount is deducted from your Main Wallet, and all Zenith benefits are processed after a successful purchase.
     </div>
 
-    <section id="basicSection" class="{{ $currentPackage ? 'd-none' : '' }}">
-      <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
-        <div>
-          <h4 class="fw-bold">Basic Package</h4>
-          <p class="mb-0 text-muted">Choose any one product to activate your Basic Package.</p>
-        </div>
-        <span class="badge badge-basic p-2">Required First</span>
-      </div>
-
-      <div class="row g-4 mb-5">
-        @foreach ($packages->where('category', 'Basic') as $package)
-          <div class="col-lg-4 col-md-6">
-            <div class="package-card">
-              <img src="{{ $package->image ?: 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=700&q=80' }}">
-              <div class="package-body">
-                <span class="badge badge-basic mb-2">{{ $package->category }} Package</span>
-                <h5>{{ $package->name }}</h5>
-                <p>{{ $package->description }}</p>
-                <div class="price">₹{{ number_format($package->price, 2) }}</div>
-                <form method="POST" action="{{ route('package.purchase.store') }}">
-                  @csrf
-                  <input type="hidden" name="package_id" value="{{ $package->id }}">
-                  <button class="btn btn-main w-100 mt-3" type="submit">Purchase Now</button>
-                </form>
-              </div>
-            </div>
-          </div>
-        @endforeach
-      </div>
-    </section>
-
-    <section id="zenithSection" class="{{ $currentPackage ? '' : 'd-none' }}">
+    <section id="zenithSection">
       <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
         <div>
           <h4 class="fw-bold">Zenith Package</h4>
-          <p class="mb-0 text-muted">Basic Package purchased. Now choose any one Zenith product.</p>
+          <p class="mb-0 text-muted">Choose an available Zenith product to purchase the package.</p>
         </div>
-        <span class="badge badge-zenith p-2">Upgrade Package</span>
+        <span class="badge badge-zenith p-2">Available Now</span>
       </div>
 
       <div class="row g-4 mb-5">
@@ -113,6 +82,11 @@
             </div>
           </div>
         @endforeach
+        @if ($packages->isEmpty())
+          <div class="col-12">
+            <div class="alert alert-warning mb-0">No Zenith Package is currently available. Please contact support.</div>
+          </div>
+        @endif
       </div>
     </section>
 
@@ -154,7 +128,6 @@
       </div>
     </div>
 
-  </div>
 </div>
 
 <!-- CONFIRM MODAL -->
@@ -182,4 +155,5 @@
       </div>
     </div>
   </div>
+</div>
 @endsection

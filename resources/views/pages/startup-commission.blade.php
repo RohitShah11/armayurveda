@@ -22,7 +22,7 @@
 .badge-paid{background:#dff7e8;color:#198754}
 .badge-pending{background:#fff3cd;color:#856404}
 .badge-hold{background:#fde2e2;color:#dc3545}
-.badge-level{background:var(--light);color:var(--primary);border:1px solid #f0cbd7}
+.badge-level{background:var(--light);color:var(--primary);border:1px solid #c8e6c9}
 .search-chip{background:#fff;border:1px solid #eee;border-radius:14px;padding:15px}
 @media(max-width:991px){}
 @media(max-width:576px){.level-row{display:block}.level-row span:last-child{text-align:left;display:block;margin-top:5px}}

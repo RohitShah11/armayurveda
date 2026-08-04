@@ -18,7 +18,7 @@ textarea.form-control{height:95px}
 .recharge-box{background:linear-gradient(135deg,var(--primary),var(--dark));color:#fff;border-radius:18px;padding:25px;height:100%}
 .recharge-row{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.2);padding:12px 0;gap:15px}
 .recharge-row span:last-child{font-weight:700;text-align:right;color:#ffe799}
-.operator-pill{background:var(--light);border:1px solid #ffd7e3;border-radius:16px;padding:14px;text-align:center;font-weight:700;color:var(--primary);height:100%;cursor:pointer;transition:.2s}
+.operator-pill{background:var(--light);border:1px solid #c8e6c9;border-radius:16px;padding:14px;text-align:center;font-weight:700;color:var(--primary);height:100%;cursor:pointer;transition:.2s}
 .operator-pill:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.08)}
 .operator-pill i{display:block;font-size:24px;margin-bottom:8px;color:var(--gold)}
 .table thead th{background:var(--primary);color:#fff;white-space:nowrap}

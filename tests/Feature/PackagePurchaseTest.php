@@ -25,34 +25,34 @@ class PackagePurchaseTest extends TestCase
         ]);
     }
 
-    public function test_user_can_purchase_basic_package_from_wallet(): void
+    public function test_user_can_purchase_zenith_package_directly_from_wallet(): void
     {
-        $basic = Package::create([
-            'name' => 'Basic Package',
-            'slug' => 'basic-package',
-            'price' => 1999,
-            'category' => 'Basic',
-            'description' => 'Starter package',
+        $zenith = Package::create([
+            'name' => 'Zenith Package',
+            'slug' => 'zenith-package',
+            'price' => 10500,
+            'category' => 'Zenith',
+            'description' => 'Zenith package',
             'image' => null,
         ]);
 
         $user = User::factory()->create([
-            'main_wallet' => 5000,
+            'main_wallet' => 20000,
             'package_name' => null,
         ]);
 
         $this->actingAs($user);
 
         $response = $this->post(route('package.purchase.store'), [
-            'package_id' => $basic->id,
+            'package_id' => $zenith->id,
         ]);
 
         $response->assertRedirect();
         $response->assertSessionHas('success');
 
         $user->refresh();
-        $this->assertSame('Basic Package', $user->package_name);
-        $this->assertSame(3001.00, (float) $user->main_wallet);
+        $this->assertSame('Zenith Package', $user->package_name);
+        $this->assertSame(9750.00, (float) $user->main_wallet);
         $this->assertDatabaseHas('main_wallet_transactions', [
             'user_id' => $user->id,
             'transaction_type' => 'Debit',
@@ -69,12 +69,12 @@ class PackagePurchaseTest extends TestCase
 
     public function test_package_purchase_creates_purchase_record_and_distributes_level_commissions(): void
     {
-        $basic = Package::create([
-            'name' => 'Basic Package',
-            'slug' => 'basic-package',
-            'price' => 1999,
-            'category' => 'Basic',
-            'description' => 'Starter package',
+        $zenith = Package::create([
+            'name' => 'Zenith Package',
+            'slug' => 'zenith-package',
+            'price' => 10500,
+            'category' => 'Zenith',
+            'description' => 'Zenith package',
             'image' => null,
         ]);
 
@@ -93,14 +93,14 @@ class PackagePurchaseTest extends TestCase
         $user = User::factory()->create([
             'member_id' => 'ARM1003',
             'sponsor_id' => 'ARM1002',
-            'main_wallet' => 5000,
+            'main_wallet' => 20000,
             'package_name' => null,
         ]);
 
         $this->actingAs($user);
 
         $response = $this->post(route('package.purchase.store'), [
-            'package_id' => $basic->id,
+            'package_id' => $zenith->id,
         ]);
 
         $response->assertRedirect();
@@ -110,58 +110,58 @@ class PackagePurchaseTest extends TestCase
         $level1Sponsor->refresh();
         $level2Sponsor->refresh();
 
-        $this->assertSame(3001.00, (float) $user->main_wallet);
-        $this->assertSame(200.00, (float) $level1Sponsor->earning_wallet);
-        $this->assertSame(100.00, (float) $level2Sponsor->earning_wallet);
+        $this->assertSame(9750.00, (float) $user->main_wallet);
+        $this->assertSame(300.00, (float) $level1Sponsor->earning_wallet);
+        $this->assertSame(150.00, (float) $level2Sponsor->earning_wallet);
         $this->assertDatabaseHas('package_purchases', [
             'user_id' => $user->id,
-            'package_id' => $basic->id,
-            'package_name' => 'Basic Package',
-            'package_price' => '1999.00',
+            'package_id' => $zenith->id,
+            'package_name' => 'Zenith Package',
+            'package_price' => '10500.00',
         ]);
         $this->assertDatabaseHas('earning_wallet_transactions', [
             'user_id' => $level1Sponsor->id,
             'type' => 'Credit',
-            'description' => 'Level 1 commission for Basic Package',
-            'amount' => '200.00',
+            'description' => 'Level 1 commission for Zenith Package',
+            'amount' => '300.00',
         ]);
         $this->assertDatabaseHas('earning_wallet_transactions', [
             'user_id' => $level2Sponsor->id,
             'type' => 'Credit',
-            'description' => 'Level 2 commission for Basic Package',
-            'amount' => '100.00',
+            'description' => 'Level 2 commission for Zenith Package',
+            'amount' => '150.00',
         ]);
     }
 
     public function test_package_purchase_places_member_under_sponsor_in_direct_tree(): void
     {
-        $basic = Package::create([
-            'name' => 'Basic Package',
-            'slug' => 'basic-package',
-            'price' => 1999,
-            'category' => 'Basic',
-            'description' => 'Starter package',
+        $zenith = Package::create([
+            'name' => 'Zenith Package',
+            'slug' => 'zenith-package',
+            'price' => 10500,
+            'category' => 'Zenith',
+            'description' => 'Zenith package',
             'image' => null,
         ]);
 
         $sponsor = User::factory()->create([
             'member_id' => 'ARM2001',
             'sponsor_id' => null,
-            'main_wallet' => 5000,
+            'main_wallet' => 20000,
         ]);
 
         $user = User::factory()->create([
             'member_id' => 'ARM2002',
             'sponsor_id' => 'ARM2001',
-            'main_wallet' => 5000,
+            'main_wallet' => 20000,
         ]);
 
         $this->actingAs($sponsor)->post(route('package.purchase.store'), [
-            'package_id' => $basic->id,
+            'package_id' => $zenith->id,
         ])->assertRedirect();
 
         $this->actingAs($user)->post(route('package.purchase.store'), [
-            'package_id' => $basic->id,
+            'package_id' => $zenith->id,
         ])->assertRedirect();
 
         $sponsorNode = DirectTreeNode::where('user_id', $sponsor->id)->first();
@@ -170,6 +170,31 @@ class PackagePurchaseTest extends TestCase
             'user_id' => $user->id,
             'parent_id' => $sponsorNode->id,
             'depth' => $sponsorNode->depth + 1,
+        ]);
+    }
+
+    public function test_basic_package_cannot_be_purchased(): void
+    {
+        $basic = Package::create([
+            'name' => 'Basic Package',
+            'slug' => 'basic-package',
+            'price' => 1999,
+            'category' => 'Basic',
+        ]);
+
+        $user = User::factory()->create([
+            'main_wallet' => 5000,
+            'package_name' => null,
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('package.purchase.store'), ['package_id' => $basic->id])
+            ->assertSessionHasErrors('package');
+
+        $this->assertSame(5000.00, (float) $user->fresh()->main_wallet);
+        $this->assertDatabaseMissing('package_purchases', [
+            'user_id' => $user->id,
+            'package_id' => $basic->id,
         ]);
     }
 }

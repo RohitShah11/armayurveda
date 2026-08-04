@@ -10,10 +10,10 @@
 
   <style>
     :root{
-      --primary:#7B1E3A;
-      --dark:#003f17;
+      --primary:#2E7D32;
+      --dark:#1B5E20;
       --gold:#dca11d;
-      --light:#f7e7ea;
+      --light:#F1F8E9;
       --cream:#f7fbf3;
       --text:#102d17;
     }
@@ -23,9 +23,9 @@
     .navbar{padding:18px 0}
     .logo{width:125px}
     .nav-link{font-weight:700;font-size:14px;margin:0 14px;color:#111}
-    .nav-link.active{color:#7B1E3A;border-bottom:2px solid #7B1E3A}
-    .btn-green{background:#7B1E3A;color:#fff;border-radius:25px;padding:10px 25px;font-weight:700;border:0}
-    .btn-green:hover{background:#003f17;color:#fff}
+    .nav-link.active{color:var(--primary);border-bottom:2px solid var(--primary)}
+    .btn-green{background:var(--primary);color:#fff;border-radius:25px;padding:10px 25px;font-weight:700;border:0}
+    .btn-green:hover{background:var(--dark);color:#fff}
     .btn-gold{background:#dca11d;color:#fff;border-radius:25px;padding:10px 25px;font-weight:700;border:0}
     .hero{background:url('https://armayurveda.com/public/images/banner.png') center/cover no-repeat;padding:70px 0}
     .hero-logo{width:210px}
@@ -35,7 +35,7 @@
     .trust-box{background:#f3f7ef;border-radius:12px;padding:24px 20px;margin-top:35px}
     .trust-item{display:flex;align-items:center;gap:15px;border-right:1px solid #d8ded2}
     .trust-item:last-child{border-right:0}
-    .trust-item i{font-size:42px;color:#7B1E3A}
+    .trust-item i{font-size:42px;color:var(--primary)}
     .section-title{text-align:center;color:#064719;font-weight:900;margin-bottom:10px}
     .title-line{text-align:center;color:#2b7b25;margin-bottom:30px}
     .category-card,.product-card{background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.09);height:100%}
@@ -44,16 +44,16 @@
     .circle-icon{width:65px;height:65px;background:#1e7b2b;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:-50px auto 15px;font-size:28px;border:5px solid #fff;position:relative}
     .product-body h5,.category-body h5{color:#064719;font-weight:800}
     .price{font-size:24px;font-weight:900;color:#0b641f}
-    .business{background:#7B1E3A;color:#fff;padding:45px 0}
+    .business{background:var(--primary);color:#fff;padding:45px 0}
     .business h2{font-weight:900}
     .business h2 span{color:#dca11d}
     .step{text-align:center}
-    .step-circle{width:90px;height:90px;background:#fff;color:#7B1E3A;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 15px;font-size:34px}
+    .step-circle{width:90px;height:90px;background:#fff;color:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 15px;font-size:34px}
     .contact{background:#f7fbf3;padding:45px 0}
     .contact-logo{width:210px}
     .form-control{height:45px;border-radius:4px}
     textarea.form-control{height:100px}
-    footer{background:#7B1E3A;color:#fff;padding:16px 0;font-size:14px}
+    footer{background:var(--primary);color:#fff;padding:16px 0;font-size:14px}
     @media(max-width:768px){
       .hero{text-align:center;padding:45px 0}
       .hero h1{font-size:34px}
@@ -94,7 +94,7 @@
 
     .hero{
       background:
-      linear-gradient(rgba(123,30,58,.84),rgba(123,30,58,.84)),
+      linear-gradient(rgba(46,125,50,.84),rgba(46,125,50,.84)),
       url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1600&q=80');
       background-size:cover;
       background-position:center;
@@ -167,7 +167,7 @@
 
     .process{
       background:
-      linear-gradient(rgba(93,22,48,.92),rgba(93,22,48,.92)),
+      linear-gradient(rgba(27,94,32,.92),rgba(27,94,32,.92)),
       url('https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1600&q=80');
       background-size:cover;
       background-position:center;
@@ -381,7 +381,7 @@
 
 .director{
   background:
-  linear-gradient(rgba(93,22,48,.90),rgba(93,22,48,.90)),
+  linear-gradient(rgba(27,94,32,.90),rgba(27,94,32,.90)),
   url('https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1600&q=80');
   background-size:cover;
   background-position:center;
@@ -444,7 +444,7 @@
 
 .cta{
   background:
-  linear-gradient(rgba(123,30,58,.88),rgba(123,30,58,.88)),
+  linear-gradient(rgba(46,125,50,.88),rgba(46,125,50,.88)),
   url('https://images.unsplash.com/photo-1596178065887-1198b6148b2b?auto=format&fit=crop&w=1600&q=80');
   background-size:cover;
   background-position:center;
@@ -492,7 +492,7 @@ textarea.form-control{
 .gallery-overlay{
   position:absolute;
   inset:0;
-  background:linear-gradient(to top,rgba(93,22,48,.85),rgba(93,22,48,.10));
+  background:linear-gradient(to top,rgba(27,94,32,.85),rgba(27,94,32,.10));
   color:#fff;
   display:flex;
   flex-direction:column;
@@ -574,7 +574,7 @@ textarea.form-control{
 
 .cta{
   background:
-  linear-gradient(rgba(123,30,58,.90),rgba(123,30,58,.90)),
+  linear-gradient(rgba(46,125,50,.90),rgba(46,125,50,.90)),
   url('https://images.unsplash.com/photo-1596178065887-1198b6148b2b?auto=format&fit=crop&w=1600&q=80');
   background-size:cover;
   background-position:center;

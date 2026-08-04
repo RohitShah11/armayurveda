@@ -32,7 +32,7 @@
 
 .hero{
   background:
-  linear-gradient(rgba(123,30,58,.84),rgba(123,30,58,.84)),
+  linear-gradient(rgba(46,125,50,.84),rgba(46,125,50,.84)),
   url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1600&q=80');
   background-size:cover;
   background-position:center;
@@ -105,7 +105,7 @@
 
 .process{
   background:
-  linear-gradient(rgba(93,22,48,.92),rgba(93,22,48,.92)),
+  linear-gradient(rgba(27,94,32,.92),rgba(27,94,32,.92)),
   url('https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1600&q=80');
   background-size:cover;
   background-position:center;

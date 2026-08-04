@@ -17,7 +17,7 @@
       @forelse($categories as $category)
         <tr>
           <td>{{ $categories->firstItem() + $loop->index }}</td>
-          <td>@if($category->image)<img class="proof-thumb" src="{{ Storage::url($category->image) }}" alt="">@else<span class="text-muted">—</span>@endif</td>
+          <td>@if($category->image)<img class="proof-thumb" src="{{ Storage::disk('public')->url($category->image) }}" alt="">@else<span class="text-muted">—</span>@endif</td>
           <td class="fw-semibold">{{ $category->name }}</td><td>{{ $category->parent?->name ?? '—' }}</td><td>{{ $category->products_count }}</td>
           <td><span class="badge {{ $category->is_active ? 'bg-success' : 'bg-secondary' }}">{{ $category->is_active ? 'Active' : 'Inactive' }}</span></td>
           <td>{{ $category->updated_at->format('d M, Y') }}</td>

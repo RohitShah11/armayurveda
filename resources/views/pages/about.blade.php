@@ -50,7 +50,7 @@
 
 .hero{
   background:
-  linear-gradient(rgba(123,30,58,.80),rgba(123,30,58,.80)),
+  linear-gradient(rgba(46,125,50,.80),rgba(46,125,50,.80)),
   url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1600&q=80');
   background-size:cover;
   background-position:center;
@@ -169,7 +169,7 @@
 
 .director{
   background:
-  linear-gradient(rgba(93,22,48,.90),rgba(93,22,48,.90)),
+  linear-gradient(rgba(27,94,32,.90),rgba(27,94,32,.90)),
   url('https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=1600&q=80');
   background-size:cover;
   background-position:center;
@@ -232,7 +232,7 @@
 
 .cta{
   background:
-  linear-gradient(rgba(123,30,58,.88),rgba(123,30,58,.88)),
+  linear-gradient(rgba(46,125,50,.88),rgba(46,125,50,.88)),
   url('https://images.unsplash.com/photo-1596178065887-1198b6148b2b?auto=format&fit=crop&w=1600&q=80');
   background-size:cover;
   background-position:center;

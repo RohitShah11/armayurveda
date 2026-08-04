@@ -49,7 +49,9 @@ class DashboardController extends Controller
     public function packagePurchase()
     {
         $user = Auth::user();
-        $packages = Package::orderBy('sort_order')->get();
+        $packages = Package::whereRaw('LOWER(category) = ?', ['zenith'])
+            ->orderBy('sort_order')
+            ->get();
         $currentPackage = $user?->package_name;
         $purchaseHistory = PackagePurchase::where('user_id', $user?->id)
             ->orderByDesc('purchase_date')
@@ -70,6 +72,12 @@ class DashboardController extends Controller
 
         if (! $user) {
             return redirect()->route('login');
+        }
+
+        if (strtolower($package->category) !== 'zenith') {
+            return back()->withErrors([
+                'package' => 'Only the Zenith Package is available for purchase.',
+            ]);
         }
 
         $walletBalance = (float) ($user->main_wallet ?? 0);
@@ -111,31 +119,29 @@ class DashboardController extends Controller
             app(DirectTreeService::class)->enterFromPurchase($user->fresh(), $packagePurchase);
             app(RankRewardService::class)->processFromPurchase($user->fresh(), $packagePurchase);
 
-            if (strtolower($package->category) === 'zenith') {
-                $rewardAmount = 250.00;
-                $rewardOpeningBalance = (float) ($user->main_wallet ?? 0);
-                $rewardClosingBalance = $rewardOpeningBalance + $rewardAmount;
+            $rewardAmount = 250.00;
+            $rewardOpeningBalance = (float) ($user->main_wallet ?? 0);
+            $rewardClosingBalance = $rewardOpeningBalance + $rewardAmount;
 
-                $user->update([
-                    'main_wallet' => $rewardClosingBalance,
-                ]);
+            $user->update([
+                'main_wallet' => $rewardClosingBalance,
+            ]);
 
-                MainWalletTransaction::create([
-                    'user_id' => $user->id,
-                    'transaction_type' => 'Credit',
-                    'amount' => $rewardAmount,
-                    'opening_balance' => $rewardOpeningBalance,
-                    'closing_balance' => $rewardClosingBalance,
-                    'particular' => 'Zenith package reward',
-                    'remarks' => 'Reward for purchasing Zenith package',
-                    'transaction_date' => now(),
-                ]);
+            MainWalletTransaction::create([
+                'user_id' => $user->id,
+                'transaction_type' => 'Credit',
+                'amount' => $rewardAmount,
+                'opening_balance' => $rewardOpeningBalance,
+                'closing_balance' => $rewardClosingBalance,
+                'particular' => 'Zenith package reward',
+                'remarks' => 'Reward for purchasing Zenith package',
+                'transaction_date' => now(),
+            ]);
 
-                $freshUser = $user->fresh();
+            $freshUser = $user->fresh();
 
-                app(ZenithPoolService::class)->enterPool($freshUser, $packagePurchase);
-                app(SponsorPoolService::class)->enterSponsorFromPurchase($freshUser, $packagePurchase);
-            }
+            app(ZenithPoolService::class)->enterPool($freshUser, $packagePurchase);
+            app(SponsorPoolService::class)->enterSponsorFromPurchase($freshUser, $packagePurchase);
 
             $commissionLevels = PackageCommissionLevel::query()
                 ->where('package_category', $package->category)
@@ -147,10 +153,6 @@ class DashboardController extends Controller
 
             if (empty($commissionLevels)) {
                 $commissionLevels = match (strtolower($package->category)) {
-                    'basic' => [
-                        1 => 200.0,
-                        2 => 100.0,
-                    ],
                     'zenith' => [
                         1 => 300.0,
                         2 => 150.0,

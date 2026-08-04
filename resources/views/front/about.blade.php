@@ -1,5 +1,14 @@
 @extends('layouts.front')
+@push('styles')
+<style>
+@media (max-width:575.98px){
+  .about-page .container{padding-left:24px;padding-right:24px}
+}
+</style>
+@endpush
 @section('content')
+
+<div class="about-page">
 
 <section class="hero">
   <div class="container">
@@ -317,4 +326,5 @@
   </div>
 </section>
 
+</div>
 @endsection

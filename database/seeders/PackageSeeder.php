@@ -11,20 +11,12 @@ class PackageSeeder extends Seeder
     {
         $packages = [
             [
-                'name' => 'Basic Package',
-                'slug' => 'basic-package',
-                'category' => 'Basic',
-                'price' => 1999,
-                'description' => 'Starter package for new members.',
-                'sort_order' => 1,
-            ],
-            [
                 'name' => 'Zenith Package',
                 'slug' => 'zenith-package',
                 'category' => 'Zenith',
                 'price' => 10500,
                 'description' => 'Premium package for upgraded members.',
-                'sort_order' => 2,
+                'sort_order' => 1,
             ],
         ];
 
