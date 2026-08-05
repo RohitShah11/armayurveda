@@ -90,6 +90,7 @@ Route::middleware('auth')->group(function () {
     // Package
     Route::get('/package/purchase', [DashboardController::class, 'packagePurchase'])->name('package.purchase');
     Route::post('/package/purchase', [DashboardController::class, 'storePackagePurchase'])->name('package.purchase.store');
+    Route::get('/package/purchases/{packagePurchase}/invoice', [DashboardController::class, 'packageInvoice'])->name('package.purchase.invoice');
 
     // Recharge
     Route::get('/recharge/mobile', [DashboardController::class, 'rechargeMobile'])->name('recharge.mobile');
@@ -139,5 +140,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/repurchase/product/{product:slug}', [CatalogController::class, 'show'])->name('catalog.show');
     Route::post('/repurchase/product/{product:slug}/purchase', [CatalogController::class, 'purchase'])->name('catalog.purchase');
     Route::get('/repurchase-orders', [CatalogController::class, 'orders'])->name('catalog.orders');
+    Route::get('/repurchase-orders/{productOrder}/invoice', [CatalogController::class, 'invoice'])->name('catalog.orders.invoice');
     Route::get('/sportmortex', [DashboardController::class, 'sportmortex'])->name('sportmortex');
 });
