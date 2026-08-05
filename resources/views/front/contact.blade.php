@@ -19,7 +19,7 @@
         <div class="contact-card">
           <div class="contact-icon"><i class="fa fa-phone"></i></div>
           <h5>Call Us</h5>
-          <p class="mb-1">+91 70851 70022</p>
+          <p class="mb-1">+91 92420 68805</p>
           <p class="text-muted mb-0">Monday to Saturday</p>
         </div>
       </div>
@@ -61,7 +61,7 @@
               <i class="fa fa-phone"></i>
               <div>
                 <b>Phone</b><br>
-                +91 70851 70022
+                +91 92420 68805
               </div>
             </li>
 
@@ -91,7 +91,7 @@
           </ul>
 
           <div class="mt-4">
-            <a href="tel:+917085170022" class="btn btn-gold me-2"><i class="fa fa-phone"></i> Call Now</a>
+            <a href="tel:+919242068805" class="btn btn-gold me-2"><i class="fa fa-phone"></i> Call Now</a>
             <a href="mailto:armayurveda@gmail.com" class="btn btn-light rounded-pill px-4"><i class="fa fa-envelope"></i> Email</a>
           </div>
         </div>

@@ -119,7 +119,7 @@
                   <td>
                     <span class="badge bg-success">{{ $purchase->status }}</span>
                   </td>
-                  <td>-</td>
+                  <td><a href="{{ route('package.purchase.invoice', $purchase) }}" class="btn btn-sm btn-success text-nowrap">View Invoice</a></td>
                 </tr>
               @endforeach
             @endif

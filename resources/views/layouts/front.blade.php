@@ -593,7 +593,7 @@ textarea.form-control{
 <div class="topbar">
   <div class="container d-flex justify-content-between flex-wrap">
     <span>Welcome to ARM Ayurveda Pvt. Ltd.</span>
-    <span><i class="fa fa-phone"></i> +91 70851 70022 &nbsp;&nbsp; <i class="fa fa-envelope"></i> armayurveda@gmail.com</span>
+    <span><i class="fa fa-phone"></i> +91 92420 68805 &nbsp;&nbsp; <i class="fa fa-envelope"></i> armayurveda@gmail.com</span>
   </div>
 </div>
 

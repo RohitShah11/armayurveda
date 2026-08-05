@@ -1,20 +1,52 @@
 @extends('layouts.front')
 
+@push('styles')
+<style>
+.home-slider{background:#eef4e9;overflow:hidden}
+.home-slider .carousel-item{background:#eef4e9}
+.home-slider .carousel-item img{display:block;width:100%;height:auto;aspect-ratio:1.875/1;object-fit:contain}
+.home-slider .carousel-control-prev,.home-slider .carousel-control-next{width:7%}
+.home-slider .carousel-control-prev-icon,.home-slider .carousel-control-next-icon{width:46px;height:46px;background-color:rgba(27,94,32,.82);background-size:52%;border-radius:50%;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.home-slider .carousel-indicators{margin-bottom:1rem}
+.home-slider .carousel-indicators [data-bs-target]{width:11px;height:11px;border:2px solid #fff;border-radius:50%;background-color:var(--primary);box-shadow:0 2px 7px rgba(0,0,0,.35)}
+@media(max-width:575.98px){
+  .home-slider .carousel-control-prev,.home-slider .carousel-control-next{width:11%}
+  .home-slider .carousel-control-prev-icon,.home-slider .carousel-control-next-icon{width:32px;height:32px}
+  .home-slider .carousel-indicators{margin-bottom:.35rem}
+  .home-slider .carousel-indicators [data-bs-target]{width:8px;height:8px}
+}
+</style>
+@endpush
+
 @section('content')
-<section class="hero">
-  <div class="container">
-    <div class="row align-items-center">
-      <div class="col-lg-3">
-        <img src="images/logo.jpeg" class="hero-logo" alt="ARM Ayurveda">
+<section class="home-slider" aria-label="ARM Ayurveda highlights">
+  <div id="homeHeroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="5000" data-bs-pause="hover" data-bs-touch="true">
+    <div class="carousel-indicators">
+      <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Ayurveda products"></button>
+      <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="1" aria-label="Repurchase benefits"></button>
+      <button type="button" data-bs-target="#homeHeroCarousel" data-bs-slide-to="2" aria-label="Recharge cashback"></button>
+    </div>
+
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="{{ asset('images/home-slider-1.png') }}" alt="ARM Ayurveda products and wellness opportunities" fetchpriority="high">
       </div>
-      <div class="col-lg-6">
-        <h1>PURE AYURVEDA</h1>
-        <h3>FOR A HEALTHIER TOMORROW</h3>
-        <p>Natural wellness products with a trusted business opportunity for a better future.</p>
-        <a href="#" class="btn btn-green me-2"><i class="fa fa-bag-shopping"></i> EXPLORE PRODUCTS</a>
-        <a href="#" class="btn btn-gold"><i class="fa fa-users"></i> JOIN BUSINESS</a>
+      <div class="carousel-item">
+        <img src="{{ asset('images/home-slider-2.png') }}" alt="ARM Ayurveda repurchase benefits" loading="lazy">
+      </div>
+      <div class="carousel-item">
+        <img src="{{ asset('images/home-slider-3.png') }}" alt="ARM Ayurveda mobile and DTH recharge cashback" loading="lazy">
       </div>
     </div>
+
+    <button class="carousel-control-prev" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous slide</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#homeHeroCarousel" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next slide</span>
+    </button>
   </div>
 </section>
 
@@ -200,7 +232,7 @@
       <div class="col-lg-3">
         <h3 class="fw-bold text-success">GET IN TOUCH</h3>
         <p>For any enquiry, feedback or distributor support, please reach out to us.</p>
-        <p><i class="fa fa-phone text-success"></i> +91 70851 70022</p>
+        <p><i class="fa fa-phone text-success"></i> +91 92420 68805</p>
         <p><i class="fa fa-envelope text-success"></i> armayurveda@gmail.com</p>
         <p><i class="fa fa-location-dot text-success"></i> Ashoknagar, North 24 Parganas, West Bengal</p>
       </div>

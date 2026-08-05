@@ -298,7 +298,7 @@
       <div class="col-lg-5">
         <h2 class="section-title">Contact Us</h2>
         <p>For product enquiry, joining or distributor support, contact ARM Ayurveda.</p>
-        <p><i class="fa fa-phone text-danger"></i> +91 70851 70022</p>
+        <p><i class="fa fa-phone text-danger"></i> +91 92420 68805</p>
         <p><i class="fa fa-envelope text-danger"></i> armayurveda@gmail.com</p>
         <p><i class="fa fa-location-dot text-danger"></i> Ashoknagar, North 24 Parganas, West Bengal</p>
       </div>

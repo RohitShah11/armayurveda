@@ -9,6 +9,7 @@ use App\Models\ProductOrder;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class CatalogController extends Controller
 {
@@ -108,5 +109,21 @@ class CatalogController extends Controller
         $orders = ProductOrder::with('product')->where('user_id', $request->user()->id)->latest('ordered_at')->paginate(15);
 
         return view('pages.catalog.orders', compact('orders'));
+    }
+
+    public function invoice(Request $request, ProductOrder $productOrder)
+    {
+        abort_unless($productOrder->user_id === $request->user()->id, 403);
+
+        $productOrder->load(['product.category', 'user']);
+        $profile = Schema::hasTable('member_profiles') ? $productOrder->user->profile()->first() : null;
+        $invoiceNumber = 'ARM/INV/'.$productOrder->ordered_at->format('Y').'/'.str_pad((string) $productOrder->id, 6, '0', STR_PAD_LEFT);
+
+        // Repurchase prices are customer-facing, GST-inclusive prices.
+        $taxableAmount = round((float) $productOrder->total_amount / 1.05, 2);
+        $cgst = round($taxableAmount * 0.025, 2);
+        $sgst = round((float) $productOrder->total_amount - $taxableAmount - $cgst, 2);
+
+        return view('pages.catalog.invoice', compact('productOrder', 'profile', 'invoiceNumber', 'taxableAmount', 'cgst', 'sgst'));
     }
 }

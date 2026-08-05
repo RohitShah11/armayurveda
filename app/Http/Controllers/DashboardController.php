@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
 {
@@ -59,6 +60,17 @@ class DashboardController extends Controller
             ->get();
 
         return view('pages.basic-package', compact('packages', 'currentPackage', 'purchaseHistory'));
+    }
+
+    public function packageInvoice(Request $request, PackagePurchase $packagePurchase)
+    {
+        abort_unless($packagePurchase->user_id === $request->user()->id, 403);
+
+        $packagePurchase->load(['package', 'user']);
+        $profile = Schema::hasTable('member_profiles') ? $packagePurchase->user->profile()->first() : null;
+        $invoiceNumber = 'ARM/PKG/'.$packagePurchase->purchase_date->format('Y').'/'.str_pad((string) $packagePurchase->id, 6, '0', STR_PAD_LEFT);
+
+        return view('pages.package-invoice', compact('packagePurchase', 'profile', 'invoiceNumber'));
     }
 
     public function storePackagePurchase(Request $request)
