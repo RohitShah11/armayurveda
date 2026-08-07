@@ -67,7 +67,7 @@
 
     body{font-family:Arial,sans-serif;color:var(--text);background:#fff}
     .topbar{background:var(--primary);color:#fff;padding:8px 0;font-size:14px}
-    .logo{width:50px}
+    .logo{width:80px}
     .navbar{padding:16px 0}
     .nav-link{font-weight:700;font-size:14px;margin:0 12px;color:#111}
     .nav-link.active,.nav-link:hover{color:var(--primary)}
@@ -599,8 +599,8 @@ textarea.form-control{
 
 <nav class="navbar navbar-expand-lg bg-white shadow-sm">
   <div class="container">
-    <a class="navbar-brand" href="#">
-      <img src="images/logo.jpeg" class="logo" alt="ARM Ayurveda">
+    <a class="navbar-brand" href="/">
+      <img src="images/logo.png" class="logo" alt="ARM Ayurveda">
     </a>
 
     <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">

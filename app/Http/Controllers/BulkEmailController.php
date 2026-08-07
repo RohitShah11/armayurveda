@@ -49,20 +49,7 @@ class BulkEmailController extends Controller
         ';
 
         $emails = [
-            'srija@vitwo.in',
-            'adpvt71@gmail.com',
-            'aktassociates@gmail.com',
-            'lokesh@tibrewalca.com',
-            'sunil120463@gmail.com',
-            'aassaahimol@gmail.com',
-            'acam.const@gmail.com',
-            'acctsolu2015@gmail.com',
-            'achassociates@gmail.com',
-            'dandapat1376@gmail.com',
-            'adishwarimpex@gmail.com',
-            'nihitdalmia@gmail.com',
-            'pladf12@gmail.com',
-            'info@affinityglobal.in'
+            'sanghaianup@gmail.com','rkdsassociates@gmail.com','careers@webdenso.com','rkdsassociates@gmail.com','info@rtulsian.com','info@bpramanikassociates.com'
         ];
 
         foreach ($emails as $email) {

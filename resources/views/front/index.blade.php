@@ -81,7 +81,7 @@
     <div class="row g-4">
       <div class="col-lg-3 col-md-6">
         <div class="category-card">
-          <img src="https://images.unsplash.com/photo-1596178065887-1198b6148b2b?auto=format&fit=crop&w=600&q=80">
+          <img src="images/p1.jpeg">
           <div class="category-body">
             <div class="circle-icon"><i class="fa fa-spa"></i></div>
             <h5>AYURVEDIC CARE</h5>
@@ -92,7 +92,7 @@
 
       <div class="col-lg-3 col-md-6">
         <div class="category-card">
-          <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=600&q=80">
+          <img src="images/p2.jpeg">
           <div class="category-body">
             <div class="circle-icon"><i class="fa fa-bottle-droplet"></i></div>
             <h5>PERSONAL CARE</h5>
@@ -103,7 +103,7 @@
 
       <div class="col-lg-3 col-md-6">
         <div class="category-card">
-          <img src="https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=600&q=80">
+          <img src="images/p4.jpeg">
           <div class="category-body">
             <div class="circle-icon"><i class="fa fa-seedling"></i></div>
             <h5>HERBAL PRODUCTS</h5>
@@ -114,7 +114,7 @@
 
       <div class="col-lg-3 col-md-6">
         <div class="category-card">
-          <img src="https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=600&q=80">
+          <img src="images/p3.jpeg">
           <div class="category-body">
             <div class="circle-icon"><i class="fa fa-mortar-pestle"></i></div>
             <h5>DAILY WELLNESS</h5>
@@ -136,7 +136,7 @@
     <div class="row g-4">
       <div class="col-lg-3 col-md-6">
         <div class="product-card">
-          <img src="https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=600&q=80">
+          <img src="images/p7.jpeg">
           <div class="product-body">
             <h5>Herbal Face Care</h5>
             <p>Natural care for daily use</p>
@@ -148,7 +148,7 @@
 
       <div class="col-lg-3 col-md-6">
         <div class="product-card">
-          <img src="https://images.unsplash.com/photo-1611078489935-0cb964de46d6?auto=format&fit=crop&w=600&q=80">
+          <img src="images/p5.jpeg">
           <div class="product-body">
             <h5>Ayurvedic Oil</h5>
             <p>Herbal oil for wellness</p>
@@ -160,7 +160,7 @@
 
       <div class="col-lg-3 col-md-6">
         <div class="product-card">
-          <img src="https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=600&q=80">
+          <img src="images/p4.jpeg">
           <div class="product-body">
             <h5>Herbal Supplement</h5>
             <p>Daily wellness support</p>
@@ -172,7 +172,7 @@
 
       <div class="col-lg-3 col-md-6">
         <div class="product-card">
-          <img src="https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=600&q=80">
+          <img src="images/p6.jpeg">
           <div class="product-body">
             <h5>Body Care Product</h5>
             <p>Natural personal care</p>

@@ -15,7 +15,7 @@
 
 <div class="sidebar" id="sidebar">
   <div class="logo-box">
-    <img src="{{ asset('images/logo.jpeg') }}" alt="ARM Ayurveda" >
+    <img src="{{ asset('images/logo.png') }}" alt="ARM Ayurveda" >
   </div>
   <div class="user-box">
     <img src="{{ auth()->user()->avatar ?? 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}" alt="User">

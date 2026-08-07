@@ -5,7 +5,7 @@
   <div class="container">
     <h1>ARM Ayurveda Business Plan</h1>
     <p class="lead">Product-based business opportunity for growth, wellness and financial independence.</p>
-    <a href="assets/arm-business-plan.pdf" download class="btn btn-gold mt-3">
+    <a href="/arm-business-plan.pdf" download class="btn btn-gold mt-3">
       <i class="fa fa-download"></i> Download Plan PDF
     </a>
   </div>
@@ -220,7 +220,7 @@
         </p>
       </div>
       <div class="col-lg-4 text-lg-end">
-        <a href="assets/arm-business-plan.pdf" download class="btn btn-gold">
+        <a href="arm-business-plan.pdf" download class="btn btn-gold">
           <i class="fa fa-file-pdf"></i> Download Plan PDF
         </a>
       </div>

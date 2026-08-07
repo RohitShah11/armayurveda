@@ -169,9 +169,9 @@
 
 <section class="section-padding director">
   <div class="container">
-    <div class="row g-5 align-items-center">
+    <div class="row g-5 align-items-center mt-0">
       <div class="col-lg-5">
-        <img src="https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=900&q=80" class="director-img">
+        <img src="images/director.jpeg" class="director-img">
       </div>
 
       <div class="col-lg-7">
@@ -220,7 +220,7 @@
 
       <div class="col-lg-3 col-md-6">
         <div class="category-card">
-          <img src="https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=700&q=80">
+          <img src="images/p8.jpeg">
           <div>
             <h5>Nutrition</h5>
             <p>Daily health and nutrition support.</p>
@@ -230,7 +230,7 @@
 
       <div class="col-lg-3 col-md-6">
         <div class="category-card">
-          <img src="https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=700&q=80">
+          <img src="images/p9.jpeg">
           <div>
             <h5>Daily Wellness</h5>
             <p>Wellness products for daily lifestyle.</p>
@@ -271,14 +271,34 @@
 
     <div class="row g-4">
       <div class="col-md-4">
-        <img class="gallery-img" src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=700&q=80">
+        <img class="gallery-img" src="images/p1.jpeg">
       </div>
       <div class="col-md-4">
-        <img class="gallery-img" src="https://images.unsplash.com/photo-1596178065887-1198b6148b2b?auto=format&fit=crop&w=700&q=80">
+        <img class="gallery-img" src="images/p2.jpeg">
       </div>
       <div class="col-md-4">
-        <img class="gallery-img" src="https://images.unsplash.com/photo-1518105779142-d975f22f1b0a?auto=format&fit=crop&w=700&q=80">
+        <img class="gallery-img" src="images/p3.jpeg">
       </div>
+      <div class="col-md-4">
+        <img class="gallery-img" src="images/p4.jpeg">
+      </div>
+      <div class="col-md-4">
+        <img class="gallery-img" src="images/p5.jpeg">
+      </div>
+      <div class="col-md-4">
+        <img class="gallery-img" src="images/p6.jpeg">
+      </div>
+      <div class="col-md-4">
+        <img class="gallery-img" src="images/p7.jpeg">
+      </div>
+      <div class="col-md-4">
+        <img class="gallery-img" src="images/p8.jpeg">
+      </div>
+      <div class="col-md-4">
+        <img class="gallery-img" src="images/p9.jpeg">
+      </div>
+    
+      
     </div>
   </div>
 </section>
