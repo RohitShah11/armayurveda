@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\DirectTreeNode;
+use App\Models\EarningWalletTransaction;
 use App\Models\FundRequest;
 use App\Models\MainWalletTransaction;
-use App\Models\EarningWalletTransaction;
 use App\Models\MemberKyc;
 use App\Models\PackagePurchase;
 use App\Models\SponsorPoolLevelIncome;
@@ -147,7 +147,7 @@ class DashboardController extends Controller
 
         return view('admin.transactions.index', compact('transactions'));
     }
-    
+
     public function earningTransactions(Request $request)
     {
         $transactions = EarningWalletTransaction::query()
@@ -223,7 +223,7 @@ class DashboardController extends Controller
     public function zenithPool(Request $request)
     {
         $nodesQuery = ZenithPoolNode::query()
-            ->with(['user', 'admin', 'parent.user', 'parent.admin', 'packagePurchase', 'levelIncomes'])
+            ->with(['user', 'parent.user', 'packagePurchase', 'levelIncomes'])
             ->withCount('children')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->search;
@@ -234,10 +234,6 @@ class DashboardController extends Controller
                             $userQuery->where('name', 'like', "%{$search}%")
                                 ->orWhere('member_id', 'like', "%{$search}%")
                                 ->orWhere('mobile', 'like', "%{$search}%")
-                                ->orWhere('email', 'like', "%{$search}%");
-                        })
-                        ->orWhereHas('admin', function ($adminQuery) use ($search) {
-                            $adminQuery->where('name', 'like', "%{$search}%")
                                 ->orWhere('email', 'like', "%{$search}%");
                         });
                 });
@@ -260,18 +256,20 @@ class DashboardController extends Controller
             ->withQueryString();
 
         $levelIncomes = ZenithPoolLevelIncome::query()
-            ->with(['node.user', 'node.admin'])
+            ->with('node.user')
             ->latest('paid_at')
             ->latest('id')
             ->take(20)
             ->get();
 
-        $rootNode = ZenithPoolNode::whereNull('parent_id')->with('admin')->first();
+        $rootNode = ZenithPoolNode::whereNull('parent_id')->with('user')->first();
         $totalNodes = ZenithPoolNode::count();
-        $memberNodes = ZenithPoolNode::whereNotNull('user_id')->count();
+        $memberNodes = ZenithPoolNode::whereNotNull('parent_id')->count();
         $paidLevels = ZenithPoolLevelIncome::count();
         $totalPaid = (float) ZenithPoolLevelIncome::sum('amount');
-        $adminIncome = (float) ZenithPoolLevelIncome::whereNotNull('admin_id')->sum('amount');
+        $rootIncome = $rootNode
+            ? (float) ZenithPoolLevelIncome::where('zenith_pool_node_id', $rootNode->id)->sum('amount')
+            : 0.0;
         $maxDepth = (int) ZenithPoolNode::max('depth');
 
         $depthStats = ZenithPoolNode::query()
@@ -288,7 +286,7 @@ class DashboardController extends Controller
             'memberNodes',
             'paidLevels',
             'totalPaid',
-            'adminIncome',
+            'rootIncome',
             'maxDepth',
             'depthStats'
         ));
@@ -299,14 +297,14 @@ class DashboardController extends Controller
         $focusNode = null;
 
         if ($request->filled('node')) {
-            $focusNode = ZenithPoolNode::with(['user', 'admin'])->find($request->node);
+            $focusNode = ZenithPoolNode::with('user')->find($request->node);
         }
 
-        $rootNode = $focusNode ?: ZenithPoolNode::whereNull('parent_id')->with(['user', 'admin'])->first();
+        $rootNode = $focusNode ?: ZenithPoolNode::whereNull('parent_id')->with('user')->first();
         $tree = $rootNode ? $this->buildZenithPoolTree($rootNode, 0, 4) : null;
 
         $searchNodes = ZenithPoolNode::query()
-            ->with(['user', 'admin'])
+            ->with('user')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->search;
 
@@ -315,10 +313,7 @@ class DashboardController extends Controller
                         ->orWhereHas('user', function ($userQuery) use ($search) {
                             $userQuery->where('name', 'like', "%{$search}%")
                                 ->orWhere('member_id', 'like', "%{$search}%")
-                                ->orWhere('mobile', 'like', "%{$search}%");
-                        })
-                        ->orWhereHas('admin', function ($adminQuery) use ($search) {
-                            $adminQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('mobile', 'like', "%{$search}%")
                                 ->orWhere('email', 'like', "%{$search}%");
                         });
                 });
@@ -329,7 +324,7 @@ class DashboardController extends Controller
             ->get();
 
         $totalNodes = ZenithPoolNode::count();
-        $memberNodes = ZenithPoolNode::whereNotNull('user_id')->count();
+        $memberNodes = ZenithPoolNode::whereNotNull('parent_id')->count();
         $maxDepth = (int) ZenithPoolNode::max('depth');
 
         return view('admin.zenith-pool.tree', compact(
@@ -344,13 +339,13 @@ class DashboardController extends Controller
 
     private function buildZenithPoolTree(ZenithPoolNode $node, int $depth, int $maxDepth): array
     {
-        $node->loadMissing(['user', 'admin', 'levelIncomes']);
+        $node->loadMissing(['user', 'levelIncomes']);
 
         $children = [];
 
         if ($depth < $maxDepth) {
             $actualChildren = ZenithPoolNode::query()
-                ->with(['user', 'admin', 'levelIncomes'])
+                ->with(['user', 'levelIncomes'])
                 ->where('parent_id', $node->id)
                 ->orderBy('position')
                 ->get()
@@ -371,14 +366,14 @@ class DashboardController extends Controller
             }
         }
 
-        $owner = $node->user ?: $node->admin;
+        $owner = $node->user;
 
         return [
             'node' => $node,
             'owner' => $owner,
             'label' => $owner?->name ?? 'Unknown',
-            'sub_label' => $node->user?->member_id ?? $node->admin?->email ?? 'Pool Node #'.$node->id,
-            'type' => $node->admin_id ? 'admin' : 'member',
+            'sub_label' => $node->user?->member_id ?? $node->user?->email ?? 'Pool Node #'.$node->id,
+            'type' => $node->parent_id === null ? 'admin' : 'member',
             'depth' => $depth,
             'children' => $children,
             'completed_levels' => $node->levelIncomes->pluck('level')->sort()->values(),
@@ -388,7 +383,7 @@ class DashboardController extends Controller
     public function sponsorPool(Request $request)
     {
         $nodesQuery = SponsorPoolNode::query()
-            ->with(['user', 'purchaser', 'admin', 'parent.user', 'parent.admin', 'packagePurchase', 'levelIncomes'])
+            ->with(['user', 'purchaser', 'parent.user', 'packagePurchase', 'levelIncomes'])
             ->withCount('children')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->search;
@@ -405,10 +400,6 @@ class DashboardController extends Controller
                             $purchaserQuery->where('name', 'like', "%{$search}%")
                                 ->orWhere('member_id', 'like', "%{$search}%")
                                 ->orWhere('mobile', 'like', "%{$search}%")
-                                ->orWhere('email', 'like', "%{$search}%");
-                        })
-                        ->orWhereHas('admin', function ($adminQuery) use ($search) {
-                            $adminQuery->where('name', 'like', "%{$search}%")
                                 ->orWhere('email', 'like', "%{$search}%");
                         });
                 });
@@ -431,18 +422,20 @@ class DashboardController extends Controller
             ->withQueryString();
 
         $levelIncomes = SponsorPoolLevelIncome::query()
-            ->with(['node.user', 'node.admin'])
+            ->with('node.user')
             ->latest('paid_at')
             ->latest('id')
             ->take(20)
             ->get();
 
-        $rootNode = SponsorPoolNode::whereNull('parent_id')->with('admin')->first();
+        $rootNode = SponsorPoolNode::whereNull('parent_id')->with('user')->first();
         $totalNodes = SponsorPoolNode::count();
-        $memberNodes = SponsorPoolNode::whereNotNull('user_id')->count();
+        $memberNodes = SponsorPoolNode::whereNotNull('parent_id')->count();
         $paidLevels = SponsorPoolLevelIncome::count();
         $totalPaid = (float) SponsorPoolLevelIncome::sum('amount');
-        $adminIncome = (float) SponsorPoolLevelIncome::whereNotNull('admin_id')->sum('amount');
+        $rootIncome = $rootNode
+            ? (float) SponsorPoolLevelIncome::where('sponsor_pool_node_id', $rootNode->id)->sum('amount')
+            : 0.0;
         $maxDepth = (int) SponsorPoolNode::max('depth');
 
         $depthStats = SponsorPoolNode::query()
@@ -459,7 +452,7 @@ class DashboardController extends Controller
             'memberNodes',
             'paidLevels',
             'totalPaid',
-            'adminIncome',
+            'rootIncome',
             'maxDepth',
             'depthStats'
         ));
@@ -470,14 +463,14 @@ class DashboardController extends Controller
         $focusNode = null;
 
         if ($request->filled('node')) {
-            $focusNode = SponsorPoolNode::with(['user', 'purchaser', 'admin'])->find($request->node);
+            $focusNode = SponsorPoolNode::with(['user', 'purchaser'])->find($request->node);
         }
 
-        $rootNode = $focusNode ?: SponsorPoolNode::whereNull('parent_id')->with(['user', 'purchaser', 'admin'])->first();
+        $rootNode = $focusNode ?: SponsorPoolNode::whereNull('parent_id')->with(['user', 'purchaser'])->first();
         $tree = $rootNode ? $this->buildSponsorPoolTree($rootNode, 0, 4) : null;
 
         $searchNodes = SponsorPoolNode::query()
-            ->with(['user', 'purchaser', 'admin'])
+            ->with(['user', 'purchaser'])
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->search;
 
@@ -491,10 +484,7 @@ class DashboardController extends Controller
                         ->orWhereHas('purchaser', function ($purchaserQuery) use ($search) {
                             $purchaserQuery->where('name', 'like', "%{$search}%")
                                 ->orWhere('member_id', 'like', "%{$search}%")
-                                ->orWhere('mobile', 'like', "%{$search}%");
-                        })
-                        ->orWhereHas('admin', function ($adminQuery) use ($search) {
-                            $adminQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('mobile', 'like', "%{$search}%")
                                 ->orWhere('email', 'like', "%{$search}%");
                         });
                 });
@@ -505,7 +495,7 @@ class DashboardController extends Controller
             ->get();
 
         $totalNodes = SponsorPoolNode::count();
-        $memberNodes = SponsorPoolNode::whereNotNull('user_id')->count();
+        $memberNodes = SponsorPoolNode::whereNotNull('parent_id')->count();
         $maxDepth = (int) SponsorPoolNode::max('depth');
 
         return view('admin.sponsor-pool.tree', compact(
@@ -520,13 +510,13 @@ class DashboardController extends Controller
 
     private function buildSponsorPoolTree(SponsorPoolNode $node, int $depth, int $maxDepth): array
     {
-        $node->loadMissing(['user', 'purchaser', 'admin', 'levelIncomes']);
+        $node->loadMissing(['user', 'purchaser', 'levelIncomes']);
 
         $children = [];
 
         if ($depth < $maxDepth) {
             $actualChildren = SponsorPoolNode::query()
-                ->with(['user', 'purchaser', 'admin', 'levelIncomes'])
+                ->with(['user', 'purchaser', 'levelIncomes'])
                 ->where('parent_id', $node->id)
                 ->orderBy('position')
                 ->get()
@@ -547,14 +537,14 @@ class DashboardController extends Controller
             }
         }
 
-        $owner = $node->user ?: $node->admin;
+        $owner = $node->user;
 
         return [
             'node' => $node,
             'owner' => $owner,
             'label' => $owner?->name ?? 'Unknown',
-            'sub_label' => $node->user?->member_id ?? $node->admin?->email ?? 'Pool Node #'.$node->id,
-            'type' => $node->admin_id ? 'admin' : 'member',
+            'sub_label' => $node->user?->member_id ?? $node->user?->email ?? 'Pool Node #'.$node->id,
+            'type' => $node->parent_id === null ? 'admin' : 'member',
             'depth' => $depth,
             'children' => $children,
             'completed_levels' => $node->levelIncomes->pluck('level')->sort()->values(),
@@ -564,7 +554,7 @@ class DashboardController extends Controller
     public function directTree(Request $request)
     {
         $nodesQuery = DirectTreeNode::query()
-            ->with(['user.rankRewards', 'admin', 'parent.user', 'parent.admin', 'packagePurchase'])
+            ->with(['user.rankRewards', 'parent.user', 'packagePurchase'])
             ->withCount('children')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->search;
@@ -575,10 +565,6 @@ class DashboardController extends Controller
                             $userQuery->where('name', 'like', "%{$search}%")
                                 ->orWhere('member_id', 'like', "%{$search}%")
                                 ->orWhere('mobile', 'like', "%{$search}%")
-                                ->orWhere('email', 'like', "%{$search}%");
-                        })
-                        ->orWhereHas('admin', function ($adminQuery) use ($search) {
-                            $adminQuery->where('name', 'like', "%{$search}%")
                                 ->orWhere('email', 'like', "%{$search}%");
                         });
                 });
@@ -592,9 +578,9 @@ class DashboardController extends Controller
             ->paginate(25)
             ->withQueryString();
 
-        $rootNode = DirectTreeNode::whereNull('parent_id')->with('admin')->first();
+        $rootNode = DirectTreeNode::whereNull('parent_id')->with('user')->first();
         $totalNodes = DirectTreeNode::count();
-        $memberNodes = DirectTreeNode::whereNotNull('user_id')->count();
+        $memberNodes = DirectTreeNode::whereNotNull('parent_id')->count();
         $maxDepth = (int) DirectTreeNode::max('depth');
 
         $depthStats = DirectTreeNode::query()
@@ -618,14 +604,14 @@ class DashboardController extends Controller
         $focusNode = null;
 
         if ($request->filled('node')) {
-            $focusNode = DirectTreeNode::with(['user', 'admin'])->find($request->node);
+            $focusNode = DirectTreeNode::with('user')->find($request->node);
         }
 
-        $rootNode = $focusNode ?: DirectTreeNode::whereNull('parent_id')->with(['user', 'admin'])->first();
+        $rootNode = $focusNode ?: DirectTreeNode::whereNull('parent_id')->with('user')->first();
         $tree = $rootNode ? $this->buildDirectTree($rootNode, 0, 4) : null;
 
         $searchNodes = DirectTreeNode::query()
-            ->with(['user', 'admin'])
+            ->with('user')
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->search;
 
@@ -634,10 +620,7 @@ class DashboardController extends Controller
                         ->orWhereHas('user', function ($userQuery) use ($search) {
                             $userQuery->where('name', 'like', "%{$search}%")
                                 ->orWhere('member_id', 'like', "%{$search}%")
-                                ->orWhere('mobile', 'like', "%{$search}%");
-                        })
-                        ->orWhereHas('admin', function ($adminQuery) use ($search) {
-                            $adminQuery->where('name', 'like', "%{$search}%")
+                                ->orWhere('mobile', 'like', "%{$search}%")
                                 ->orWhere('email', 'like', "%{$search}%");
                         });
                 });
@@ -648,7 +631,7 @@ class DashboardController extends Controller
             ->get();
 
         $totalNodes = DirectTreeNode::count();
-        $memberNodes = DirectTreeNode::whereNotNull('user_id')->count();
+        $memberNodes = DirectTreeNode::whereNotNull('parent_id')->count();
         $maxDepth = (int) DirectTreeNode::max('depth');
 
         return view('admin.direct-tree.tree', compact(
@@ -663,13 +646,13 @@ class DashboardController extends Controller
 
     private function buildDirectTree(DirectTreeNode $node, int $depth, int $maxDepth): array
     {
-        $node->loadMissing(['user', 'admin']);
+        $node->loadMissing('user');
 
         $children = [];
 
         if ($depth < $maxDepth) {
             $children = DirectTreeNode::query()
-                ->with(['user', 'admin'])
+                ->with('user')
                 ->where('parent_id', $node->id)
                 ->orderBy('position')
                 ->get()
@@ -677,14 +660,14 @@ class DashboardController extends Controller
                 ->all();
         }
 
-        $owner = $node->user ?: $node->admin;
+        $owner = $node->user;
 
         return [
             'node' => $node,
             'owner' => $owner,
             'label' => $owner?->name ?? 'Unknown',
-            'sub_label' => $node->user?->member_id ?? $node->admin?->email ?? 'Direct Node #'.$node->id,
-            'type' => $node->admin_id ? 'admin' : 'member',
+            'sub_label' => $node->user?->member_id ?? $node->user?->email ?? 'Direct Node #'.$node->id,
+            'type' => $node->parent_id === null ? 'admin' : 'member',
             'depth' => $depth,
             'children' => $children,
         ];
@@ -730,7 +713,7 @@ class DashboardController extends Controller
             'highestRank'
         ));
     }
-    
+
     public function funds(Request $request)
     {
         $funds = FundRequest::with('user')

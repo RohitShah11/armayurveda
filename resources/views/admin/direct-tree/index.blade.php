@@ -33,7 +33,7 @@
   <div class="col-lg-3 col-md-6"><div class="admin-card tree-stat"><p>Total Nodes</p><h3>{{ number_format($totalNodes) }}</h3></div></div>
   <div class="col-lg-3 col-md-6"><div class="admin-card tree-stat"><p>Member Nodes</p><h3>{{ number_format($memberNodes) }}</h3></div></div>
   <div class="col-lg-3 col-md-6"><div class="admin-card tree-stat"><p>Max Depth</p><h3>{{ $maxDepth }}</h3></div></div>
-  <div class="col-lg-3 col-md-6"><div class="admin-card tree-stat"><p>Root</p><h3>{{ $rootNode?->admin?->name ?? 'Admin' }}</h3></div></div>
+  <div class="col-lg-3 col-md-6"><div class="admin-card tree-stat"><p>Root</p><h3>{{ $rootNode?->user?->name ?? 'Admin' }}</h3></div></div>
 </div>
 
 <div class="admin-card mb-4">
@@ -64,7 +64,7 @@
   <div class="col-lg-5">
     <div class="admin-card h-100">
       <h5 class="fw-bold mb-3"><i class="fa fa-crown me-2"></i>Root & Rule</h5>
-      <div class="detail-row"><span>Root</span><span>{{ $rootNode?->admin?->name ?? 'Admin not created' }}</span></div>
+      <div class="detail-row"><span>Root</span><span>{{ $rootNode?->user?->name ?? 'Root user not created' }}</span></div>
       <div class="detail-row"><span>Placement Rule</span><span>Buyer placed under direct sponsor</span></div>
       <div class="detail-row"><span>Fallback Parent</span><span>Admin root</span></div>
       <div class="detail-row"><span>Children Limit</span><span>Unlimited directs</span></div>
@@ -109,22 +109,23 @@
       <tbody>
         @forelse($nodes as $node)
           @php
-            $owner = $node->user ?: $node->admin;
-            $parentOwner = $node->parent?->user ?: $node->parent?->admin;
+            $owner = $node->user;
+            $parentOwner = $node->parent?->user;
+            $isRoot = $node->parent_id === null;
             $currentRank = $node->user?->rankRewards?->sortByDesc('rank')->first();
           @endphp
           <tr>
             <td><span class="tree-indent" style="--depth: {{ min($node->depth, 8) }}"></span><strong>#{{ $node->id }}</strong></td>
             <td>
               <div class="tree-member">
-                <span class="node-avatar {{ $node->admin_id ? 'admin' : '' }}">{{ $node->admin_id ? 'A' : strtoupper(substr($owner?->name ?? 'M', 0, 1)) }}</span>
+                <span class="node-avatar {{ $isRoot ? 'admin' : '' }}">{{ $isRoot ? 'A' : strtoupper(substr($owner?->name ?? 'M', 0, 1)) }}</span>
                 <div>
                   <strong>{{ $owner?->name ?? '-' }}</strong><br>
-                  <small class="text-muted">{{ $node->user?->member_id ?? $node->admin?->email ?? '-' }}</small>
+                  <small class="text-muted">{{ $node->user?->member_id ?? $node->user?->email ?? '-' }}</small>
                 </div>
               </div>
             </td>
-            <td>{{ $parentOwner?->name ?? '-' }}<br><small class="text-muted">{{ $node->parent?->user?->member_id ?? $node->parent?->admin?->email ?? '-' }}</small></td>
+            <td>{{ $parentOwner?->name ?? '-' }}<br><small class="text-muted">{{ $node->parent?->user?->member_id ?? $node->parent?->user?->email ?? '-' }}</small></td>
             <td><span class="badge badge-soft">{{ $node->depth == 0 ? 'Root' : 'Level ' . $node->depth }}</span></td>
             <td>{{ $node->parent_id ? $node->position : '-' }}</td>
             <td>{{ $node->children_count }}</td>

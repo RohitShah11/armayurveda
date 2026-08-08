@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Admin;
-use App\Models\AdminEarningWalletTransaction;
 use App\Models\EarningWalletTransaction;
 use App\Models\PackagePurchase;
 use App\Models\User;
@@ -29,7 +27,12 @@ class ZenithPoolService
             return $existingNode;
         }
 
-        $root = $this->ensureAdminRootNode();
+        $root = $this->ensureRootUserNode();
+
+        if ($root->user_id === $user->id) {
+            return $root;
+        }
+
         $parent = $this->findNextAvailableSlot($root);
         $position = $this->nextChildPosition($parent);
 
@@ -49,7 +52,7 @@ class ZenithPoolService
 
     public function findNextAvailableSlot(?ZenithPoolNode $root = null): ZenithPoolNode
     {
-        $root ??= $this->ensureAdminRootNode();
+        $root ??= $this->ensureRootUserNode();
         $queue = [$root->id];
 
         while (! empty($queue)) {
@@ -83,17 +86,18 @@ class ZenithPoolService
         return $root;
     }
 
-    private function ensureAdminRootNode(): ZenithPoolNode
+    private function ensureRootUserNode(): ZenithPoolNode
     {
-        $admin = Admin::orderBy('id')->first();
+        $rootUser = User::query()->orderBy('id')->lockForUpdate()->first();
 
-        if (! $admin) {
-            throw new \RuntimeException('Cannot start Zenith pool because no admin account exists.');
+        if (! $rootUser) {
+            throw new \RuntimeException('Cannot start Zenith pool because no root user exists.');
         }
 
         return ZenithPoolNode::firstOrCreate(
-            ['admin_id' => $admin->id, 'parent_id' => null],
+            ['parent_id' => null],
             [
+                'user_id' => $rootUser->id,
                 'position' => 1,
                 'depth' => 0,
                 'joined_at' => now(),
@@ -155,16 +159,13 @@ class ZenithPoolService
         $income = ZenithPoolLevelIncome::create([
             'zenith_pool_node_id' => $node->id,
             'user_id' => $node->user_id,
-            'admin_id' => $node->admin_id,
             'level' => $level,
             'slots_required' => $slotsRequired,
             'amount' => $amount,
             'paid_at' => now(),
         ]);
 
-        $node->admin_id
-            ? $this->creditAdminIncome($node, $income, $level, $amount)
-            : $this->creditUserIncome($node, $income, $level, $amount);
+        $this->creditUserIncome($node, $income, $level, $amount);
     }
 
     public function filledSlotsAtLevel(ZenithPoolNode $node, int $level): int
@@ -214,39 +215,6 @@ class ZenithPoolService
             'closing_balance' => $closingBalance,
             'description' => 'Zenith Non-Working Global Pool Level '.$level.' complete income',
             'reference_no' => 'ZENITH-POOL-'.$income->id.'-U'.$receiver->id,
-            'transaction_date' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-    }
-
-    private function creditAdminIncome(ZenithPoolNode $node, ZenithPoolLevelIncome $income, int $level, float $amount): void
-    {
-        if (! $node->admin_id) {
-            return;
-        }
-
-        $receiver = Admin::lockForUpdate()->find($node->admin_id);
-
-        if (! $receiver) {
-            return;
-        }
-
-        $openingBalance = (float) ($receiver->earning_wallet ?? 0);
-        $closingBalance = $openingBalance + $amount;
-
-        $receiver->update([
-            'earning_wallet' => $closingBalance,
-        ]);
-
-        AdminEarningWalletTransaction::create([
-            'admin_id' => $receiver->id,
-            'type' => 'Credit',
-            'amount' => $amount,
-            'opening_balance' => $openingBalance,
-            'closing_balance' => $closingBalance,
-            'description' => 'Zenith Non-Working Global Pool Level '.$level.' complete income',
-            'reference_no' => 'ZENITH-POOL-'.$income->id.'-A'.$receiver->id,
             'transaction_date' => now(),
             'created_at' => now(),
             'updated_at' => now(),

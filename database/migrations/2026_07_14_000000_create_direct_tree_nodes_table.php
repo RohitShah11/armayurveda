@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('direct_tree_nodes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->unique()->constrained()->cascadeOnDelete();
-            $table->foreignId('admin_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('parent_id')->nullable()->constrained('direct_tree_nodes')->nullOnDelete();
             $table->foreignId('package_purchase_id')->nullable()->constrained()->nullOnDelete();
             $table->unsignedInteger('position')->default(1);

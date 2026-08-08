@@ -77,11 +77,11 @@
         <div class="mt-4">
           <h6 class="fw-bold">Search Results</h6>
           @forelse($searchNodes as $result)
-            @php $owner = $result->user ?: $result->admin; @endphp
+            @php $owner = $result->user; @endphp
             <div class="tree-result">
               <div>
                 <strong>#{{ $result->id }} - {{ $owner?->name ?? '-' }}</strong><br>
-                <small class="text-muted">{{ $result->user?->member_id ?? $result->admin?->email ?? '-' }} | Depth {{ $result->depth }}</small>
+                <small class="text-muted">{{ $result->user?->member_id ?? $result->user?->email ?? '-' }} | Depth {{ $result->depth }}</small>
               </div>
               <a href="{{ route('admin.zenith-pool.tree', ['node' => $result->id]) }}" class="btn btn-sm btn-outline-dark">Focus</a>
             </div>

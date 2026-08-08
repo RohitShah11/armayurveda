@@ -66,8 +66,8 @@
   <div class="col-lg-5">
     <div class="admin-card h-100">
       <h5 class="fw-bold mb-3"><i class="fa fa-crown me-2"></i>Root & Pool Summary</h5>
-      <div class="detail-row"><span>Root</span><span>{{ $rootNode?->admin?->name ?? 'Admin not created' }}</span></div>
-      <div class="detail-row"><span>Root Income</span><span>{{ $money($adminIncome) }}</span></div>
+      <div class="detail-row"><span>Root</span><span>{{ $rootNode?->user?->name ?? 'Root user not created' }}</span></div>
+      <div class="detail-row"><span>Root Income</span><span>{{ $money($rootIncome) }}</span></div>
       <div class="detail-row"><span>Max Filled Depth</span><span>{{ $maxDepth }}</span></div>
       <div class="detail-row"><span>Matrix Rule</span><span>4 direct slots, 6 payout levels</span></div>
       <div class="detail-row"><span>Payout Rule</span><span>Paid once when a level is complete</span></div>
@@ -153,8 +153,9 @@
       <tbody>
         @forelse($nodes as $node)
           @php
-            $owner = $node->user ?: $node->admin;
-            $parentOwner = $node->parent?->user ?: $node->parent?->admin;
+            $owner = $node->user;
+            $parentOwner = $node->parent?->user;
+            $isRoot = $node->parent_id === null;
             $completedLevels = $node->levelIncomes->pluck('level')->sort()->values();
           @endphp
           <tr>
@@ -164,16 +165,16 @@
             </td>
             <td>
               <div class="pool-node">
-                <span class="node-avatar {{ $node->admin_id ? 'admin' : '' }}">{{ $node->admin_id ? 'A' : strtoupper(substr($owner?->name ?? 'M', 0, 1)) }}</span>
+                <span class="node-avatar {{ $isRoot ? 'admin' : '' }}">{{ $isRoot ? 'A' : strtoupper(substr($owner?->name ?? 'M', 0, 1)) }}</span>
                 <div>
                   <strong>{{ $owner?->name ?? '-' }}</strong><br>
-                  <small class="text-muted">{{ $node->user?->member_id ?? $node->admin?->email ?? '-' }}</small>
+                  <small class="text-muted">{{ $node->user?->member_id ?? $node->user?->email ?? '-' }}</small>
                 </div>
               </div>
             </td>
             <td>
               {{ $parentOwner?->name ?? '-' }}<br>
-              <small class="text-muted">{{ $node->parent?->user?->member_id ?? $node->parent?->admin?->email ?? '-' }}</small>
+              <small class="text-muted">{{ $node->parent?->user?->member_id ?? $node->parent?->user?->email ?? '-' }}</small>
             </td>
             <td><span class="badge badge-soft">{{ $node->depth == 0 ? 'Root' : 'Level ' . $node->depth }}</span></td>
             <td>{{ $node->parent_id ? $node->position . ' / 4' : '-' }}</td>
@@ -226,12 +227,12 @@
       </thead>
       <tbody>
         @forelse($levelIncomes as $income)
-          @php $receiver = $income->node?->user ?: $income->node?->admin; @endphp
+          @php $receiver = $income->node?->user; @endphp
           <tr>
             <td>{{ $income->id }}</td>
             <td>
               <strong>{{ $receiver?->name ?? '-' }}</strong><br>
-              <small class="text-muted">{{ $income->node?->user?->member_id ?? $income->node?->admin?->email ?? '-' }}</small>
+              <small class="text-muted">{{ $income->node?->user?->member_id ?? $income->node?->user?->email ?? '-' }}</small>
             </td>
             <td>Level {{ $income->level }}</td>
             <td>{{ $income->slots_required }} / {{ $income->slots_required }}</td>

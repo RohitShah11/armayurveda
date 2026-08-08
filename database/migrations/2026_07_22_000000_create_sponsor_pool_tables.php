@@ -13,7 +13,6 @@ return new class extends Migration
                 $table->id();
                 $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
                 $table->foreignId('purchaser_id')->nullable()->constrained('users')->cascadeOnDelete();
-                $table->foreignId('admin_id')->nullable()->constrained()->cascadeOnDelete();
                 $table->foreignId('parent_id')->nullable()->constrained('sponsor_pool_nodes')->nullOnDelete();
                 $table->foreignId('package_purchase_id')->nullable()->unique()->constrained()->nullOnDelete();
                 $table->unsignedTinyInteger('position')->default(1);
@@ -31,7 +30,6 @@ return new class extends Migration
                 $table->id();
                 $table->foreignId('sponsor_pool_node_id')->constrained()->cascadeOnDelete();
                 $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
-                $table->foreignId('admin_id')->nullable()->constrained()->cascadeOnDelete();
                 $table->unsignedTinyInteger('level');
                 $table->unsignedInteger('slots_required');
                 $table->decimal('amount', 12, 2);

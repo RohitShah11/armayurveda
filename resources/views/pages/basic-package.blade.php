@@ -8,7 +8,7 @@
 .page-
 .card-box{background:#fff;border-radius:18px;padding:25px;box-shadow:0 8px 25px rgba(0,0,0,.07)}
 .package-card{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,.08);height:100%;border:1px solid #eee}
-.package-card img{width:100%;height:210px;object-fit:cover}
+.package-card img{width:100%;height:210px;object-fit:contain;background:#fff}
 .package-
 .package-body h5{color:var(--primary);font-weight:900}
 .price{font-size:24px;font-weight:900;color:var(--primary)}
@@ -26,6 +26,10 @@
 @section('content')
 
 <div class="page-body">
+    @error('package')
+      <div class="alert alert-danger mb-4" role="alert">{{ $message }}</div>
+    @enderror
+
 <div class="row g-4 mb-4">
       <div class="col-lg-4">
         <div class="card-box">
@@ -44,16 +48,28 @@
       <div class="col-lg-4">
         <div class="card-box">
           <h6>Available Package</h6>
-          <h3 class="fw-bold text-primary" id="nextPackage">Zenith Package</h3>
-          <small>Choose an available Zenith package product.</small>
+          <h3 class="fw-bold {{ $hasPurchasedPackage ? 'text-success' : 'text-primary' }}" id="nextPackage">
+            {{ $hasPurchasedPackage ? 'Purchased' : 'Zenith Package' }}
+          </h3>
+          <small>{{ $hasPurchasedPackage ? 'No additional package purchase is available.' : 'Choose an available Zenith package product.' }}</small>
         </div>
       </div>
     </div>
 
     <div class="alert-note mb-4">
-      <b>Package:</b> Zenith Package is available directly. The purchase amount is deducted from your Main Wallet, and all Zenith benefits are processed after a successful purchase.
+      @if ($hasPurchasedPackage)
+        <b>Package:</b> Your one-time package purchase is complete and the package is active.
+      @else
+        <b>Package:</b> Zenith Package is available directly. The purchase amount is deducted from your Main Wallet, and all Zenith benefits are processed after a successful purchase.
+      @endif
     </div>
 
+    @if ($hasPurchasedPackage)
+      <div class="alert alert-success mb-4" role="alert">
+        <h5 class="fw-bold mb-1"><i class="fa fa-check-circle me-2"></i>Package Already Purchased</h5>
+        <p class="mb-0">Your package is active. Each user can purchase a package only once, so no additional package purchase is available.</p>
+      </div>
+    @else
     <section id="zenithSection">
       <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
         <div>
@@ -65,9 +81,16 @@
 
       <div class="row g-4 mb-5">
         @foreach ($packages->where('category', 'Zenith') as $package)
+          @php
+            $packageImage = $package->image ?: 'images/zenith-package.jpeg';
+
+            if (!str_starts_with($packageImage, 'http://') && !str_starts_with($packageImage, 'https://') && !str_starts_with($packageImage, '/')) {
+                $packageImage = asset($packageImage);
+            }
+          @endphp
           <div class="col-lg-4 col-md-6">
             <div class="package-card">
-              <img src="{{ $package->image ?: 'https://images.unsplash.com/photo-1600428877878-1a0fd85beda0?auto=format&fit=crop&w=700&q=80' }}">
+              <img src="{{ $packageImage }}" alt="{{ $package->name }}">
               <div class="package-body">
                 <span class="badge badge-zenith mb-2">{{ $package->category }} Package</span>
                 <h5>{{ $package->name }}</h5>
@@ -89,6 +112,7 @@
         @endif
       </div>
     </section>
+    @endif
 
     <div class="card-box">
       <h5 class="fw-bold mb-3">Package Purchase History</h5>
@@ -130,6 +154,7 @@
 
 </div>
 
+@unless ($hasPurchasedPackage)
 <!-- CONFIRM MODAL -->
 <div class="modal fade" id="confirmModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
@@ -156,4 +181,5 @@
     </div>
   </div>
 </div>
+@endunless
 @endsection

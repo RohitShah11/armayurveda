@@ -7,7 +7,7 @@
       <div class="card card-auth">
         <div class="row g-0">
           <div class="col-lg-4 left-panel">
-            <img src="{{ asset('images/logo.jpeg') }}" class="logo mb-4">
+            <img src="{{ asset('images/arm-ayurveda-logo.png') }}" class="logo mb-4" alt="ARM Ayurveda">
             <h2>Join ARM Ayurveda</h2>
             <p>Register to start your wellness journey and build your business network.</p>
           </div>

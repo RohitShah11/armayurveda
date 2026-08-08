@@ -18,7 +18,7 @@
 @endphp
 <main class="sheet"><div class="content">
 <header class="header">
-    <div class="brand"><img class="logo" src="{{ asset('images/logo.jpeg') }}" alt="ARM Ayurveda"><div class="company"><h1>ARM Ayurveda<br>Pvt. Ltd.</h1><div class="tag">Healthy Life, Natural Future</div><div class="contact">Phone: +91 92420 68805<br>Email: armayurveda@gmail.com<br>Ashoknagar, North 24 Parganas, West Bengal</div></div></div>
+    <div class="brand"><img class="logo" src="{{ asset('images/arm-ayurveda-logo.png') }}" alt="ARM Ayurveda"><div class="company"><h1>ARM Ayurveda<br>Pvt. Ltd.</h1><div class="tag">Healthy Life, Natural Future</div><div class="contact">Phone: +91 92420 68805<br>Email: armayurveda@gmail.com<br>Ashoknagar, North 24 Parganas, West Bengal</div></div></div>
     <div class="title"><h2>INVOICE</h2><div class="meta">
         <div class="row"><b>Invoice No.</b><span>{{ $invoiceNumber }}</span></div><div class="row"><b>Invoice Date</b><span>{{ $order->ordered_at->format('d-m-Y') }}</span></div><div class="row"><b>Order No.</b><span>{{ $order->order_number }}</span></div><div class="row"><b>Order Date</b><span>{{ $order->ordered_at->format('d-m-Y') }}</span></div><div class="row"><b>Payment Mode</b><span>Main Wallet</span></div><div class="row"><b>Payment Status</b><span class="status">{{ $order->payment_status }}</span></div>
     </div></div>

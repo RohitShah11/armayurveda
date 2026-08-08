@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('zenith_pool_nodes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->unique()->constrained()->cascadeOnDelete();
-            $table->foreignId('admin_id')->nullable()->constrained()->cascadeOnDelete();
             $table->foreignId('parent_id')->nullable()->constrained('zenith_pool_nodes')->nullOnDelete();
             $table->foreignId('package_purchase_id')->nullable()->constrained()->nullOnDelete();
             $table->unsignedTinyInteger('position')->default(1);

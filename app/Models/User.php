@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['member_id','sponsor_id','state','city','package_name','main_wallet','earning_wallet','status','name', 'email', 'mobile','password'])]
+#[Fillable(['member_id', 'sponsor_id', 'state', 'city', 'package_name', 'main_wallet', 'earning_wallet', 'status', 'name', 'email', 'mobile', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -43,6 +43,11 @@ class User extends Authenticatable
     public function fundRequests()
     {
         return $this->hasMany(FundRequest::class);
+    }
+
+    public function payoutRequests()
+    {
+        return $this->hasMany(PayoutRequest::class);
     }
 
     public function zenithPoolNode()

@@ -1,20 +1,23 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CatalogController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\PublicProductController;
-use App\Http\Controllers\MemberController;
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\PayoutController as AdminPayoutController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductOrderController;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BulkEmailController;
+use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MemberController;
+use App\Http\Controllers\PayoutController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicProductController;
+use Illuminate\Support\Facades\Route;
 
 // Public routes
-Route::get('/', function(){
+Route::get('/', function () {
     return view('front.index');
 })->name('index');
 Route::get('/plan', function () {
@@ -32,13 +35,13 @@ Route::get('/contact', function () {
     return view('front.contact');
 })->name('contact');
 
-Route::get('/mail', [App\Http\Controllers\BulkEmailController::class, 'sendBulkMail'])->name('mail');
+Route::get('/mail', [BulkEmailController::class, 'sendBulkMail'])->name('mail');
 
-Route::get('/login',    [AuthController::class, 'showLogin'])->name('login');
-Route::post('/login',   [AuthController::class, 'login'])->name('login.post');
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/register',[AuthController::class, 'register'])->name('register.post');
-Route::post('/logout',  [AuthController::class, 'logout'])->name('logout');
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware('admin.guest')->group(function () {
@@ -67,6 +70,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/rank-rewards', [AdminDashboardController::class, 'rankRewards'])->name('rank-rewards.index');
         Route::get('/funds', [AdminDashboardController::class, 'funds'])->name('funds.index');
         Route::patch('/funds/{fund}', [AdminDashboardController::class, 'updateFund'])->name('funds.update');
+        Route::get('/payouts', [AdminPayoutController::class, 'index'])->name('payouts.index');
+        Route::patch('/payouts/{payoutRequest}', [AdminPayoutController::class, 'update'])->name('payouts.update');
         Route::resource('categories', CategoryController::class)->except('show');
         Route::resource('products', ProductController::class)->except('show');
         Route::get('/product-orders', [ProductOrderController::class, 'index'])->name('product-orders.index');
@@ -80,10 +85,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-    Route::post('/profile',  [DashboardController::class, 'updateProfile'])->name('profile.update');
-    Route::get('/kyc',       [DashboardController::class, 'kyc'])->name('kyc');
+    Route::post('/profile', [DashboardController::class, 'updateProfile'])->name('profile.update');
+    Route::get('/kyc', [DashboardController::class, 'kyc'])->name('kyc');
     Route::get('/change-password', [ProfileController::class, 'changePassword'])->name('change.password');
-    Route::post('/change-password',[ProfileController::class, 'updatePassword'])->name('change.password.update');
+    Route::post('/change-password', [ProfileController::class, 'updatePassword'])->name('change.password.update');
     Route::get('/kyc', [ProfileController::class, 'kyc'])->name('kyc');
     Route::post('/kyc/update', [ProfileController::class, 'updateKyc'])->name('kyc.update');
 
@@ -94,45 +99,45 @@ Route::middleware('auth')->group(function () {
 
     // Recharge
     Route::get('/recharge/mobile', [DashboardController::class, 'rechargeMobile'])->name('recharge.mobile');
-    Route::get('/recharge/dth',    [DashboardController::class, 'rechargeDth'])->name('recharge.dth');
+    Route::get('/recharge/dth', [DashboardController::class, 'rechargeDth'])->name('recharge.dth');
 
     // Team
     Route::get('/team/add-member', [MemberController::class, 'create'])->name('team.add-member');
     Route::post('/team/add-member', [MemberController::class, 'store'])->name('team.add-member.post');
 
-    Route::get('/team/direct',      [MemberController::class, 'memberList'])->name('team.direct');
-    Route::get('/team/member/{id}', [MemberController::class,'memberDetails'])->name('team.member.details');
-    Route::get('/team/level',       [DashboardController::class, 'levelTeam'])->name('team.level');
+    Route::get('/team/direct', [MemberController::class, 'memberList'])->name('team.direct');
+    Route::get('/team/member/{id}', [MemberController::class, 'memberDetails'])->name('team.member.details');
+    Route::get('/team/level', [DashboardController::class, 'levelTeam'])->name('team.level');
 
     // Reports
-    Route::get('/report/main-wallet',  [DashboardController::class, 'mainWallet'])->name('report.main-wallet');
-    Route::get('/report/earn-wallet',  [DashboardController::class, 'earnWallet'])->name('report.earn-wallet');
-    Route::get('/report/package',      [DashboardController::class, 'packageReport'])->name('report.package');
-    Route::get('/report/recharge',     [DashboardController::class, 'rechargeReport'])->name('report.recharge');
-    Route::get('/report/orders',       [DashboardController::class, 'orderReport'])->name('report.orders');
+    Route::get('/report/main-wallet', [DashboardController::class, 'mainWallet'])->name('report.main-wallet');
+    Route::get('/report/earn-wallet', [DashboardController::class, 'earnWallet'])->name('report.earn-wallet');
+    Route::get('/report/package', [DashboardController::class, 'packageReport'])->name('report.package');
+    Route::get('/report/recharge', [DashboardController::class, 'rechargeReport'])->name('report.recharge');
+    Route::get('/report/orders', [DashboardController::class, 'orderReport'])->name('report.orders');
 
     // Fund
-    Route::get('/fund/request',[ProfileController::class,'fundRequest'])->name('fund.request');
-    Route::post('/fund-request/store',[ProfileController::class,'storeFundRequest'])->name('fund.request.store');
-    Route::get('/fund/report',   [ProfileController::class, 'fundRequestList'])->name('fund.report');
+    Route::get('/fund/request', [ProfileController::class, 'fundRequest'])->name('fund.request');
+    Route::post('/fund-request/store', [ProfileController::class, 'storeFundRequest'])->name('fund.request.store');
+    Route::get('/fund/report', [ProfileController::class, 'fundRequestList'])->name('fund.report');
 
     // Payout
-    Route::get('/payout/request',  [DashboardController::class, 'payoutRequest'])->name('payout.request');
-    Route::post('/payout/request', [DashboardController::class, 'storePayoutRequest'])->name('payout.request.post');
-    Route::get('/payout/list',     [DashboardController::class, 'payoutList'])->name('payout.list');
+    Route::get('/payout/request', [PayoutController::class, 'create'])->name('payout.request');
+    Route::post('/payout/request', [PayoutController::class, 'store'])->name('payout.request.post');
+    Route::get('/payout/list', [PayoutController::class, 'index'])->name('payout.list');
 
     // Income
-    Route::get('/income/startup',              [DashboardController::class, 'incomeStartup'])->name('income.startup');
-    Route::get('/income/recharge-cashback',    [DashboardController::class, 'incomeRechargeCashback'])->name('income.recharge-cashback');
-    Route::get('/income/zenith-benefit',       [DashboardController::class, 'incomeZenithBenefit'])->name('income.zenith-benefit');
-    Route::get('/income/product-repurchase',   [DashboardController::class, 'incomeProductRepurchase'])->name('income.product-repurchase');
-    Route::get('/income/zenith-pool',          [DashboardController::class, 'incomeZenithPool'])->name('income.zenith-pool');
-    Route::get('/income/non-working-pool',     [DashboardController::class, 'incomeNonWorkingPool'])->name('income.non-working-pool');
-    Route::get('/income/zenith-team',          [DashboardController::class, 'incomeZenithTeam'])->name('income.zenith-team');
-    Route::get('/income/sponsor-pool',         [DashboardController::class, 'incomeSponsorPool'])->name('income.sponsor-pool');
-    Route::get('/income/business-expansion',   [DashboardController::class, 'incomeBusinessExpansion'])->name('income.business-expansion');
-    Route::get('/income/rank-reward',          [DashboardController::class, 'incomeRankReward'])->name('income.rank-reward');
-    Route::get('/income/zenith-package',       [DashboardController::class, 'zenithPackage'])->name('income.zenith-package');
+    Route::get('/income/startup', [DashboardController::class, 'incomeStartup'])->name('income.startup');
+    Route::get('/income/recharge-cashback', [DashboardController::class, 'incomeRechargeCashback'])->name('income.recharge-cashback');
+    Route::get('/income/zenith-benefit', [DashboardController::class, 'incomeZenithBenefit'])->name('income.zenith-benefit');
+    Route::get('/income/product-repurchase', [DashboardController::class, 'incomeProductRepurchase'])->name('income.product-repurchase');
+    Route::get('/income/zenith-pool', [DashboardController::class, 'incomeZenithPool'])->name('income.zenith-pool');
+    Route::get('/income/non-working-pool', [DashboardController::class, 'incomeNonWorkingPool'])->name('income.non-working-pool');
+    Route::get('/income/zenith-team', [DashboardController::class, 'incomeZenithTeam'])->name('income.zenith-team');
+    Route::get('/income/sponsor-pool', [DashboardController::class, 'incomeSponsorPool'])->name('income.sponsor-pool');
+    Route::get('/income/business-expansion', [DashboardController::class, 'incomeBusinessExpansion'])->name('income.business-expansion');
+    Route::get('/income/rank-reward', [DashboardController::class, 'incomeRankReward'])->name('income.rank-reward');
+    Route::get('/income/zenith-package', [DashboardController::class, 'zenithPackage'])->name('income.zenith-package');
 
     // Other
     Route::get('/repurchase', [CatalogController::class, 'categories'])->name('catalog.index');

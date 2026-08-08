@@ -2,10 +2,12 @@
 
 namespace Tests\Feature;
 
-use App\Models\Admin;
 use App\Models\DirectTreeNode;
+use App\Models\EarningWalletTransaction;
 use App\Models\Package;
+use App\Models\SponsorPoolNode;
 use App\Models\User;
+use App\Models\ZenithPoolNode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -13,14 +15,19 @@ class PackagePurchaseTest extends TestCase
 {
     use RefreshDatabase;
 
+    private User $rootUser;
+
     protected function setUp(): void
     {
         parent::setUp();
 
-        Admin::create([
-            'name' => 'Super Admin',
-            'email' => 'admin@armayurveda.test',
-            'password' => 'admin12345',
+        $this->rootUser = User::factory()->create([
+            'name' => 'Admin Root User',
+            'email' => 'root@armayurveda.test',
+            'member_id' => 'ARM1000',
+            'sponsor_id' => null,
+            'main_wallet' => 0,
+            'earning_wallet' => 0,
             'status' => 'Active',
         ]);
     }
@@ -60,11 +67,42 @@ class PackagePurchaseTest extends TestCase
         ]);
 
         $root = DirectTreeNode::whereNull('parent_id')->first();
+        $this->assertSame($this->rootUser->id, $root->user_id);
         $this->assertDatabaseHas('direct_tree_nodes', [
             'user_id' => $user->id,
             'parent_id' => $root->id,
             'depth' => 1,
         ]);
+
+        $zenithRoot = ZenithPoolNode::whereNull('parent_id')->first();
+        $this->assertSame($this->rootUser->id, $zenithRoot->user_id);
+        $this->assertDatabaseHas('zenith_pool_nodes', [
+            'user_id' => $user->id,
+            'parent_id' => $zenithRoot->id,
+            'depth' => 1,
+        ]);
+        $this->assertDatabaseCount('admins', 0);
+    }
+
+    public function test_package_purchase_page_uses_the_zenith_package_image(): void
+    {
+        Package::create([
+            'name' => 'Zenith Package',
+            'slug' => 'zenith-package',
+            'price' => 10500,
+            'category' => 'Zenith',
+            'image' => null,
+        ]);
+        $user = User::factory()->create([
+            'main_wallet' => 20000,
+            'package_name' => null,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('package.purchase'))
+            ->assertOk()
+            ->assertSee(asset('images/zenith-package.jpeg'), false)
+            ->assertSee('alt="Zenith Package"', false);
     }
 
     public function test_package_purchase_creates_purchase_record_and_distributes_level_commissions(): void
@@ -131,6 +169,15 @@ class PackagePurchaseTest extends TestCase
             'description' => 'Level 2 commission for Zenith Package',
             'amount' => '150.00',
         ]);
+        $this->assertNotNull(
+            EarningWalletTransaction::where('user_id', $level1Sponsor->id)
+                ->where('description', 'Level 1 commission for Zenith Package')
+                ->firstOrFail()
+                ->transaction_date
+        );
+
+        $sponsorRoot = SponsorPoolNode::whereNull('parent_id')->first();
+        $this->assertSame($this->rootUser->id, $sponsorRoot->user_id);
     }
 
     public function test_package_purchase_places_member_under_sponsor_in_direct_tree(): void
@@ -171,6 +218,40 @@ class PackagePurchaseTest extends TestCase
             'parent_id' => $sponsorNode->id,
             'depth' => $sponsorNode->depth + 1,
         ]);
+    }
+
+    public function test_user_cannot_purchase_a_package_more_than_once(): void
+    {
+        $zenith = Package::create([
+            'name' => 'Zenith Package',
+            'slug' => 'zenith-package',
+            'price' => 10500,
+            'category' => 'Zenith',
+        ]);
+        $user = User::factory()->create([
+            'main_wallet' => 30000,
+            'package_name' => null,
+        ]);
+
+        $this->actingAs($user)
+            ->post(route('package.purchase.store'), ['package_id' => $zenith->id])
+            ->assertSessionHas('success');
+
+        $balanceAfterFirstPurchase = (float) $user->fresh()->main_wallet;
+
+        $this->actingAs($user)
+            ->post(route('package.purchase.store'), ['package_id' => $zenith->id])
+            ->assertSessionHasErrors('package');
+
+        $this->assertSame($balanceAfterFirstPurchase, (float) $user->fresh()->main_wallet);
+        $this->assertDatabaseCount('package_purchases', 1);
+        $this->assertDatabaseCount('main_wallet_transactions', 2);
+
+        $this->actingAs($user)
+            ->get(route('package.purchase'))
+            ->assertOk()
+            ->assertSee('Package Already Purchased')
+            ->assertDontSee('Purchase Now');
     }
 
     public function test_basic_package_cannot_be_purchased(): void

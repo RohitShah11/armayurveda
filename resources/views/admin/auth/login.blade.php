@@ -66,7 +66,7 @@ a:hover{
       <div class="card card-auth">
         <div class="row g-0">
           <div class="col-lg-5 left-panel">
-            <img src="{{ asset('images/logo.jpeg') }}" class="logo mb-4" alt="ARM Ayurveda">
+            <img src="{{ asset('images/arm-ayurveda-logo.png') }}" class="logo mb-4" alt="ARM Ayurveda">
             <h2>Admin Panel</h2>
             <p>Login to manage members, KYC approvals, fund requests and business operations.</p>
           </div>

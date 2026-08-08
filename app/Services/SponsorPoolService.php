@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Admin;
-use App\Models\AdminEarningWalletTransaction;
 use App\Models\EarningWalletTransaction;
 use App\Models\PackagePurchase;
 use App\Models\SponsorPoolLevelIncome;
@@ -44,7 +42,7 @@ class SponsorPoolService
 
     public function enterPool(User $sponsor, User $purchaser, PackagePurchase $purchase): SponsorPoolNode
     {
-        $root = $this->ensureAdminRootNode();
+        $root = $this->ensureRootUserNode();
         $parent = $this->findNextAvailableSlot($root);
         $position = $this->nextChildPosition($parent);
 
@@ -65,7 +63,7 @@ class SponsorPoolService
 
     public function findNextAvailableSlot(?SponsorPoolNode $root = null): SponsorPoolNode
     {
-        $root ??= $this->ensureAdminRootNode();
+        $root ??= $this->ensureRootUserNode();
         $queue = [$root->id];
 
         while (! empty($queue)) {
@@ -99,17 +97,18 @@ class SponsorPoolService
         return $root;
     }
 
-    private function ensureAdminRootNode(): SponsorPoolNode
+    private function ensureRootUserNode(): SponsorPoolNode
     {
-        $admin = Admin::orderBy('id')->first();
+        $rootUser = User::query()->orderBy('id')->lockForUpdate()->first();
 
-        if (! $admin) {
-            throw new \RuntimeException('Cannot start Sponsor pool because no admin account exists.');
+        if (! $rootUser) {
+            throw new \RuntimeException('Cannot start Sponsor pool because no root user exists.');
         }
 
         return SponsorPoolNode::firstOrCreate(
-            ['admin_id' => $admin->id, 'parent_id' => null],
+            ['parent_id' => null],
             [
+                'user_id' => $rootUser->id,
                 'position' => 1,
                 'depth' => 0,
                 'joined_at' => now(),
@@ -171,16 +170,13 @@ class SponsorPoolService
         $income = SponsorPoolLevelIncome::create([
             'sponsor_pool_node_id' => $node->id,
             'user_id' => $node->user_id,
-            'admin_id' => $node->admin_id,
             'level' => $level,
             'slots_required' => $slotsRequired,
             'amount' => $amount,
             'paid_at' => now(),
         ]);
 
-        $node->admin_id
-            ? $this->creditAdminIncome($node, $income, $level, $amount)
-            : $this->creditUserIncome($node, $income, $level, $amount);
+        $this->creditUserIncome($node, $income, $level, $amount);
     }
 
     public function filledSlotsAtLevel(SponsorPoolNode $node, int $level): int
@@ -230,39 +226,6 @@ class SponsorPoolService
             'closing_balance' => $closingBalance,
             'description' => 'Sponsor Global Pool Level '.$level.' complete income',
             'reference_no' => 'SPONSOR-POOL-'.$income->id.'-U'.$receiver->id,
-            'transaction_date' => now(),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-    }
-
-    private function creditAdminIncome(SponsorPoolNode $node, SponsorPoolLevelIncome $income, int $level, float $amount): void
-    {
-        if (! $node->admin_id) {
-            return;
-        }
-
-        $receiver = Admin::lockForUpdate()->find($node->admin_id);
-
-        if (! $receiver) {
-            return;
-        }
-
-        $openingBalance = (float) ($receiver->earning_wallet ?? 0);
-        $closingBalance = $openingBalance + $amount;
-
-        $receiver->update([
-            'earning_wallet' => $closingBalance,
-        ]);
-
-        AdminEarningWalletTransaction::create([
-            'admin_id' => $receiver->id,
-            'type' => 'Credit',
-            'amount' => $amount,
-            'opening_balance' => $openingBalance,
-            'closing_balance' => $closingBalance,
-            'description' => 'Sponsor Global Pool Level '.$level.' complete income',
-            'reference_no' => 'SPONSOR-POOL-'.$income->id.'-A'.$receiver->id,
             'transaction_date' => now(),
             'created_at' => now(),
             'updated_at' => now(),

@@ -50,7 +50,7 @@
     <div class="row g-4 align-items-stretch">
       <div class="col-lg-5">
         <div class="info-box">
-          <img src="images/arm-logo.jpeg" alt="ARM Ayurveda">
+          <img src="{{ asset('images/arm-ayurveda-logo.png') }}" alt="ARM Ayurveda">
           <h3 class="fw-bold mb-3">ARM Ayurveda Pvt. Ltd.</h3>
           <p>
             For product enquiry, distributor registration, business plan details or customer support, please contact us.

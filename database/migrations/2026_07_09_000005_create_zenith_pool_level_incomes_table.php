@@ -12,7 +12,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('zenith_pool_node_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
-            $table->foreignId('admin_id')->nullable()->constrained()->cascadeOnDelete();
             $table->unsignedTinyInteger('level');
             $table->unsignedInteger('slots_required');
             $table->decimal('amount', 12, 2);

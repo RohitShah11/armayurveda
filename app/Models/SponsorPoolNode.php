@@ -27,11 +27,6 @@ class SponsorPoolNode extends Model
         return $this->belongsTo(User::class, 'purchaser_id');
     }
 
-    public function admin()
-    {
-        return $this->belongsTo(Admin::class);
-    }
-
     public function parent()
     {
         return $this->belongsTo(self::class, 'parent_id');

@@ -33,7 +33,7 @@
 
 <div class="sidebar" id="sidebar">
   <div class="logo-box">
-    <img src="{{ asset('images/logo.jpeg') }}" alt="ARM Ayurveda">
+    <img src="{{ asset('images/arm-ayurveda-logo.png') }}" alt="ARM Ayurveda">
   </div>
   <div class="user-box">
     <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Admin">
@@ -53,6 +53,9 @@
   </a>
   <a href="{{ route('admin.funds.index') }}" class="{{ request()->routeIs('admin.funds.*') ? 'active' : '' }}">
     <i class="fa fa-wallet"></i>Fund Requests
+  </a>
+  <a href="{{ route('admin.payouts.index') }}" class="{{ request()->routeIs('admin.payouts.*') ? 'active' : '' }}">
+    <i class="fa fa-money-bill-transfer"></i>Payout Requests
   </a>
   <a href="{{ route('admin.transactions.index') }}" class="{{ request()->routeIs('admin.transactions.*') ? 'active' : '' }}">
     <i class="fa fa-wallet"></i>Transactions

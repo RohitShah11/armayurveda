@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MainWalletTransaction;
 use App\Models\EarningWalletTransaction;
+use App\Models\MainWalletTransaction;
+use App\Models\MemberKyc;
 use App\Models\Package;
 use App\Models\PackageCommissionLevel;
 use App\Models\PackagePurchase;
+use App\Models\ProductOrder;
 use App\Models\User;
 use App\Models\ZenithPoolLevelIncome;
 use App\Models\ZenithPoolNode;
@@ -22,10 +24,175 @@ use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
 {
-    public function index()       { return view('dashboard.index'); }
-    //public function profile()     { return view('pages.profile'); }
-    public function kyc()         { return view('pages.kyc'); }
-    //public function changePassword() { return view('pages.change-password'); }
+    public function index()
+    {
+        /** @var User $user */
+        $user = Auth::user();
+        [$directMembers, $totalTeam] = $this->teamCounts($user);
+
+        $mainTransactions = MainWalletTransaction::query()
+            ->where('user_id', $user->id)
+            ->latest('transaction_date')
+            ->latest('id')
+            ->limit(10)
+            ->get();
+
+        $earningTransactions = EarningWalletTransaction::query()
+            ->where('user_id', $user->id)
+            ->latest('transaction_date')
+            ->latest('id')
+            ->limit(10)
+            ->get();
+
+        $recentTransactions = $mainTransactions
+            ->map(fn (MainWalletTransaction $transaction) => [
+                'date' => $transaction->transaction_date ?? $transaction->created_at,
+                'description' => $transaction->particular ?: 'Main wallet transaction',
+                'amount' => (float) $transaction->amount,
+                'direction' => ucfirst(strtolower($transaction->transaction_type)),
+            ])
+            ->concat($earningTransactions->map(fn (EarningWalletTransaction $transaction) => [
+                'date' => $transaction->transaction_date ?? $transaction->created_at,
+                'description' => $transaction->description ?: 'Earning wallet transaction',
+                'amount' => (float) $transaction->amount,
+                'direction' => ucfirst(strtolower($transaction->type)),
+            ]))
+            ->sortByDesc(fn (array $transaction) => $transaction['date']?->timestamp ?? 0)
+            ->take(6)
+            ->values();
+
+        $incomeLabels = [
+            'Start Up Package Level Commission',
+            'Mobile & DTH Recharge Cashback',
+            'Zenith Package Return Benefit',
+            'Product Repurchase Bonus',
+            'Monthly Zenith Pool Income',
+            'Non-Working Global Pool Income',
+            'Zenith Team Package Commission',
+            'Sponsor Global Pool Income',
+            'Business Expansion Incentive Bonus',
+            'Rank & Reward',
+        ];
+
+        $incomeSummary = collect($incomeLabels)->mapWithKeys(fn (string $label) => [
+            $label => ['label' => $label, 'today' => 0.0, 'total' => 0.0],
+        ]);
+
+        EarningWalletTransaction::query()
+            ->where('user_id', $user->id)
+            ->whereRaw('LOWER(type) = ?', ['credit'])
+            ->get()
+            ->each(function (EarningWalletTransaction $transaction) use ($incomeSummary) {
+                $category = $this->incomeCategory($transaction->description);
+
+                if (! $incomeSummary->has($category)) {
+                    $incomeSummary->put($category, ['label' => $category, 'today' => 0.0, 'total' => 0.0]);
+                }
+
+                $row = $incomeSummary->get($category);
+                $row['total'] += (float) $transaction->amount;
+                $transactionDate = $transaction->transaction_date ?? $transaction->created_at;
+
+                if ($transactionDate?->isToday()) {
+                    $row['today'] += (float) $transaction->amount;
+                }
+
+                $incomeSummary->put($category, $row);
+            });
+
+        $latestPackage = PackagePurchase::query()
+            ->where('user_id', $user->id)
+            ->latest('purchase_date')
+            ->latest('id')
+            ->first();
+
+        $orderQuery = ProductOrder::query()->where('user_id', $user->id);
+        $kyc = Schema::hasTable('member_kycs')
+            ? MemberKyc::query()->where('user_id', $user->id)->latest('id')->first()
+            : null;
+
+        return view('dashboard.index', [
+            'user' => $user,
+            'directMembers' => $directMembers,
+            'totalTeam' => $totalTeam,
+            'levelMembers' => max(0, $totalTeam - $directMembers),
+            'activePackage' => $user->package_name ?: $latestPackage?->package_name,
+            'totalOrders' => (clone $orderQuery)->count(),
+            'totalOrderValue' => (float) (clone $orderQuery)->sum('total_amount'),
+            'recentTransactions' => $recentTransactions,
+            'incomeSummary' => $incomeSummary->values(),
+            'kycStatus' => $kyc?->status ?: 'Not Submitted',
+        ]);
+    }
+
+    private function teamCounts(User $user): array
+    {
+        if (! $user->member_id) {
+            return [0, 0];
+        }
+
+        $sponsorIds = [$user->member_id];
+        $seenUserIds = [];
+        $seenMemberIds = [$user->member_id => true];
+        $directMembers = 0;
+        $depth = 0;
+
+        while ($sponsorIds !== []) {
+            $members = User::query()
+                ->whereIn('sponsor_id', $sponsorIds)
+                ->get(['id', 'member_id']);
+            $nextSponsorIds = [];
+
+            foreach ($members as $member) {
+                if (isset($seenUserIds[$member->id])) {
+                    continue;
+                }
+
+                $seenUserIds[$member->id] = true;
+
+                if ($depth === 0) {
+                    $directMembers++;
+                }
+
+                if ($member->member_id && ! isset($seenMemberIds[$member->member_id])) {
+                    $seenMemberIds[$member->member_id] = true;
+                    $nextSponsorIds[] = $member->member_id;
+                }
+            }
+
+            $sponsorIds = $nextSponsorIds;
+            $depth++;
+        }
+
+        return [$directMembers, count($seenUserIds)];
+    }
+
+    private function incomeCategory(?string $description): string
+    {
+        $description = strtolower((string) $description);
+
+        return match (true) {
+            str_contains($description, 'sponsor global pool') => 'Sponsor Global Pool Income',
+            str_contains($description, 'non-working global pool') => 'Non-Working Global Pool Income',
+            str_contains($description, 'rank reward'), str_contains($description, 'leadership') => 'Rank & Reward',
+            str_contains($description, 'recharge') => 'Mobile & DTH Recharge Cashback',
+            str_contains($description, 'repurchase') => 'Product Repurchase Bonus',
+            str_contains($description, 'business expansion') => 'Business Expansion Incentive Bonus',
+            str_contains($description, 'return benefit') => 'Zenith Package Return Benefit',
+            str_contains($description, 'monthly zenith pool') => 'Monthly Zenith Pool Income',
+            str_contains($description, 'team package'),
+            str_contains($description, 'level') && str_contains($description, 'zenith') => 'Zenith Team Package Commission',
+            str_contains($description, 'level') => 'Start Up Package Level Commission',
+            default => 'Other Income',
+        };
+    }
+
+    // public function profile()     { return view('pages.profile'); }
+    public function kyc()
+    {
+        return view('pages.kyc');
+    }
+    // public function changePassword() { return view('pages.change-password'); }
 
     // public function updateProfile(Request $request)
     // {
@@ -37,13 +204,14 @@ class DashboardController extends Controller
     public function updatePassword(Request $request)
     {
         $request->validate([
-            'current_password'      => 'required',
-            'password'              => 'required|min:6|confirmed',
+            'current_password' => 'required',
+            'password' => 'required|min:6|confirmed',
         ]);
-        if (!Hash::check($request->current_password, auth()->user()->password)) {
+        if (! Hash::check($request->current_password, auth()->user()->password)) {
             return back()->withErrors(['current_password' => 'Current password is incorrect.']);
         }
         auth()->user()->update(['password' => Hash::make($request->password)]);
+
         return back()->with('success', 'Password changed successfully.');
     }
 
@@ -58,8 +226,9 @@ class DashboardController extends Controller
             ->orderByDesc('purchase_date')
             ->orderByDesc('id')
             ->get();
+        $hasPurchasedPackage = $purchaseHistory->isNotEmpty();
 
-        return view('pages.basic-package', compact('packages', 'currentPackage', 'purchaseHistory'));
+        return view('pages.basic-package', compact('packages', 'currentPackage', 'purchaseHistory', 'hasPurchasedPackage'));
     }
 
     public function packageInvoice(Request $request, PackagePurchase $packagePurchase)
@@ -92,15 +261,23 @@ class DashboardController extends Controller
             ]);
         }
 
-        $walletBalance = (float) ($user->main_wallet ?? 0);
         $price = (float) $package->price;
 
-        if ($walletBalance < $price) {
-            return back()->withErrors(['package' => 'Insufficient wallet balance to purchase this package.']);
-        }
+        return DB::transaction(function () use ($user, $package, $price) {
+            $user = User::query()->lockForUpdate()->findOrFail($user->id);
 
-        return DB::transaction(function () use ($user, $package, $price, $walletBalance) {
-            $openingBalance = $walletBalance;
+            if (PackagePurchase::where('user_id', $user->id)->exists()) {
+                return back()->withErrors([
+                    'package' => 'You have already purchased a package. Only one package purchase is allowed per user.',
+                ]);
+            }
+
+            $openingBalance = (float) ($user->main_wallet ?? 0);
+
+            if ($openingBalance < $price) {
+                return back()->withErrors(['package' => 'Insufficient wallet balance to purchase this package.']);
+            }
+
             $closingBalance = $openingBalance - $price;
 
             $user->update([
@@ -174,12 +351,14 @@ class DashboardController extends Controller
             }
 
             $currentSponsorId = $user->sponsor_id;
-           
+
             $currentLevel = 1;
 
             while ($currentSponsorId && $currentLevel <= 15) {
-                $sponsor = User::where('member_id', $currentSponsorId)->first();
-                
+                $sponsor = User::where('member_id', $currentSponsorId)
+                    ->lockForUpdate()
+                    ->first();
+
                 if (! $sponsor) {
                     break;
                 }
@@ -202,6 +381,7 @@ class DashboardController extends Controller
                         'closing_balance' => $sponsorClosingBalance,
                         'description' => 'Level '.$currentLevel.' commission for '.$package->name,
                         'reference_no' => 'LEVEL-'.$currentLevel.'-'.$package->id.'-'.now()->timestamp,
+                        'transaction_date' => now(),
                         'created_at' => now(),
                         'updated_at' => now(),
                     ]);
@@ -214,12 +394,37 @@ class DashboardController extends Controller
             return redirect()->route('package.purchase')->with('success', 'Package purchased successfully.');
         });
     }
-    public function rechargeMobile()     { return view('pages.recharge-cashback'); }
-    public function rechargeDth()        { return view('pages.recharge-cashback'); }
-    public function addMember()          { return view('pages.add-member'); }
-    public function storeMember(Request $request) { return back()->with('success', 'Member added!'); }
-    public function directMember()       { return view('pages.direct-member'); }
-    public function levelTeam()          { return view('pages.level-team'); }
+
+    public function rechargeMobile()
+    {
+        return view('pages.recharge-cashback');
+    }
+
+    public function rechargeDth()
+    {
+        return view('pages.recharge-cashback');
+    }
+
+    public function addMember()
+    {
+        return view('pages.add-member');
+    }
+
+    public function storeMember(Request $request)
+    {
+        return back()->with('success', 'Member added!');
+    }
+
+    public function directMember()
+    {
+        return view('pages.direct-member');
+    }
+
+    public function levelTeam()
+    {
+        return view('pages.level-team');
+    }
+
     public function mainWallet()
     {
         $user = Auth::user();
@@ -236,6 +441,7 @@ class DashboardController extends Controller
 
         return view('pages.main-wallet', compact('transactions', 'currentBalance', 'totalCredit', 'totalDebit'));
     }
+
     public function earnWallet()
     {
         $user = Auth::user();
@@ -252,20 +458,62 @@ class DashboardController extends Controller
 
         return view('pages.earn-wallet', compact('transactions', 'currentBalance', 'totalCredit', 'totalDebit'));
     }
-    public function packageReport()      { return view('pages.package-report'); }
-    public function rechargeReport()     { return view('pages.recharge-report'); }
-    public function orderReport()        { return view('pages.order-report'); }
-    public function fundRequest()        { return view('pages.fund-request'); }
-    public function storeFundRequest(Request $request) { return back()->with('success', 'Fund request submitted!'); }
-    public function fundReport()         { return view('pages.fund-report'); }
-    public function payoutRequest()      { return view('pages.payout'); }
-    public function storePayoutRequest(Request $request) { return back()->with('success', 'Payout request submitted!'); }
-    public function payoutList()         { return view('pages.payout-list'); }
-    public function incomeStartup()      { return view('pages.startup-commission'); }
-    public function incomeRechargeCashback() { return view('pages.recharge-cashback'); }
-    public function incomeZenithBenefit()    { return view('pages.zenith-benefit'); }
-    public function incomeProductRepurchase(){ return view('pages.product-repurchase'); }
-    public function incomeZenithPool()       { return view('pages.zenith-pool'); }
+
+    public function packageReport()
+    {
+        return view('pages.package-report');
+    }
+
+    public function rechargeReport()
+    {
+        return view('pages.recharge-report');
+    }
+
+    public function orderReport()
+    {
+        return view('pages.order-report');
+    }
+
+    public function fundRequest()
+    {
+        return view('pages.fund-request');
+    }
+
+    public function storeFundRequest(Request $request)
+    {
+        return back()->with('success', 'Fund request submitted!');
+    }
+
+    public function fundReport()
+    {
+        return view('pages.fund-report');
+    }
+
+    public function incomeStartup()
+    {
+        return view('pages.startup-commission');
+    }
+
+    public function incomeRechargeCashback()
+    {
+        return view('pages.recharge-cashback');
+    }
+
+    public function incomeZenithBenefit()
+    {
+        return view('pages.zenith-benefit');
+    }
+
+    public function incomeProductRepurchase()
+    {
+        return view('pages.product-repurchase');
+    }
+
+    public function incomeZenithPool()
+    {
+        return view('pages.zenith-pool');
+    }
+
     public function incomeNonWorkingPool(Request $request, ZenithPoolService $zenithPoolService)
     {
         $user = Auth::user();
@@ -329,9 +577,22 @@ class DashboardController extends Controller
             'nextLevel'
         ));
     }
-    public function incomeZenithTeam()       { return view('pages.zenith-team'); }
-    public function incomeSponsorPool()      { return view('pages.sponsor-pool'); }
-    public function incomeBusinessExpansion(){ return view('pages.business-expansion'); }
+
+    public function incomeZenithTeam()
+    {
+        return view('pages.zenith-team');
+    }
+
+    public function incomeSponsorPool()
+    {
+        return view('pages.sponsor-pool');
+    }
+
+    public function incomeBusinessExpansion()
+    {
+        return view('pages.business-expansion');
+    }
+
     public function incomeRankReward(RankRewardService $rankRewardService)
     {
         $user = Auth::user();
@@ -345,11 +606,39 @@ class DashboardController extends Controller
 
         return view('pages.rank-reward', compact('progress', 'rankRewards', 'rankPlan'));
     }
-    public function zenithPackage()      { return view('pages.zenith-package'); }
-    public function products()           { return view('pages.products'); }
-    public function plan()               { return view('pages.plan'); }
-    public function gallery()            { return view('pages.gallery'); }
-    public function about()              { return view('pages.about'); }
-    public function contact()            { return view('pages.contact'); }
-    public function sportmortex()        { return view('pages.sportmortex'); }
+
+    public function zenithPackage()
+    {
+        return view('pages.zenith-package');
+    }
+
+    public function products()
+    {
+        return view('pages.products');
+    }
+
+    public function plan()
+    {
+        return view('pages.plan');
+    }
+
+    public function gallery()
+    {
+        return view('pages.gallery');
+    }
+
+    public function about()
+    {
+        return view('pages.about');
+    }
+
+    public function contact()
+    {
+        return view('pages.contact');
+    }
+
+    public function sportmortex()
+    {
+        return view('pages.sportmortex');
+    }
 }

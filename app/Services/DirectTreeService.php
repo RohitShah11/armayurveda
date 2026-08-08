@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Admin;
 use App\Models\DirectTreeNode;
 use App\Models\PackagePurchase;
 use App\Models\User;
@@ -15,7 +14,12 @@ class DirectTreeService
             return $existingNode;
         }
 
-        $root = $this->ensureAdminRootNode();
+        $root = $this->ensureRootUserNode();
+
+        if ($root->user_id === $user->id) {
+            return $root;
+        }
+
         $parent = $this->findSponsorNode($user) ?: $root;
         $position = $this->nextChildPosition($parent);
 
@@ -29,17 +33,18 @@ class DirectTreeService
         ]);
     }
 
-    private function ensureAdminRootNode(): DirectTreeNode
+    private function ensureRootUserNode(): DirectTreeNode
     {
-        $admin = Admin::orderBy('id')->first();
+        $rootUser = User::query()->orderBy('id')->lockForUpdate()->first();
 
-        if (! $admin) {
-            throw new \RuntimeException('Cannot start Direct tree because no admin account exists.');
+        if (! $rootUser) {
+            throw new \RuntimeException('Cannot start Direct tree because no root user exists.');
         }
 
         return DirectTreeNode::firstOrCreate(
-            ['admin_id' => $admin->id, 'parent_id' => null],
+            ['parent_id' => null],
             [
+                'user_id' => $rootUser->id,
                 'position' => 1,
                 'depth' => 0,
                 'joined_at' => now(),
