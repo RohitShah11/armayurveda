@@ -30,8 +30,18 @@ return new class extends Migration
             return;
         }
 
+        foreach (Schema::getForeignKeys($tableName) as $foreignKey) {
+            if (! in_array('admin_id', $foreignKey['columns'] ?? [], true) || empty($foreignKey['name'])) {
+                continue;
+            }
+
+            Schema::table($tableName, function (Blueprint $table) use ($foreignKey) {
+                $table->dropForeign($foreignKey['name']);
+            });
+        }
+
         Schema::table($tableName, function (Blueprint $table) {
-            $table->dropConstrainedForeignId('admin_id');
+            $table->dropColumn('admin_id');
         });
     }
 
