@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\DirectTreeNode;
 use App\Models\EarningWalletTransaction;
 use App\Models\Package;
+use App\Models\PackagePurchase;
 use App\Models\SponsorPoolNode;
 use App\Models\User;
 use App\Models\ZenithPoolNode;
@@ -157,14 +158,21 @@ class PackagePurchaseTest extends TestCase
             'package_name' => 'Zenith Package',
             'package_price' => '10500.00',
         ]);
+        $packagePurchase = PackagePurchase::where('user_id', $user->id)->firstOrFail();
         $this->assertDatabaseHas('earning_wallet_transactions', [
             'user_id' => $level1Sponsor->id,
+            'source_user_id' => $user->id,
+            'package_purchase_id' => $packagePurchase->id,
+            'level' => 1,
             'type' => 'Credit',
             'description' => 'Level 1 commission for Zenith Package',
             'amount' => '300.00',
         ]);
         $this->assertDatabaseHas('earning_wallet_transactions', [
             'user_id' => $level2Sponsor->id,
+            'source_user_id' => $user->id,
+            'package_purchase_id' => $packagePurchase->id,
+            'level' => 2,
             'type' => 'Credit',
             'description' => 'Level 2 commission for Zenith Package',
             'amount' => '150.00',

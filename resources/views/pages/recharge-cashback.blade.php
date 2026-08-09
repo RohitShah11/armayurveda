@@ -34,10 +34,10 @@ textarea.form-control{height:95px}
 
 @section('content')
 <div class="row g-4 mb-4">
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Recharge Wallet</p><h3>₹3,250</h3></div></div>
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Recharge</p><h3>₹12,800</h3></div></div>
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Cashback</p><h3 class="text-success">₹640</h3></div></div>
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Pending Cashback</p><h3 class="text-warning">₹75</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Recharge Wallet</p><h3>₹0</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Recharge</p><h3>₹0</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Cashback</p><h3 class="text-success">₹0</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Pending Cashback</p><h3 class="text-warning">₹0</h3></div></div>
     </div>
 
     <div class="info-note mb-4">
@@ -155,7 +155,7 @@ textarea.form-control{height:95px}
       </div>
     </div>
 
-    <div class="card-box mt-4">
+    {{-- <div class="card-box mt-4">
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <h5 class="fw-bold mb-0">Recharge Cashback History</h5>
         <div class="d-flex gap-2 flex-wrap">
@@ -221,7 +221,7 @@ textarea.form-control{height:95px}
           </tbody>
         </table>
       </div>
-    </div>
+    </div> --}}
 
   </div>
 @endsection

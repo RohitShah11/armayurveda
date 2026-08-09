@@ -29,10 +29,10 @@
 
 @section('content')
 <div class="row g-4 mb-4">
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Repurchase BV</p><h3>48,500</h3></div></div>
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Bonus</p><h3>₹12,250</h3></div></div>
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>This Month Income</p><h3 class="text-success">₹4,750</h3></div></div>
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Pending Income</p><h3 class="text-warning">₹1,250</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Repurchase </p><h3>0</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Bonus</p><h3>₹0</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>This Month Income</p><h3 class="text-success">₹0</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Pending Income</p><h3 class="text-warning">₹0</h3></div></div>
     </div>
 
     <div class="info-note mb-4">
@@ -101,7 +101,7 @@
       </div>
     </div>
 
-    <div class="card-box">
+    {{-- <div class="card-box">
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <h5 class="fw-bold mb-0">Level Wise Repurchase Income List</h5>
         <span class="fw-bold text-success">Total: ₹12,250</span>
@@ -143,7 +143,7 @@
           </tbody>
         </table>
       </div>
-    </div>
+    </div> --}}
 
   </div>
 @endsection

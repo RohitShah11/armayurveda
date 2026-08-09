@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MemberProfile;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use App\Models\User;
-use App\Models\MemberProfile;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -19,16 +19,17 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'login'    => 'required',
+            'login' => 'required',
             'password' => 'required',
         ]);
 
-        $login    = $request->login;
-        $field    = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'mobile';
+        $login = $request->login;
+        $field = filter_var($login, FILTER_VALIDATE_EMAIL) ? 'email' : 'mobile';
         $remember = $request->boolean('remember');
 
         if (Auth::attempt([$field => $login, 'password' => $request->password], $remember)) {
             $request->session()->regenerate();
+
             return redirect()->intended(route('dashboard'));
         }
 
@@ -40,14 +41,46 @@ class AuthController extends Controller
         return view('auth.signup');
     }
 
+    public function lookupSponsor(Request $request)
+    {
+        $validated = $request->validate([
+            'member_id' => 'required|string|max:255',
+        ]);
+
+        $memberId = strtoupper(trim($validated['member_id']));
+        $sponsor = User::query()
+            ->where('member_id', $memberId)
+            ->first(['member_id', 'name']);
+
+        if (! $sponsor) {
+            return response()->json([
+                'available' => false,
+                'message' => 'Sponsor is not available.',
+            ], 404);
+        }
+
+        return response()->json([
+            'available' => true,
+            'member_id' => $sponsor->member_id,
+            'name' => $sponsor->name,
+        ]);
+    }
+
     public function register(Request $request)
     {
+        $sponsorId = strtoupper(trim((string) $request->input('sponsor_id')));
+        $request->merge([
+            'sponsor_id' => $sponsorId !== '' ? $sponsorId : null,
+        ]);
+
         $request->validate([
-            'name'                  => 'required|string|max:255',
-            'mobile'                => 'required|string|unique:users,mobile',
-            'email'                 => 'nullable|email|unique:users,email',
-            'password'              => 'required|min:6|confirmed',
-            'sponsor_id'            => 'nullable|string',
+            'name' => 'required|string|max:255',
+            'mobile' => 'required|string|unique:users,mobile',
+            'email' => 'nullable|email|unique:users,email',
+            'password' => 'required|min:6|confirmed',
+            'sponsor_id' => 'nullable|string|exists:users,member_id',
+        ], [
+            'sponsor_id.exists' => 'Sponsor is not available.',
         ]);
 
         $user = DB::transaction(function () use ($request) {
@@ -59,13 +92,13 @@ class AuthController extends Controller
                 ->max() ?? 1000;
 
             $user = User::create([
-                'name'       => $request->name,
-                'mobile'     => $request->mobile,
-                'email'      => $request->email,
-                'password'   => Hash::make($request->password),
+                'name' => $request->name,
+                'mobile' => $request->mobile,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
                 'sponsor_id' => $request->sponsor_id,
-                'status'     => 'Active',
-                'member_id'  => 'ARM' . str_pad($lastMemberNumber + 1, 4, '0', STR_PAD_LEFT),
+                'status' => 'Active',
+                'member_id' => 'ARM'.str_pad($lastMemberNumber + 1, 4, '0', STR_PAD_LEFT),
             ]);
 
             MemberProfile::create([
@@ -79,6 +112,7 @@ class AuthController extends Controller
         });
 
         Auth::login($user);
+
         return redirect()->route('dashboard')->with('success', 'Welcome to ARM Ayurveda!');
     }
 
@@ -87,6 +121,7 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect()->route('login');
     }
 }

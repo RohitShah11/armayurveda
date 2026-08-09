@@ -105,7 +105,28 @@ class MemberController extends Controller
 
     public function memberList(Request $request)
     {
-        $query = User::where('sponsor_id', auth()->user()->member_id);
+        $directMembers = User::query()
+            ->where('sponsor_id', auth()->user()->member_id);
+
+        $stats = [
+            'total_direct' => (clone $directMembers)->count(),
+            'active_direct' => (clone $directMembers)
+                ->where('status', 'Active')
+                ->count(),
+            'pending_package' => (clone $directMembers)
+                ->where(function ($query) {
+                    $query->whereNull('package_name')
+                        ->orWhere('package_name', '');
+                })
+                ->count(),
+            'active_members' => (clone $directMembers)
+                ->where('status', 'Active')
+                ->whereNotNull('package_name')
+                ->where('package_name', '<>', '')
+                ->count(),
+        ];
+
+        $query = clone $directMembers;
 
         // Search
         if ($request->filled('search')) {
@@ -126,7 +147,7 @@ class MemberController extends Controller
 
         $members = $query->latest()->paginate(10);
         
-        return view('pages.direct-member', compact('members'));
+        return view('pages.direct-member', compact('members', 'stats'));
     }
 
     public function memberDetails($id)

@@ -35,10 +35,10 @@
 
 @section('content')
 <div class="row g-4 mb-4">
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Zenith Purchases</p><h3 id="totalPurchase">18</h3></div></div>
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Benefit Per Purchase</p><h3>₹250</h3></div></div>
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Income</p><h3 id="totalIncome">₹4,500</h3></div></div>
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Paid Income</p><h3 class="text-success" id="paidIncome">₹3,750</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Zenith Purchases</p><h3 id="totalPurchase">0</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Benefit Per Purchase</p><h3 id="benefitPerPurchase">₹0</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Income</p><h3 id="totalIncome">₹0</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Paid Income</p><h3 class="text-success" id="paidIncome">₹0</h3></div></div>
     </div>
 
     <div class="info-note mb-4">
@@ -94,7 +94,7 @@
         </div>
       </div>
     </div>
-
+    {{--
     <div class="row total-strip mb-4 text-center">
       <div class="col-md-3 col-6 item"><small>Filtered Purchases</small><h4 id="filteredPurchase">18</h4></div>
       <div class="col-md-3 col-6 item"><small>Filtered Income</small><h4 id="filteredIncome">₹4,500</h4></div>
@@ -138,6 +138,6 @@
         </table>
       </div>
     </div>
-
+--}}
   </div>
 @endsection

@@ -62,11 +62,11 @@ class DashboardController extends Controller
             ->values();
 
         $incomeLabels = [
-            'Start Up Package Level Commission',
+            // 'Start Up Package Level Commission',
             'Mobile & DTH Recharge Cashback',
             'Zenith Package Return Benefit',
             'Product Repurchase Bonus',
-            'Monthly Zenith Pool Income',
+            // 'Monthly Zenith Pool Income',
             'Non-Working Global Pool Income',
             'Zenith Team Package Commission',
             'Sponsor Global Pool Income',
@@ -375,12 +375,15 @@ class DashboardController extends Controller
 
                     $e = EarningWalletTransaction::create([
                         'user_id' => $sponsor->id,
+                        'source_user_id' => $user->id,
+                        'package_purchase_id' => $packagePurchase->id,
+                        'level' => $currentLevel,
                         'type' => 'Credit',
                         'amount' => $commissionAmount,
                         'opening_balance' => $sponsorOpeningBalance,
                         'closing_balance' => $sponsorClosingBalance,
                         'description' => 'Level '.$currentLevel.' commission for '.$package->name,
-                        'reference_no' => 'LEVEL-'.$currentLevel.'-'.$package->id.'-'.now()->timestamp,
+                        'reference_no' => 'LEVEL-'.$currentLevel.'-PURCHASE-'.$packagePurchase->id,
                         'transaction_date' => now(),
                         'created_at' => now(),
                         'updated_at' => now(),
@@ -578,9 +581,72 @@ class DashboardController extends Controller
         ));
     }
 
-    public function incomeZenithTeam()
+    public function incomeZenithTeam(Request $request)
     {
-        return view('pages.zenith-team');
+        $user = $request->user();
+        $commissionStructure = PackageCommissionLevel::query()
+            ->whereRaw('LOWER(package_category) = ?', ['zenith'])
+            ->orderBy('level')
+            ->get();
+
+        $totalLevels = (int) ($commissionStructure->max('level') ?? 0);
+        $planCommission = (float) $commissionStructure->sum('commission_amount');
+
+        $baseQuery = EarningWalletTransaction::query()
+            ->where('user_id', $user->id)
+            ->whereRaw('LOWER(type) = ?', ['credit'])
+            ->whereRaw('LOWER(description) LIKE ?', ['level % commission for %zenith%']);
+
+        $totalIncome = (float) (clone $baseQuery)->sum('amount');
+        $thisMonthIncome = (float) (clone $baseQuery)
+            ->whereBetween('transaction_date', [now()->startOfMonth(), now()->endOfMonth()])
+            ->sum('amount');
+        $activeLevels = (clone $baseQuery)
+            ->select(['level', 'description'])
+            ->distinct()
+            ->get()
+            ->map(fn (EarningWalletTransaction $transaction) => $transaction->commissionLevel())
+            ->filter()
+            ->unique()
+            ->count();
+        $totalTeamSales = (clone $baseQuery)->count();
+
+        $transactionsQuery = (clone $baseQuery)
+            ->with(['sourceUser', 'packagePurchase']);
+
+        if ($request->filled('from_date')) {
+            $transactionsQuery->whereDate('transaction_date', '>=', $request->from_date);
+        }
+
+        if ($request->filled('to_date')) {
+            $transactionsQuery->whereDate('transaction_date', '<=', $request->to_date);
+        }
+
+        if ($request->filled('level')) {
+            $level = (int) $request->level;
+            $transactionsQuery->where(function ($query) use ($level) {
+                $query->where('level', $level)
+                    ->orWhere('description', 'like', 'Level '.$level.' commission for %');
+            });
+        }
+
+        $transactions = $transactionsQuery
+            ->latest('transaction_date')
+            ->latest('id')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('pages.zenith-team', compact(
+            'user',
+            'commissionStructure',
+            'totalLevels',
+            'planCommission',
+            'totalIncome',
+            'thisMonthIncome',
+            'activeLevels',
+            'totalTeamSales',
+            'transactions'
+        ));
     }
 
     public function incomeSponsorPool()

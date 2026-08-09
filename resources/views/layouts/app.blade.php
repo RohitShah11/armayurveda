@@ -54,8 +54,10 @@
     <i class="fa fa-mobile-screen"></i> Recharge <i class="fa fa-angle-down ms-auto"></i>
   </a>
   <div class="collapse {{ request()->routeIs('recharge.*') ? 'show':'' }} submenu" id="rechargeMenu">
-    <a href="{{ route('recharge.mobile') }}" class="{{ request()->routeIs('recharge.mobile') ? 'active':'' }}">Mobile Recharge</a>
-    <a href="{{ route('recharge.dth') }}"    class="{{ request()->routeIs('recharge.dth')    ? 'active':'' }}">DTH Recharge</a>
+    <!--<a href="{{ route('recharge.mobile') }}" class="{{ request()->routeIs('recharge.mobile') ? 'active':'' }}">Mobile Recharge</a>-->
+    <!--<a href="{{ route('recharge.dth') }}"    class="{{ request()->routeIs('recharge.dth')    ? 'active':'' }}">DTH Recharge</a>-->
+    <a href="">Mobile Recharge</a>
+    <a href="">DTH Recharge</a>
   </div>
 
   <a data-bs-toggle="collapse" href="#teamMenu">
@@ -64,7 +66,8 @@
   <div class="collapse {{ request()->routeIs('team.*') ? 'show':'' }} submenu" id="teamMenu">
     <a href="{{ route('team.add-member') }}" class="{{ request()->routeIs('team.add-member') ? 'active':'' }}">Add Member</a>
     <a href="{{ route('team.direct') }}"     class="{{ request()->routeIs('team.direct')     ? 'active':'' }}">Direct Member</a>
-    <a href="{{ route('team.level') }}"      class="{{ request()->routeIs('team.level')      ? 'active':'' }}">Level Wise Team</a>
+    {{-- <a href="{{ route('team.level') }}"      class="{{ request()->routeIs('team.level')      ? 'active':'' }}">Level Wise Team</a> --}}
+    <a href="">Level Wise Team</a>
   </div>
 
   <a data-bs-toggle="collapse" href="#reportMenu">
@@ -73,9 +76,9 @@
   <div class="collapse {{ request()->routeIs('report.*') ? 'show':'' }} submenu" id="reportMenu">
     <a href="{{ route('report.main-wallet') }}" class="{{ request()->routeIs('report.main-wallet') ? 'active':'' }}">Main Wallet</a>
     <a href="{{ route('report.earn-wallet') }}" class="{{ request()->routeIs('report.earn-wallet') ? 'active':'' }}">Earn Wallet</a>
-    <a href="{{ route('report.package') }}"     class="{{ request()->routeIs('report.package')     ? 'active':'' }}">Package Report</a>
-    <a href="{{ route('report.recharge') }}"    class="{{ request()->routeIs('report.recharge')    ? 'active':'' }}">Recharge Report</a>
-    <a href="{{ route('report.orders') }}"      class="{{ request()->routeIs('report.orders')      ? 'active':'' }}">Orders Report</a>
+    <!--<a href="{{ route('report.package') }}"     class="{{ request()->routeIs('report.package')     ? 'active':'' }}">Package Report</a>-->
+    <!--<a href="{{ route('report.recharge') }}"    class="{{ request()->routeIs('report.recharge')    ? 'active':'' }}">Recharge Report</a>-->
+    <!--<a href="{{ route('report.orders') }}"      class="{{ request()->routeIs('report.orders')      ? 'active':'' }}">Orders Report</a>-->
   </div>
 
   <a data-bs-toggle="collapse" href="#fundMenu">
@@ -98,11 +101,11 @@
     <i class="fa fa-sack-dollar"></i> Income Summary <i class="fa fa-angle-down ms-auto"></i>
   </a>
   <div class="collapse {{ request()->routeIs('income.*') ? 'show':'' }} submenu" id="incomeMenu">
-    <a href="{{ route('income.startup') }}"            class="{{ request()->routeIs('income.startup')            ? 'active':'' }}">Start Up Package Level Commission</a>
+    <!--<a href="{{ route('income.startup') }}"            class="{{ request()->routeIs('income.startup')            ? 'active':'' }}">Start Up Package Level Commission</a>-->
     <a href="{{ route('income.recharge-cashback') }}"  class="{{ request()->routeIs('income.recharge-cashback')  ? 'active':'' }}">Mobile & DTH Recharge Cashback</a>
     <a href="{{ route('income.zenith-benefit') }}"     class="{{ request()->routeIs('income.zenith-benefit')     ? 'active':'' }}">Zenith Package Return Benefit</a>
     <a href="{{ route('income.product-repurchase') }}" class="{{ request()->routeIs('income.product-repurchase') ? 'active':'' }}">Product Repurchase Bonus</a>
-    <a href="{{ route('income.zenith-pool') }}"        class="{{ request()->routeIs('income.zenith-pool')        ? 'active':'' }}">Monthly Zenith Pool Income</a>
+    <!--<a href="{{ route('income.zenith-pool') }}"        class="{{ request()->routeIs('income.zenith-pool')        ? 'active':'' }}">Monthly Zenith Pool Income</a>-->
     <a href="{{ route('income.non-working-pool') }}"   class="{{ request()->routeIs('income.non-working-pool')   ? 'active':'' }}">Non-Working Global Pool Income</a>
     <a href="{{ route('income.zenith-team') }}"        class="{{ request()->routeIs('income.zenith-team')        ? 'active':'' }}">Zenith Team Package Commission</a>
     <a href="{{ route('income.sponsor-pool') }}"       class="{{ request()->routeIs('income.sponsor-pool')       ? 'active':'' }}">Sponsor Global Pool Income</a>

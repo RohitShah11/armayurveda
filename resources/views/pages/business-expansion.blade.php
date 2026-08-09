@@ -21,21 +21,21 @@
         <div class="col-lg-5 p-4">
           <div class="calc-box">
             <h5 class="fw-bold mb-3"><i class="fa fa-calculator"></i> Pool Calculation</h5>
-            <div class="calc-row"><span>Company Turnover</span><span>₹10,00,00,000</span></div>
+            <div class="calc-row"><span>Company Turnover</span><span>₹0</span></div>
             <div class="calc-row"><span>Bonus Percentage</span><span>3%</span></div>
-            <div class="calc-row"><span>Total Bonus Pool</span><span>₹30,00,000</span></div>
+            <div class="calc-row"><span>Total Bonus Pool</span><span>₹0</span></div>
             <div class="calc-row"><span>Total Pools</span><span>6 Pools</span></div>
-            <div class="calc-row"><span>Per Pool Allocation</span><span>₹5,00,000</span></div>
+            <div class="calc-row"><span>Per Pool Allocation</span><span>₹0</span></div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="row g-4 mb-4">
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>This Month Bonus</p><h3>₹18,500</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>This Month Bonus</p><h3>₹0</h3></div></div>
       <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Current Pool</p><h3>Gold</h3></div></div>
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Monthly Business</p><h3>₹58,200</h3></div></div>
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Received</p><h3 class="text-success">₹96,000</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Monthly Business</p><h3>₹0</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Received</p><h3 class="text-success">₹0</h3></div></div>
     </div>
 
     <div class="card-box mb-4">
@@ -64,7 +64,7 @@
 
     <div class="card-box">
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3"><h5 class="fw-bold mb-0">Business Expansion Incentive Bonus List</h5><button class="btn btn-main btn-sm"><i class="fa fa-download"></i> Export</button></div>
-      <div class="table-responsive">
+      {{-- <div class="table-responsive">
         <table class="table table-bordered align-middle">
           <thead><tr><th>SL</th><th>Month</th><th>Pool Name</th><th>Monthly Business</th><th>Pool Amount</th><th>Qualified Members</th><th>Per Member Bonus</th><th>Status</th><th>Payment Date</th><th>Remark</th></tr></thead>
           <tbody>
@@ -74,7 +74,7 @@
             <tr><td>4</td><td>Mar 2026</td><td>Diamond Pool</td><td>₹1,20,000</td><td>₹5,00,000</td><td>50</td><td>₹10,000</td><td><span class="badge badge-qualified">Qualified</span></td><td>10 Apr 2026</td><td>Diamond milestone achieved</td></tr>
           </tbody>
         </table>
-      </div>
+      </div> --}}
     </div>
   </div>
 @endsection

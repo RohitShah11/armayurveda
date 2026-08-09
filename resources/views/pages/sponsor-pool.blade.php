@@ -19,10 +19,10 @@
 
 @section('content')
 <div class="row g-4 mb-4">
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Pool Income</p><h3>₹11,750</h3></div></div>
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Direct Entries</p><h3>42</h3></div></div>
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Paid Income</p><h3 class="text-success">₹9,250</h3></div></div>
-      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Pending Income</p><h3 class="text-warning">₹2,500</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Pool Income</p><h3>₹0</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Total Direct Entries</p><h3>0</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Paid Income</p><h3 class="text-success">₹0</h3></div></div>
+      <div class="col-lg-3 col-md-6"><div class="card-box stat-card"><p>Pending Income</p><h3 class="text-warning">₹0</h3></div></div>
     </div>
 
     <div class="info-note mb-4"><b>Income Rule:</b> When a direct referral purchases the Zenith Package, one entry ID is added to the Zenith Package Sponsor Global Pool. More direct referrals create more pool entries and higher earning opportunity.</div>
@@ -63,7 +63,7 @@
 
     <div class="card-box">
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3"><h5 class="fw-bold mb-0">Sponsor Global Pool Income List</h5><span class="badge bg-dark rounded-pill">Working Pool Income</span></div>
-      <div class="table-responsive">
+      {{-- <div class="table-responsive">
         <table class="table table-bordered align-middle">
           <thead><tr><th>SL</th><th>Date</th><th>Entry ID</th><th>Direct Member</th><th>Package</th><th>Level</th><th>Income</th><th>Status</th><th>Payment Date</th><th>Remark</th></tr></thead>
           <tbody>
@@ -75,7 +75,7 @@
             <tr><td>6</td><td>15 Jun 2026</td><td>ZGPI10016</td><td>Bikash Mondal<br><small>ARM1060</small></td><td>Zenith Package</td><td><span class="badge-level">Level 6</span></td><td class="fw-bold text-success">₹8,000</td><td><span class="badge badge-pending">Pending</span></td><td>-</td><td>Awaiting monthly closing</td></tr>
           </tbody>
         </table>
-      </div>
+      </div> --}}
     </div>
   </div>
 @endsection

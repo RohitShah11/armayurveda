@@ -26,25 +26,25 @@
       <div class="col-lg-3 col-md-6">
         <div class="card-box stat-card">
           <p>Total Direct</p>
-          <h3>18</h3>
+          <h3>{{ number_format($stats['total_direct']) }}</h3>
         </div>
       </div>
       <div class="col-lg-3 col-md-6">
         <div class="card-box stat-card">
           <p>Active Direct</p>
-          <h3>12</h3>
+          <h3>{{ number_format($stats['active_direct']) }}</h3>
         </div>
       </div>
       <div class="col-lg-3 col-md-6">
         <div class="card-box stat-card">
           <p>Pending Package</p>
-          <h3>6</h3>
+          <h3>{{ number_format($stats['pending_package']) }}</h3>
         </div>
       </div>
       <div class="col-lg-3 col-md-6">
         <div class="card-box stat-card">
-          <p>Zenith Members</p>
-          <h3>4</h3>
+          <p>Active Members</p>
+          <h3>{{ number_format($stats['active_members']) }}</h3>
         </div>
       </div>
     </div>
