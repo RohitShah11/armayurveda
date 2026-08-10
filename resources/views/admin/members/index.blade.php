@@ -43,6 +43,7 @@
           <th>Sponsor</th>
           <th>Package</th>
           <th>Main Wallet</th>
+          <th>Earning Wallet</th>
           <th>KYC</th>
           <th>Status</th>
           <th>Joined</th>
@@ -60,13 +61,14 @@
             <td>{{ $member->sponsor_id ?? '-' }}</td>
             <td>{{ $member->package_name ?? '-' }}</td>
             <td>INR {{ number_format($member->main_wallet ?? 0, 2) }}</td>
+            <td>INR {{ number_format($member->earning_wallet ?? 0, 2) }}</td>
             <td><span class="badge bg-secondary">{{ $member->kyc->status ?? 'Not Submitted' }}</span></td>
             <td><span class="badge bg-dark">{{ $member->status ?? 'Active' }}</span></td>
             <td>{{ optional($member->created_at)->format('d M Y') ?? '-' }}</td>
             <td><a href="{{ route('admin.members.show', $member) }}" class="btn btn-sm btn-main">Manage</a></td>
           </tr>
         @empty
-          <tr><td colspan="9" class="text-center py-4">No members found.</td></tr>
+          <tr><td colspan="10" class="text-center py-4">No members found.</td></tr>
         @endforelse
       </tbody>
     </table>

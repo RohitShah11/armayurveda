@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class DashboardController extends Controller
 {
@@ -61,7 +62,69 @@ class DashboardController extends Controller
     {
         $member->load(['profile', 'kyc', 'fundRequests' => fn ($query) => $query->latest()->take(10)]);
 
-        return view('admin.members.show', compact('member'));
+        $mainWalletTransactions = MainWalletTransaction::where('user_id', $member->id)
+            ->latest('transaction_date')->latest('id')->take(10)->get();
+        $earningWalletTransactions = EarningWalletTransaction::where('user_id', $member->id)
+            ->latest('transaction_date')->latest('id')->take(10)->get();
+
+        return view('admin.members.show', compact('member', 'mainWalletTransactions', 'earningWalletTransactions'));
+    }
+
+    public function adjustMemberWallet(Request $request, User $member)
+    {
+        $validated = $request->validate([
+            'wallet' => 'required|in:main,earning',
+            'type' => 'required|in:Credit,Debit',
+            'amount' => 'required|numeric|decimal:0,2|min:0.01|max:9999999999.99',
+            'remarks' => 'required|string|max:500',
+        ]);
+
+        DB::transaction(function () use ($member, $validated) {
+            $lockedMember = User::whereKey($member->id)->lockForUpdate()->firstOrFail();
+            $walletColumn = $validated['wallet'] === 'main' ? 'main_wallet' : 'earning_wallet';
+            $openingBalance = round((float) ($lockedMember->{$walletColumn} ?? 0), 2);
+            $amount = round((float) $validated['amount'], 2);
+
+            if ($validated['type'] === 'Debit' && $amount > $openingBalance) {
+                throw ValidationException::withMessages([
+                    'amount' => 'The debit amount exceeds the available '.($validated['wallet'] === 'main' ? 'main' : 'earning').' wallet balance.',
+                ]);
+            }
+
+            $closingBalance = round($validated['type'] === 'Credit'
+                ? $openingBalance + $amount
+                : $openingBalance - $amount, 2);
+
+            $lockedMember->update([$walletColumn => $closingBalance]);
+            $adminId = Auth::guard('admin')->id();
+
+            if ($validated['wallet'] === 'main') {
+                MainWalletTransaction::create([
+                    'user_id' => $lockedMember->id,
+                    'transaction_type' => $validated['type'],
+                    'amount' => $amount,
+                    'opening_balance' => $openingBalance,
+                    'closing_balance' => $closingBalance,
+                    'particular' => 'Manual admin adjustment',
+                    'remarks' => $validated['remarks'],
+                    'transaction_date' => now(),
+                    'created_by' => $adminId,
+                ]);
+            } else {
+                EarningWalletTransaction::create([
+                    'user_id' => $lockedMember->id,
+                    'type' => $validated['type'],
+                    'amount' => $amount,
+                    'opening_balance' => $openingBalance,
+                    'closing_balance' => $closingBalance,
+                    'description' => 'Manual admin adjustment: '.$validated['remarks'],
+                    'reference_no' => 'ADMIN-'.now()->format('YmdHis').'-'.$lockedMember->id,
+                    'transaction_date' => now(),
+                ]);
+            }
+        });
+
+        return back()->with('success', ucfirst($validated['wallet'])." wallet {$validated['type']} of INR ".number_format((float) $validated['amount'], 2).' completed successfully.');
     }
 
     public function updateMemberStatus(Request $request, User $member)

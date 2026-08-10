@@ -59,6 +59,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/members/{member}', [AdminDashboardController::class, 'showMember'])->name('members.show');
         Route::patch('/members/{member}/status', [AdminDashboardController::class, 'updateMemberStatus'])->name('members.status');
         Route::patch('/members/{member}/password', [AdminDashboardController::class, 'resetMemberPassword'])->name('members.password');
+        Route::post('/members/{member}/wallet-adjustment', [AdminDashboardController::class, 'adjustMemberWallet'])->name('members.wallet-adjustment');
         Route::get('/kyc', [AdminDashboardController::class, 'kycs'])->name('kyc.index');
         Route::patch('/kyc/{kyc}', [AdminDashboardController::class, 'updateKyc'])->name('kyc.update');
         Route::get('/transactions', [AdminDashboardController::class, 'transactions'])->name('transactions.index');
