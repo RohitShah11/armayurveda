@@ -21,6 +21,36 @@ class SponsorPoolService
         6 => 16000.0,
     ];
 
+    public function incomePlan(): array
+    {
+        return collect(self::INCOME_BY_LEVEL)
+            ->map(fn (float $amount, int $level) => [
+                'level' => $level,
+                'slots_required' => self::MAX_CHILDREN ** $level,
+                'amount' => $amount,
+            ])
+            ->values()
+            ->all();
+    }
+
+    public function progressForNode(SponsorPoolNode $node): array
+    {
+        $node->loadMissing('levelIncomes');
+        $completedLevels = $node->levelIncomes->pluck('level')->map(fn ($level) => (int) $level);
+
+        return collect($this->incomePlan())
+            ->map(function (array $plan) use ($node, $completedLevels) {
+                $filled = $this->filledSlotsAtLevel($node, $plan['level']);
+
+                return $plan + [
+                    'filled_slots' => $filled,
+                    'percentage' => min(100, round(($filled / $plan['slots_required']) * 100)),
+                    'paid' => $completedLevels->contains($plan['level']),
+                ];
+            })
+            ->all();
+    }
+
     public function enterSponsorFromPurchase(User $purchaser, PackagePurchase $purchase): ?SponsorPoolNode
     {
         if ($existingNode = SponsorPoolNode::where('package_purchase_id', $purchase->id)->first()) {

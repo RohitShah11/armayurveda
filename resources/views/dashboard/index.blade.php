@@ -167,7 +167,8 @@
       <div class="quick-card">
         <i class="fa fa-mobile-screen"></i>
         <h6>Mobile Recharge</h6>
-        <a href="{{ route('recharge.mobile') }}" class="btn btn-main btn-sm">Recharge</a>
+        <!-- <a href="{{ route('recharge.mobile') }}" class="btn btn-main btn-sm">Recharge</a> -->
+        <a href="#" class="btn btn-main btn-sm">Recharge</a>
       </div>
     </div>
 
@@ -193,7 +194,7 @@
       <div class="table-box h-100">
         <div class="d-flex justify-content-between align-items-center mb-3">
           <h5 class="fw-bold mb-0">Recent Transactions</h5>
-          <a href="{{ route('report.main-wallet') }}" class="small text-decoration-none">View wallet</a>
+          <!-- <a href="{{ route('report.main-wallet') }}" class="small text-decoration-none">View wallet</a> -->
         </div>
         <div class="table-responsive">
           <table class="table table-bordered align-middle mb-0">

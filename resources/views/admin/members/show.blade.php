@@ -108,6 +108,19 @@
       </div>
 
       <div class="surface mb-4">
+        <div class="surface-body d-flex justify-content-between align-items-center flex-wrap gap-3">
+          <div>
+            <strong class="d-block mb-1">Member login</strong>
+            <span class="small text-muted">{{ $member->email ?? $member->mobile ?? 'No login ID available' }}</span>
+          </div>
+          <form method="POST" action="{{ route('admin.members.login', $member) }}" onsubmit="return confirm('Log in as {{ addslashes($member->name) }}?');">
+            @csrf
+            <button class="btn btn-main px-4"><i class="fa fa-right-to-bracket me-2"></i>Log in as member</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="surface mb-4">
         <div class="surface-head">
           <div class="d-flex align-items-center gap-3"><span class="section-icon"><i class="fa fa-money-bill-transfer"></i></span><div><h5>Wallet adjustment</h5><p>Credit or debit the member's selected wallet</p></div></div>
         </div>
@@ -152,21 +165,6 @@
         </div>
       </div>
 
-      <div class="surface">
-        <div class="surface-head"><div class="d-flex align-items-center gap-3"><span class="section-icon"><i class="fa fa-receipt"></i></span><div><h5>Recent fund requests</h5><p>Latest requests submitted by this member</p></div></div></div>
-        <div class="table-responsive">
-          <table class="table activity-table">
-            <thead><tr><th>Date</th><th>Amount</th><th>Transaction ID</th><th>Status</th></tr></thead>
-            <tbody>
-              @forelse($member->fundRequests as $fund)
-                <tr><td>{{ optional($fund->created_at)->format('d M Y') ?? '-' }}</td><td class="fw-bold text-dark">₹{{ number_format($fund->amount, 2) }}</td><td>{{ $fund->transaction_id ?? '-' }}</td><td><span class="badge bg-secondary">{{ $fund->status ?? 'Pending' }}</span></td></tr>
-              @empty
-                <tr><td colspan="4" class="empty-activity"><i class="fa fa-inbox d-block fs-4 mb-2"></i>No fund requests found</td></tr>
-              @endforelse
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
 
     <div class="col-xl-4">

@@ -20,9 +20,11 @@
 .tree ul ul::before{content:"";position:absolute;top:0;left:50%;height:28px;border-left:2px solid #c9d1dc}
 .direct-node-card{display:inline-flex;flex-direction:column;align-items:center;gap:7px;min-width:118px;max-width:142px;padding:10px 8px;border:1px solid #dbe3ef;border-radius:12px;background:#f8fbff;box-shadow:0 6px 14px rgba(15,23,42,.08);text-decoration:none;color:#1f2937}
 .direct-node-card:hover{color:#1f2937;border-color:#1f2937;transform:translateY(-1px)}
-.direct-node-card.admin{background:#fff7d6;border-color:#d4af37}
+.direct-node-card.purchased{background:#ecfdf3;border-color:#22c55e}
+.direct-node-card.not-purchased{background:#fff1f2;border-color:#ef4444}
 .node-icon{width:46px;height:46px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#0b5cab;color:#fff;font-weight:900;border:3px solid #d7e8ff}
-.node-icon.admin{background:#d43d2f;border-color:#ffd8d4}
+.node-icon.purchased{background:#16a34a;border-color:#bbf7d0}
+.node-icon.not-purchased{background:#dc2626;border-color:#fecaca}
 .node-name{font-size:13px;font-weight:800;line-height:1.2;max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .node-meta{font-size:11px;color:#6b7280;max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tree-result{display:flex;justify-content:space-between;gap:14px;align-items:center;border-bottom:1px solid #eee;padding:10px 0}
@@ -35,7 +37,7 @@
 <div class="tree-toolbar mb-4">
   <div>
     <h4 class="fw-bold mb-1">Direct Sponsor Tree</h4>
-    <p class="text-muted mb-0">Admin root with sponsor based child branches.</p>
+    <p class="text-muted mb-0">All registered members in sponsor-based branches.</p>
   </div>
   <div class="d-flex gap-2 flex-wrap">
     <a href="{{ route('admin.direct-tree.index') }}" class="btn btn-outline-secondary rounded-pill px-4">
@@ -48,10 +50,10 @@
 </div>
 
 <div class="row g-4 mb-4">
-  <div class="col-lg-3 col-md-6"><div class="admin-card"><p class="text-muted fw-bold mb-1">Total Nodes</p><h3 class="fw-black mb-0">{{ number_format($totalNodes) }}</h3></div></div>
-  <div class="col-lg-3 col-md-6"><div class="admin-card"><p class="text-muted fw-bold mb-1">Member Nodes</p><h3 class="fw-black mb-0">{{ number_format($memberNodes) }}</h3></div></div>
-  <div class="col-lg-3 col-md-6"><div class="admin-card"><p class="text-muted fw-bold mb-1">Max Depth</p><h3 class="fw-black mb-0">{{ $maxDepth }}</h3></div></div>
-  <div class="col-lg-3 col-md-6"><div class="admin-card"><p class="text-muted fw-bold mb-1">Focused Root</p><h3 class="fw-black mb-0">#{{ $rootNode?->id ?? '-' }}</h3></div></div>
+  <div class="col-lg-3 col-md-6"><div class="admin-card"><p class="text-muted fw-bold mb-1">Total Members</p><h3 class="fw-black mb-0">{{ number_format($totalMembers) }}</h3></div></div>
+  <div class="col-lg-3 col-md-6"><div class="admin-card"><p class="text-success fw-bold mb-1">Package Purchased</p><h3 class="fw-black mb-0 text-success">{{ number_format($purchasedMembers) }}</h3></div></div>
+  <div class="col-lg-3 col-md-6"><div class="admin-card"><p class="text-danger fw-bold mb-1">Not Purchased</p><h3 class="fw-black mb-0 text-danger">{{ number_format($notPurchasedMembers) }}</h3></div></div>
+  <div class="col-lg-3 col-md-6"><div class="admin-card"><p class="text-muted fw-bold mb-1">Focused Member</p><h3 class="fw-black mb-0">{{ $focusedUser?->member_id ?? '-' }}</h3></div></div>
 </div>
 
 <div class="row g-4 mb-4">
@@ -71,14 +73,13 @@
       @if(request('search'))
         <div class="mt-4">
           <h6 class="fw-bold">Search Results</h6>
-          @forelse($searchNodes as $result)
-            @php $owner = $result->user; @endphp
+          @forelse($searchMembers as $result)
             <div class="tree-result">
               <div>
-                <strong>#{{ $result->id }} - {{ $owner?->name ?? '-' }}</strong><br>
-                <small class="text-muted">{{ $result->user?->member_id ?? $result->user?->email ?? '-' }} | Depth {{ $result->depth }}</small>
+                <strong>{{ $result->name ?? '-' }}</strong><br>
+                <small class="{{ filled($result->package_name) ? 'text-success' : 'text-danger' }}">{{ $result->member_id ?? $result->email ?? '-' }} | {{ filled($result->package_name) ? 'Purchased' : 'Not purchased' }}</small>
               </div>
-              <a href="{{ route('admin.direct-tree.tree', ['node' => $result->id]) }}" class="btn btn-sm btn-outline-dark">Focus</a>
+              <a href="{{ route('admin.direct-tree.tree', ['member' => $result->id]) }}" class="btn btn-sm btn-outline-dark">Focus</a>
             </div>
           @empty
             <p class="text-muted mb-0">No matching direct tree node found.</p>
@@ -91,8 +92,8 @@
     <div class="admin-card h-100">
       <h5 class="fw-bold mb-3">Legend</h5>
       <div class="row g-3">
-        <div class="col-md-4"><span class="d-inline-block rounded-circle me-2" style="width:14px;height:14px;background:#d43d2f"></span>Admin Root</div>
-        <div class="col-md-4"><span class="d-inline-block rounded-circle me-2" style="width:14px;height:14px;background:#0b5cab"></span>Member Node</div>
+        <div class="col-md-4"><span class="d-inline-block rounded-circle me-2" style="width:14px;height:14px;background:#16a34a"></span>Package Purchased</div>
+        <div class="col-md-4"><span class="d-inline-block rounded-circle me-2" style="width:14px;height:14px;background:#dc2626"></span>Not Purchased</div>
         <div class="col-md-4"><span class="d-inline-block rounded-circle me-2" style="width:14px;height:14px;background:#c9d1dc"></span>Sponsor Link</div>
       </div>
       <hr>

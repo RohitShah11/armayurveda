@@ -9,6 +9,8 @@ use App\Models\Package;
 use App\Models\PackageCommissionLevel;
 use App\Models\PackagePurchase;
 use App\Models\ProductOrder;
+use App\Models\SponsorPoolLevelIncome;
+use App\Models\SponsorPoolNode;
 use App\Models\User;
 use App\Models\ZenithPoolLevelIncome;
 use App\Models\ZenithPoolNode;
@@ -649,9 +651,82 @@ class DashboardController extends Controller
         ));
     }
 
-    public function incomeSponsorPool()
+    public function incomeSponsorPool(Request $request, SponsorPoolService $sponsorPoolService)
     {
-        return view('pages.sponsor-pool');
+        /** @var User $user */
+        $user = Auth::user();
+
+        $entriesQuery = SponsorPoolNode::query()
+            ->where('user_id', $user->id)
+            ->whereNotNull('purchaser_id')
+            ->with(['purchaser', 'packagePurchase', 'levelIncomes'])
+            ->when($request->filled('from_date'), fn ($query) => $query->whereDate('joined_at', '>=', $request->from_date))
+            ->when($request->filled('to_date'), fn ($query) => $query->whereDate('joined_at', '<=', $request->to_date))
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->search;
+                $query->where(function ($inner) use ($search) {
+                    $inner->where('id', $search)
+                        ->orWhereHas('purchaser', function ($purchaser) use ($search) {
+                            $purchaser->where('name', 'like', "%{$search}%")
+                                ->orWhere('member_id', 'like', "%{$search}%")
+                                ->orWhere('mobile', 'like', "%{$search}%")
+                                ->orWhere('email', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->when($request->status === 'paid', fn ($query) => $query->has('levelIncomes'))
+            ->when($request->status === 'progress', fn ($query) => $query->whereDoesntHave('levelIncomes', fn ($income) => $income->where('level', 6)));
+
+        $entries = $entriesQuery
+            ->latest('joined_at')
+            ->latest('id')
+            ->paginate(10, ['*'], 'entries_page')
+            ->withQueryString();
+
+        $entryProgress = $entries->getCollection()->mapWithKeys(
+            fn (SponsorPoolNode $node) => [$node->id => $sponsorPoolService->progressForNode($node)]
+        );
+
+        $incomes = SponsorPoolLevelIncome::query()
+            ->where('user_id', $user->id)
+            ->with(['node.purchaser', 'node.packagePurchase'])
+            ->when($request->filled('from_date'), fn ($query) => $query->whereDate('paid_at', '>=', $request->from_date))
+            ->when($request->filled('to_date'), fn ($query) => $query->whereDate('paid_at', '<=', $request->to_date))
+            ->when($request->filled('level'), fn ($query) => $query->where('level', $request->level))
+            ->when($request->filled('search'), function ($query) use ($request) {
+                $search = $request->search;
+                $query->whereHas('node', function ($node) use ($search) {
+                    $node->where('id', $search)
+                        ->orWhereHas('purchaser', function ($purchaser) use ($search) {
+                            $purchaser->where('name', 'like', "%{$search}%")
+                                ->orWhere('member_id', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->latest('paid_at')
+            ->latest('id')
+            ->paginate(10, ['*'], 'income_page')
+            ->withQueryString();
+
+        $totalPoolIncome = (float) SponsorPoolLevelIncome::where('user_id', $user->id)->sum('amount');
+        $totalEntries = SponsorPoolNode::where('user_id', $user->id)->whereNotNull('purchaser_id')->count();
+        $completedPayouts = SponsorPoolLevelIncome::where('user_id', $user->id)->count();
+        $activeEntries = SponsorPoolNode::where('user_id', $user->id)
+            ->whereNotNull('purchaser_id')
+            ->whereDoesntHave('levelIncomes', fn ($income) => $income->where('level', 6))
+            ->count();
+        $incomePlan = $sponsorPoolService->incomePlan();
+
+        return view('pages.sponsor-pool', compact(
+            'entries',
+            'entryProgress',
+            'incomes',
+            'totalPoolIncome',
+            'totalEntries',
+            'completedPayouts',
+            'activeEntries',
+            'incomePlan'
+        ));
     }
 
     public function incomeBusinessExpansion()

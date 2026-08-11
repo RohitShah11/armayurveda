@@ -28,7 +28,7 @@ class DashboardController extends Controller
     {
         return view('admin.dashboard', [
             'totalMembers' => User::count(),
-            'activeMembers' => User::where('status', 'Active')->count(),
+            'activeMembers' => User::where('package_name', '!=', '')->count(),
             'pendingKyc' => MemberKyc::where('status', 'Pending')->count(),
             'pendingFunds' => FundRequest::where('status', 'Pending')->count(),
             'approvedFundAmount' => FundRequest::where('status', 'Approved')->sum('amount'),
@@ -60,7 +60,7 @@ class DashboardController extends Controller
 
     public function showMember(User $member)
     {
-        $member->load(['profile', 'kyc', 'fundRequests' => fn ($query) => $query->latest()->take(10)]);
+        $member->load(['profile', 'kyc']);
 
         $mainWalletTransactions = MainWalletTransaction::where('user_id', $member->id)
             ->latest('transaction_date')->latest('id')->take(10)->get();
@@ -146,7 +146,18 @@ class DashboardController extends Controller
 
         $member->update(['password' => Hash::make($request->password)]);
 
-        return back()->with('success', 'Member password reset successfully.');
+        $login = $member->email ?: $member->mobile;
+
+        return back()->with('success', "Member password reset successfully. The member can log in with {$login} and the new password you entered.");
+    }
+
+    public function loginAsMember(Request $request, User $member)
+    {
+        Auth::guard('web')->login($member);
+        $request->session()->put('impersonated_by_admin_id', Auth::guard('admin')->id());
+        $request->session()->regenerate();
+
+        return redirect()->route('dashboard');
     }
 
     public function kycs(Request $request)
@@ -664,73 +675,90 @@ class DashboardController extends Controller
 
     public function directTreeView(Request $request)
     {
-        $focusNode = null;
+        $rootUser = User::query()->orderBy('id')->first();
+        $focusUser = null;
 
-        if ($request->filled('node')) {
-            $focusNode = DirectTreeNode::with('user')->find($request->node);
+        if ($request->filled('member')) {
+            $focusUser = User::find($request->member);
+        } elseif ($request->filled('node')) {
+            // Keep old direct-tree links/bookmarks working.
+            $focusUser = DirectTreeNode::with('user')->find($request->node)?->user;
         }
 
-        $rootNode = $focusNode ?: DirectTreeNode::whereNull('parent_id')->with('user')->first();
-        $tree = $rootNode ? $this->buildDirectTree($rootNode, 0, 4) : null;
+        $focusedUser = $focusUser ?: $rootUser;
+        $tree = $focusedUser
+            ? $this->buildAllMembersDirectTree($focusedUser, 0, 4, $rootUser?->id)
+            : null;
 
-        $searchNodes = DirectTreeNode::query()
-            ->with('user')
+        $searchMembers = User::query()
             ->when($request->filled('search'), function ($query) use ($request) {
                 $search = $request->search;
 
                 $query->where(function ($inner) use ($search) {
                     $inner->where('id', $search)
-                        ->orWhereHas('user', function ($userQuery) use ($search) {
-                            $userQuery->where('name', 'like', "%{$search}%")
-                                ->orWhere('member_id', 'like', "%{$search}%")
-                                ->orWhere('mobile', 'like', "%{$search}%")
-                                ->orWhere('email', 'like', "%{$search}%");
-                        });
+                        ->orWhere('name', 'like', "%{$search}%")
+                        ->orWhere('member_id', 'like', "%{$search}%")
+                        ->orWhere('mobile', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
                 });
             })
-            ->orderBy('depth')
             ->orderBy('id')
             ->take(20)
             ->get();
 
-        $totalNodes = DirectTreeNode::count();
-        $memberNodes = DirectTreeNode::whereNotNull('parent_id')->count();
-        $maxDepth = (int) DirectTreeNode::max('depth');
+        $totalMembers = User::count();
+        $purchasedMembers = User::whereNotNull('package_name')->where('package_name', '!=', '')->count();
+        $notPurchasedMembers = $totalMembers - $purchasedMembers;
 
         return view('admin.direct-tree.tree', compact(
             'tree',
-            'rootNode',
-            'searchNodes',
-            'totalNodes',
-            'memberNodes',
-            'maxDepth'
+            'focusedUser',
+            'searchMembers',
+            'totalMembers',
+            'purchasedMembers',
+            'notPurchasedMembers'
         ));
     }
 
-    private function buildDirectTree(DirectTreeNode $node, int $depth, int $maxDepth): array
+    private function buildAllMembersDirectTree(User $user, int $depth, int $maxDepth, ?int $rootUserId, array $visited = []): array
     {
-        $node->loadMissing('user');
+        $visited[] = $user->id;
 
         $children = [];
 
         if ($depth < $maxDepth) {
-            $children = DirectTreeNode::query()
-                ->with('user')
-                ->where('parent_id', $node->id)
-                ->orderBy('position')
+            $childrenQuery = User::query()
+                ->whereNotIn('id', $visited)
+                ->where('id', '!=', $user->id)
+                ->where('sponsor_id', $user->member_id);
+
+            if ($user->id === $rootUserId) {
+                $childrenQuery->orWhere(function ($query) use ($visited, $user) {
+                    $query->whereNotIn('id', $visited)
+                        ->where('id', '!=', $user->id)
+                        ->where(function ($orphan) {
+                            $orphan->whereNull('sponsor_id')
+                                ->orWhere('sponsor_id', '')
+                                ->orWhereNotIn('sponsor_id', User::query()->whereNotNull('member_id')->select('member_id'));
+                        });
+                });
+            }
+
+            $children = $childrenQuery
+                ->orderBy('id')
                 ->get()
-                ->map(fn (DirectTreeNode $child) => $this->buildDirectTree($child, $depth + 1, $maxDepth))
+                ->unique('id')
+                ->map(fn (User $child) => $this->buildAllMembersDirectTree($child, $depth + 1, $maxDepth, $rootUserId, $visited))
                 ->all();
         }
 
-        $owner = $node->user;
+        $hasPurchased = filled($user->package_name);
 
         return [
-            'node' => $node,
-            'owner' => $owner,
-            'label' => $owner?->name ?? 'Unknown',
-            'sub_label' => $node->user?->member_id ?? $node->user?->email ?? 'Direct Node #'.$node->id,
-            'type' => $node->parent_id === null ? 'admin' : 'member',
+            'user' => $user,
+            'label' => $user->name ?: 'Unknown',
+            'sub_label' => $user->member_id ?? $user->email ?? 'Member #'.$user->id,
+            'has_purchased' => $hasPurchased,
             'depth' => $depth,
             'children' => $children,
         ];

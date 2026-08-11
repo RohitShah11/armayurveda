@@ -136,7 +136,7 @@
           <thead>
             <tr>
               <th>SL</th>
-              <th>Photo</th>
+              <!-- <th>Photo</th> -->
               <th>Member ID</th>
               <th>Name</th>
               <th>Mobile</th>
@@ -146,8 +146,8 @@
               <th>Package</th>
               <th>KYC</th>
               <th>Status</th>
-              <th>Total Team</th>
-              <th>Action</th>
+              <!-- <th>Total Team</th> -->
+              <!-- <th>Action</th> -->
             </tr>
           </thead>
 
@@ -162,9 +162,9 @@
                 </td>
 
                 <td>
-                    <img
+                    <!-- <img
                         src="{{ $member->profile_photo ? asset('storage/'.$member->profile_photo) : asset('images/default-user.png') }}"
-                        class="member-img">
+                        class="member-img"> -->
                 </td>
 
                 <td>{{ $member->member_id }}</td>
@@ -239,13 +239,13 @@
 
                 </td>
 
-                <td>
+                <!-- <td>
 
                     {{ $member->children_count }}
 
-                </td>
+                </td> -->
 
-                <td>
+                <!-- <td>
 
                     <button
                         class="btn btn-sm btn-outline-primary viewMemberBtn"
@@ -255,7 +255,7 @@
                         View
                     </button>
 
-                </td>
+                </td> -->
 
             </tr>
 

@@ -40,17 +40,23 @@
     <h6 class="mt-2 mb-0">{{ Auth::guard('admin')->user()->name ?? 'Admin' }}</h6>
     <small>Administration</small>
   </div>
-  <div class="menu-title">Admin Menu</div>
+  <div class="menu-title">Overview</div>
 
   <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
     <i class="fa fa-house"></i>Dashboard
   </a>
+
+  <div class="menu-title">Member Management</div>
+
   <a href="{{ route('admin.members.index') }}" class="{{ request()->routeIs('admin.members.*') ? 'active' : '' }}">
     <i class="fa fa-users"></i>Members
   </a>
   <a href="{{ route('admin.kyc.index') }}" class="{{ request()->routeIs('admin.kyc.*') ? 'active' : '' }}">
     <i class="fa fa-id-card"></i>KYC Requests
   </a>
+
+  <div class="menu-title">Finance</div>
+
   <a href="{{ route('admin.funds.index') }}" class="{{ request()->routeIs('admin.funds.*') ? 'active' : '' }}">
     <i class="fa fa-wallet"></i>Fund Requests
   </a>
@@ -66,6 +72,9 @@
   <a href="{{ route('admin.package-purchases.index') }}" class="{{ request()->routeIs('admin.package-purchases.*') ? 'active' : '' }}">
     <i class="fa fa-box-open"></i>Package Purchases
   </a>
+
+  <div class="menu-title">Catalog &amp; Orders</div>
+
   <a href="{{ route('admin.categories.index') }}" class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
     <i class="fa fa-layer-group"></i>Categories
   </a>
@@ -75,18 +84,23 @@
   <a href="{{ route('admin.product-orders.index') }}" class="{{ request()->routeIs('admin.product-orders.*') ? 'active' : '' }}">
     <i class="fa fa-cart-shopping"></i>Repurchase Orders
   </a>
+
+  <div class="menu-title">Network &amp; Rewards</div>
+
+  <a href="{{ route('admin.direct-tree.index') }}" class="{{ request()->routeIs('admin.direct-tree.*') ? 'active' : '' }}">
+    <i class="fa fa-diagram-project"></i>Direct Tree
+  </a>
   <a href="{{ route('admin.zenith-pool.index') }}" class="{{ request()->routeIs('admin.zenith-pool.*') ? 'active' : '' }}">
     <i class="fa fa-sitemap"></i>Zenith Pool
   </a>
   <a href="{{ route('admin.sponsor-pool.index') }}" class="{{ request()->routeIs('admin.sponsor-pool.*') ? 'active' : '' }}">
     <i class="fa fa-network-wired"></i>Sponsor Pool
   </a>
-  <a href="{{ route('admin.direct-tree.index') }}" class="{{ request()->routeIs('admin.direct-tree.*') ? 'active' : '' }}">
-    <i class="fa fa-diagram-project"></i>Direct Tree
-  </a>
   <a href="{{ route('admin.rank-rewards.index') }}" class="{{ request()->routeIs('admin.rank-rewards.*') ? 'active' : '' }}">
     <i class="fa fa-trophy"></i>Rank & Reward
   </a>
+
+  <div class="menu-title">Account</div>
 
   <form method="POST" action="{{ route('admin.logout') }}">
     @csrf
