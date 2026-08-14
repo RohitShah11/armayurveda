@@ -22,6 +22,14 @@ class ProfileController extends Controller
         return view('pages.profile', compact('user', 'profile'));
     }
 
+    public function idCard()
+    {
+        $user = auth()->user();
+        $profile = Schema::hasTable('member_profiles') ? $user->profile : null;
+
+        return view('pages.id-card', compact('user', 'profile'));
+    }
+
     public function update(Request $request)
     {
         $request->validate([

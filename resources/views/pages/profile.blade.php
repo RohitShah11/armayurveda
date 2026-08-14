@@ -71,6 +71,12 @@ textarea.form-control{height:90px}
                     </span>
                 @endif
 
+                <div class="mt-3">
+                    <a href="{{ route('profile.id-card') }}" class="btn btn-light fw-bold rounded-pill px-4">
+                        <i class="fa-solid fa-id-card me-2"></i>View ID Card
+                    </a>
+                </div>
+
             </div>
         </div>
     </div>

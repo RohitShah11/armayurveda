@@ -89,6 +89,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::get('/profile/id-card', [ProfileController::class, 'idCard'])->name('profile.id-card');
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
     Route::post('/profile', [DashboardController::class, 'updateProfile'])->name('profile.update');
     Route::get('/kyc', [DashboardController::class, 'kyc'])->name('kyc');

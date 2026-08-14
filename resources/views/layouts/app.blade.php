@@ -18,7 +18,15 @@
     <img src="{{ asset('images/arm-ayurveda-logo.png') }}" alt="ARM Ayurveda">
   </div>
   <div class="user-box">
-    <img src="{{ auth()->user()->avatar ?? 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }}" alt="User">
+    @php
+      $sidebarProfilePhoto = auth()->user()->profilePhotoPath();
+      $sidebarProfilePhotoUrl = $sidebarProfilePhoto
+          ? asset($sidebarProfilePhoto)
+          : asset('images/profile-placeholder.svg');
+    @endphp
+    <img src="{{ $sidebarProfilePhotoUrl }}"
+         onerror="this.onerror=null;this.src='{{ asset('images/profile-placeholder.svg') }}';"
+         alt="{{ auth()->user()->name }}">
     <h6 class="mt-2 mb-0">Welcome, {{ auth()->user()->name ?? 'Member' }}</h6>
     <small>ID: {{ auth()->user()->member_id ?? 'ARM1001' }}</small>
   </div>
@@ -26,6 +34,7 @@
 
    <a href="{{ route('dashboard') }}"       class="{{ request()->routeIs('dashboard')       ? 'active':'' }}"><i class="fa fa-house"></i>Dashboard</a>
     <a href="{{ route('profile') }}"         class="{{ request()->routeIs('profile')         ? 'active':'' }}"><i class="fa fa-user"></i>Profile</a>
+    <a href="{{ route('profile.id-card') }}" class="{{ request()->routeIs('profile.id-card') ? 'active':'' }}"><i class="fa fa-id-card"></i>My ID Card</a>
   <!-- <a data-bs-toggle="collapse" href="#homeMenu">
     <i class="fa fa-house"></i> Home <i class="fa fa-angle-down ms-auto"></i>
   </a>

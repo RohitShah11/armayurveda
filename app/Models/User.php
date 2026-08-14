@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Schema;
 
 #[Fillable(['member_id', 'sponsor_id', 'state', 'city', 'package_name', 'main_wallet', 'earning_wallet', 'status', 'name', 'email', 'mobile', 'password'])]
 #[Hidden(['password', 'remember_token'])]
@@ -33,6 +34,15 @@ class User extends Authenticatable
     public function profile()
     {
         return $this->hasOne(MemberProfile::class);
+    }
+
+    public function profilePhotoPath(): ?string
+    {
+        if (! Schema::hasTable('member_profiles')) {
+            return null;
+        }
+
+        return $this->profile?->profile_photo;
     }
 
     public function kyc()
