@@ -1,8 +1,31 @@
 @extends('layouts.front')
 @push('styles')
 <style>
+.about-contact{position:relative;overflow:hidden;padding:78px 0;background:linear-gradient(135deg,#f3f9f3,#fff 62%,#fff8e8)}
+.about-contact:before{content:"";position:absolute;right:-110px;bottom:-150px;width:320px;height:320px;border:52px solid rgba(46,125,50,.045);border-radius:50%}
+.about-contact-shell{position:relative;display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);overflow:hidden;border:1px solid #deeadf;border-radius:28px;background:#fff;box-shadow:0 22px 60px rgba(18,76,35,.11)}
+.about-contact-intro{position:relative;isolation:isolate;display:flex;flex-direction:column;justify-content:center;min-height:420px;padding:48px;background:linear-gradient(145deg,rgba(3,75,32,.97),rgba(16,108,51,.92)),url('{{ asset('images/p5.jpeg') }}') center/cover no-repeat;color:#fff}
+.about-contact-intro:after{content:"";position:absolute;z-index:-1;right:-80px;top:-75px;width:210px;height:210px;border:38px solid rgba(255,255,255,.055);border-radius:50%}
+.about-contact-logo{width:92px;height:92px;margin-bottom:24px;padding:7px;border-radius:18px;background:#fff;object-fit:contain}
+.about-contact-kicker{margin-bottom:9px;color:#f2c458;font-size:12px;font-weight:900;letter-spacing:.15em;text-transform:uppercase}
+.about-contact-intro h2{margin:0 0 14px;font-size:clamp(32px,4vw,44px);line-height:1.08;font-weight:900}
+.about-contact-intro p{max-width:420px;margin:0;color:rgba(255,255,255,.8);font-size:15px;line-height:1.75}
+.about-contact-button{display:inline-flex;align-items:center;gap:9px;align-self:flex-start;margin-top:26px;padding:11px 19px;border-radius:999px;background:#dca11d;color:#fff;text-decoration:none;font-weight:800;transition:.2s}
+.about-contact-button:hover{transform:translateY(-2px);background:#c58f16;color:#fff}
+.about-contact-details{display:flex;flex-direction:column;justify-content:center;padding:44px}
+.about-contact-details h3{margin:0 0 8px;color:#174524;font-size:25px;font-weight:900}
+.about-contact-details>p{margin:0 0 25px;color:#6a776e;line-height:1.65}
+.about-contact-list{display:grid;gap:13px}
+.about-contact-item{display:flex;align-items:center;gap:16px;padding:17px 18px;border:1px solid #e2eae3;border-radius:17px;background:#fbfdfb;text-decoration:none;transition:.22s}
+.about-contact-item:hover{transform:translateX(4px);border-color:#b8d5be;background:#f3f9f3;box-shadow:0 8px 20px rgba(18,76,35,.07)}
+.about-contact-icon{display:grid;place-items:center;flex:0 0 48px;height:48px;border-radius:14px;background:#e9f5eb;color:#237b37;font-size:19px}
+.about-contact-copy small{display:block;margin-bottom:2px;color:#839087;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.about-contact-copy strong{display:block;color:#183b23;font-size:14px;line-height:1.45}
+.about-contact-arrow{margin-left:auto;color:#3d854d}
+@media (max-width:991.98px){.about-contact-shell{grid-template-columns:1fr}.about-contact-intro{min-height:auto;padding:38px}.about-contact-details{padding:38px}}
 @media (max-width:575.98px){
   .about-page .container{padding-left:24px;padding-right:24px}
+  .about-contact{padding:55px 0}.about-contact-shell{border-radius:22px}.about-contact-intro,.about-contact-details{padding:28px 22px}.about-contact-logo{width:78px;height:78px}.about-contact-item{align-items:flex-start;padding:15px 13px}.about-contact-icon{flex-basis:43px;height:43px}.about-contact-copy strong{font-size:13px}.about-contact-arrow{display:none}
 }
 </style>
 @endpush
@@ -312,36 +335,25 @@
   </div>
 </section>
 
-<section class="section-padding contact-section">
+<section class="about-contact">
   <div class="container">
-    <div class="row g-5">
-      <div class="col-lg-5">
-        <h2 class="section-title">Contact Us</h2>
-        <p>For product enquiry, joining or distributor support, contact ARM Ayurveda.</p>
-        <p><i class="fa fa-phone text-danger"></i> +91 92420 68805</p>
-        <p><i class="fa fa-envelope text-danger"></i> armayurveda@gmail.com</p>
-        <p><i class="fa fa-location-dot text-danger"></i> Ashoknagar, North 24 Parganas, West Bengal</p>
+    <div class="about-contact-shell">
+      <div class="about-contact-intro">
+        <img src="{{ asset('images/arm-ayurveda-logo.png') }}" class="about-contact-logo" alt="ARM Ayurveda">
+        <div class="about-contact-kicker">Get in touch</div>
+        <h2>Let’s grow healthier, together.</h2>
+        <p>Have a question about our products, distributor programme or business opportunity? Our team is ready to help.</p>
+        <a href="{{ route('contact') }}" class="about-contact-button">Visit contact page <i class="fa-solid fa-arrow-right"></i></a>
       </div>
-
-      <!--<div class="col-lg-7">-->
-      <!--  <form class="row g-3">-->
-      <!--    <div class="col-md-6">-->
-      <!--      <input type="text" class="form-control" placeholder="Your Name">-->
-      <!--    </div>-->
-      <!--    <div class="col-md-6">-->
-      <!--      <input type="text" class="form-control" placeholder="Mobile Number">-->
-      <!--    </div>-->
-      <!--    <div class="col-12">-->
-      <!--      <input type="email" class="form-control" placeholder="Email Address">-->
-      <!--    </div>-->
-      <!--    <div class="col-12">-->
-      <!--      <textarea class="form-control" placeholder="Your Message"></textarea>-->
-      <!--    </div>-->
-      <!--    <div class="col-12">-->
-      <!--      <button class="btn btn-main">Submit Enquiry</button>-->
-      <!--    </div>-->
-      <!--  </form>-->
-      <!--</div>-->
+      <div class="about-contact-details">
+        <h3>Connect with ARM Ayurveda</h3>
+        <p>For enquiries, feedback and distributor support, reach us through the channel most convenient for you.</p>
+        <div class="about-contact-list">
+          <a href="tel:+919242068805" class="about-contact-item"><span class="about-contact-icon"><i class="fa-solid fa-phone-volume"></i></span><span class="about-contact-copy"><small>Call us</small><strong>+91 92420 68805</strong></span><i class="fa-solid fa-arrow-right about-contact-arrow"></i></a>
+          <a href="mailto:armayurveda@gmail.com" class="about-contact-item"><span class="about-contact-icon"><i class="fa-regular fa-envelope"></i></span><span class="about-contact-copy"><small>Email us</small><strong>armayurveda@gmail.com</strong></span><i class="fa-solid fa-arrow-right about-contact-arrow"></i></a>
+          <a href="{{ route('contact') }}#location" class="about-contact-item"><span class="about-contact-icon"><i class="fa-solid fa-location-dot"></i></span><span class="about-contact-copy"><small>Visit us</small><strong>Ashoknagar, North 24 Parganas, West Bengal</strong></span><i class="fa-solid fa-arrow-right about-contact-arrow"></i></a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
