@@ -36,7 +36,7 @@
         <p>
           We believe that good health begins with nature, purity, quality and trust.
         </p>
-        <a href="products.html" class="btn btn-main mt-3">Explore Products</a>
+        <a href="{{route('products')}}" class="btn btn-main mt-3">Explore Products</a>
       </div>
     </div>
   </div>
@@ -171,7 +171,7 @@
   <div class="container">
     <div class="row g-5 align-items-center mt-0">
       <div class="col-lg-5">
-        <img src="images/director.jpeg" class="director-img">
+        <!--<img src="images/placeholder.webp" class="director-img">-->
       </div>
 
       <div class="col-lg-7">
@@ -323,25 +323,25 @@
         <p><i class="fa fa-location-dot text-danger"></i> Ashoknagar, North 24 Parganas, West Bengal</p>
       </div>
 
-      <div class="col-lg-7">
-        <form class="row g-3">
-          <div class="col-md-6">
-            <input type="text" class="form-control" placeholder="Your Name">
-          </div>
-          <div class="col-md-6">
-            <input type="text" class="form-control" placeholder="Mobile Number">
-          </div>
-          <div class="col-12">
-            <input type="email" class="form-control" placeholder="Email Address">
-          </div>
-          <div class="col-12">
-            <textarea class="form-control" placeholder="Your Message"></textarea>
-          </div>
-          <div class="col-12">
-            <button class="btn btn-main">Submit Enquiry</button>
-          </div>
-        </form>
-      </div>
+      <!--<div class="col-lg-7">-->
+      <!--  <form class="row g-3">-->
+      <!--    <div class="col-md-6">-->
+      <!--      <input type="text" class="form-control" placeholder="Your Name">-->
+      <!--    </div>-->
+      <!--    <div class="col-md-6">-->
+      <!--      <input type="text" class="form-control" placeholder="Mobile Number">-->
+      <!--    </div>-->
+      <!--    <div class="col-12">-->
+      <!--      <input type="email" class="form-control" placeholder="Email Address">-->
+      <!--    </div>-->
+      <!--    <div class="col-12">-->
+      <!--      <textarea class="form-control" placeholder="Your Message"></textarea>-->
+      <!--    </div>-->
+      <!--    <div class="col-12">-->
+      <!--      <button class="btn btn-main">Submit Enquiry</button>-->
+      <!--    </div>-->
+      <!--  </form>-->
+      <!--</div>-->
     </div>
   </div>
 </section>

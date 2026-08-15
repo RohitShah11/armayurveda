@@ -135,7 +135,7 @@
         <table class="table table-bordered align-middle">
           <thead>
             <tr>
-              <th>SL</th>
+              <!--<th>SL</th>-->
               <!-- <th>Photo</th> -->
               <th>Member ID</th>
               <th>Name</th>
@@ -145,7 +145,7 @@
               <th>Joining Date</th>
               <th>Package</th>
               <th>KYC</th>
-              <th>Status</th>
+              <!--<th>Status</th>-->
               <!-- <th>Total Team</th> -->
               <!-- <th>Action</th> -->
             </tr>
@@ -157,15 +157,7 @@
 
             <tr>
 
-                <td>
-                    {{ $loop->iteration + ($members->currentPage()-1) * $members->perPage() }}
-                </td>
-
-                <td>
-                    <!-- <img
-                        src="{{ $member->profile_photo ? asset('storage/'.$member->profile_photo) : asset('images/default-user.png') }}"
-                        class="member-img"> -->
-                </td>
+                
 
                 <td>{{ $member->member_id }}</td>
 
@@ -174,8 +166,9 @@
                 <td>{{ $member->mobile }}</td>
 
                 <td>{{ $member->email ?? '-' }}</td>
-
-                <td>{{ optional($member->sponsor)->member_id }}</td>
+        
+                <td>
+                    {{ $member->sponsor_id }}</td>
 
                 <td>{{ $member->created_at->format('d M Y') }}</td>
 
@@ -221,23 +214,23 @@
 
                 </td>
 
-                <td>
+                <!--<td>-->
 
-                    @if($member->status=='active')
+                <!--    @if($member->status=='active')-->
 
-                        <span class="badge bg-success">
-                            Active
-                        </span>
+                <!--        <span class="badge bg-success">-->
+                <!--            Active-->
+                <!--        </span>-->
 
-                    @else
+                <!--    @else-->
 
-                        <span class="badge bg-warning text-dark">
-                            Pending
-                        </span>
+                <!--        <span class="badge bg-warning text-dark">-->
+                <!--            Pending-->
+                <!--        </span>-->
 
-                    @endif
+                <!--    @endif-->
 
-                </td>
+                <!--</td>-->
 
                 <!-- <td>
 

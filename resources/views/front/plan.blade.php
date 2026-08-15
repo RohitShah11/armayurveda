@@ -75,7 +75,7 @@
               <li><i class="fa fa-check"></i> Earn margin on every sale</li>
               <li><i class="fa fa-check"></i> Build repeat customer base</li>
             </ul>
-            <a href="signup.html" class="btn btn-main w-100">Start Now</a>
+            <a href="{{route('register')}}" class="btn btn-main w-100">Start Now</a>
           </div>
         </div>
       </div>
@@ -93,7 +93,7 @@
               <li><i class="fa fa-check"></i> Earn direct business bonus</li>
               <li><i class="fa fa-check"></i> Grow your active team</li>
             </ul>
-            <a href="signup.html" class="btn btn-main w-100">Join Business</a>
+            <a href="{{route('register')}}" class="btn btn-main w-100">Join Business</a>
           </div>
         </div>
       </div>
@@ -111,7 +111,7 @@
               <li><i class="fa fa-check"></i> Support team training and growth</li>
               <li><i class="fa fa-check"></i> Create long-term business income</li>
             </ul>
-            <a href="signup.html" class="btn btn-main w-100">Build Team</a>
+            <a href="{{route('register')}}" class="btn btn-main w-100">Build Team</a>
           </div>
         </div>
       </div>

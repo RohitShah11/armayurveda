@@ -97,52 +97,52 @@
         </div>
       </div>
 
-      <div class="col-lg-7">
-        <div class="form-box">
-          <h3 class="section-title">Send Your Message</h3>
-          <p class="text-muted mb-4">Fill the form below and our team will contact you soon.</p>
+      <!--<div class="col-lg-7">-->
+      <!--  <div class="form-box">-->
+      <!--    <h3 class="section-title">Send Your Message</h3>-->
+      <!--    <p class="text-muted mb-4">Fill the form below and our team will contact you soon.</p>-->
 
-          <form>
-            <div class="row g-3">
-              <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="Your Name">
-              </div>
+      <!--    <form>-->
+      <!--      <div class="row g-3">-->
+      <!--        <div class="col-md-6">-->
+      <!--          <input type="text" class="form-control" placeholder="Your Name">-->
+      <!--        </div>-->
 
-              <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="Mobile Number">
-              </div>
+      <!--        <div class="col-md-6">-->
+      <!--          <input type="text" class="form-control" placeholder="Mobile Number">-->
+      <!--        </div>-->
 
-              <div class="col-md-6">
-                <input type="email" class="form-control" placeholder="Email Address">
-              </div>
+      <!--        <div class="col-md-6">-->
+      <!--          <input type="email" class="form-control" placeholder="Email Address">-->
+      <!--        </div>-->
 
-              <div class="col-md-6">
-                <select class="form-select">
-                  <option>Select Enquiry Type</option>
-                  <option>Product Enquiry</option>
-                  <option>Distributor Joining</option>
-                  <option>Business Plan</option>
-                  <option>Customer Support</option>
-                  <option>Other</option>
-                </select>
-              </div>
+      <!--        <div class="col-md-6">-->
+      <!--          <select class="form-select">-->
+      <!--            <option>Select Enquiry Type</option>-->
+      <!--            <option>Product Enquiry</option>-->
+      <!--            <option>Distributor Joining</option>-->
+      <!--            <option>Business Plan</option>-->
+      <!--            <option>Customer Support</option>-->
+      <!--            <option>Other</option>-->
+      <!--          </select>-->
+      <!--        </div>-->
 
-              <div class="col-12">
-                <input type="text" class="form-control" placeholder="Subject">
-              </div>
+      <!--        <div class="col-12">-->
+      <!--          <input type="text" class="form-control" placeholder="Subject">-->
+      <!--        </div>-->
 
-              <div class="col-12">
-                <textarea class="form-control" placeholder="Write your message"></textarea>
-              </div>
+      <!--        <div class="col-12">-->
+      <!--          <textarea class="form-control" placeholder="Write your message"></textarea>-->
+      <!--        </div>-->
 
-              <div class="col-12">
-                <button class="btn btn-main w-100">Submit Enquiry</button>
-              </div>
-            </div>
-          </form>
+      <!--        <div class="col-12">-->
+      <!--          <button class="btn btn-main w-100">Submit Enquiry</button>-->
+      <!--        </div>-->
+      <!--      </div>-->
+      <!--    </form>-->
 
-        </div>
-      </div>
+      <!--  </div>-->
+      <!--</div>-->
     </div>
   </div>
 </section>

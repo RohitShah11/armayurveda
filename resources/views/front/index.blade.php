@@ -130,7 +130,7 @@
   <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h2 class="section-title mb-0">FEATURED PRODUCTS</h2>
-      <a href="#" class="btn btn-outline-success rounded-pill">VIEW ALL PRODUCTS <i class="fa fa-arrow-right"></i></a>
+      <a href="{{route('products')}}" class="btn btn-outline-success rounded-pill">VIEW ALL PRODUCTS <i class="fa fa-arrow-right"></i></a>
     </div>
 
     <div class="row g-4">
@@ -141,7 +141,7 @@
             <h5>Herbal Face Care</h5>
             <p>Natural care for daily use</p>
             <div class="price">₹499</div>
-            <a href="#" class="btn btn-green btn-sm mt-2"><i class="fa fa-cart-shopping"></i> BUY NOW</a>
+            <!--<a href="#" class="btn btn-green btn-sm mt-2"><i class="fa fa-cart-shopping"></i> BUY NOW</a>-->
           </div>
         </div>
       </div>
@@ -153,7 +153,7 @@
             <h5>Ayurvedic Oil</h5>
             <p>Herbal oil for wellness</p>
             <div class="price">₹699</div>
-            <a href="#" class="btn btn-green btn-sm mt-2"><i class="fa fa-cart-shopping"></i> BUY NOW</a>
+            <!--<a href="#" class="btn btn-green btn-sm mt-2"><i class="fa fa-cart-shopping"></i> BUY NOW</a>-->
           </div>
         </div>
       </div>
@@ -165,7 +165,7 @@
             <h5>Herbal Supplement</h5>
             <p>Daily wellness support</p>
             <div class="price">₹999</div>
-            <a href="#" class="btn btn-green btn-sm mt-2"><i class="fa fa-cart-shopping"></i> BUY NOW</a>
+            <!--<a href="#" class="btn btn-green btn-sm mt-2"><i class="fa fa-cart-shopping"></i> BUY NOW</a>-->
           </div>
         </div>
       </div>
@@ -177,7 +177,7 @@
             <h5>Body Care Product</h5>
             <p>Natural personal care</p>
             <div class="price">₹599</div>
-            <a href="#" class="btn btn-green btn-sm mt-2"><i class="fa fa-cart-shopping"></i> BUY NOW</a>
+            <!--<a href="#" class="btn btn-green btn-sm mt-2"><i class="fa fa-cart-shopping"></i> BUY NOW</a>-->
           </div>
         </div>
       </div>
@@ -191,7 +191,7 @@
       <div class="col-lg-4">
         <h2>START YOUR BUSINESS <br><span>WITH ARM AYURVEDA</span></h2>
         <p>Simple product-based earning opportunity for dedicated and hardworking people.</p>
-        <a href="#" class="btn btn-light rounded-pill px-4">JOIN NOW <i class="fa fa-user-plus"></i></a>
+        <a href="{{route('register')}}" class="btn btn-light rounded-pill px-4">JOIN NOW <i class="fa fa-user-plus"></i></a>
       </div>
 
       <div class="col-lg-8">
@@ -226,7 +226,7 @@
   <div class="container">
     <div class="row align-items-center g-4">
       <div class="col-lg-3 text-center">
-        <img src="images/logo.jpeg" class="contact-logo" alt="ARM Ayurveda">
+        <img src="{{asset('images/logo.png')}}" class="contact-logo" alt="ARM Ayurveda">
       </div>
 
       <div class="col-lg-3">
@@ -237,25 +237,25 @@
         <p><i class="fa fa-location-dot text-success"></i> Ashoknagar, North 24 Parganas, West Bengal</p>
       </div>
 
-      <div class="col-lg-6">
-        <form class="row g-3">
-          <div class="col-md-6">
-            <input type="text" class="form-control" placeholder="Your Name">
-          </div>
-          <div class="col-md-6">
-            <input type="text" class="form-control" placeholder="Mobile Number">
-          </div>
-          <div class="col-12">
-            <input type="email" class="form-control" placeholder="Email Address">
-          </div>
-          <div class="col-12">
-            <textarea class="form-control" placeholder="Your Message"></textarea>
-          </div>
-          <div class="col-12">
-            <button class="btn btn-green">SUBMIT ENQUIRY</button>
-          </div>
-        </form>
-      </div>
+      <!--<div class="col-lg-6">-->
+      <!--  <form class="row g-3">-->
+      <!--    <div class="col-md-6">-->
+      <!--      <input type="text" class="form-control" placeholder="Your Name">-->
+      <!--    </div>-->
+      <!--    <div class="col-md-6">-->
+      <!--      <input type="text" class="form-control" placeholder="Mobile Number">-->
+      <!--    </div>-->
+      <!--    <div class="col-12">-->
+      <!--      <input type="email" class="form-control" placeholder="Email Address">-->
+      <!--    </div>-->
+      <!--    <div class="col-12">-->
+      <!--      <textarea class="form-control" placeholder="Your Message"></textarea>-->
+      <!--    </div>-->
+      <!--    <div class="col-12">-->
+      <!--      <button class="btn btn-green">SUBMIT ENQUIRY</button>-->
+      <!--    </div>-->
+      <!--  </form>-->
+      <!--</div>-->
     </div>
   </div>
 </section>
