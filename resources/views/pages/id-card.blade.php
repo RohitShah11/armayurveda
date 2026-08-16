@@ -42,7 +42,9 @@
 .identity-line{font-size:2.05cqw;line-height:1.38}
 .details-divider{margin:2% 0}
 .meta-line{font-size:1.78cqw;line-height:1.5}
-.card-footer{height:16%;font-size:1.7cqw;gap:2.7%}
+.card-footer{height:16%;font-size:2cqw;font-weight:600;gap:2%;padding-left:3%;padding-right:3%}
+.contact-item{gap:10px}
+.contact-item i{font-size:1.08em}
 @media(max-width:700px){
     .employee-card-shell{width:100%}
 }
@@ -53,6 +55,8 @@
 @php
     $photoUrl = !empty($profile?->profile_photo) ? asset($profile->profile_photo) : asset('images/profile-placeholder.svg');
     $memberStatus = $user->status ?: 'Inactive';
+    $memberMobile = $profile?->mobile ?: $user->mobile ?: 'Not provided';
+    $memberEmail = $user->email ?: 'Not provided';
 @endphp
 <div class="id-card-page">
     <div class="id-card-toolbar">
@@ -80,8 +84,8 @@
                 </div>
             </div>
             <div class="card-footer">
-                <div class="contact-item"><i class="fa-solid fa-phone"></i><span>+91 8759670380</span></div><span class="contact-separator"></span>
-                <div class="contact-item"><i class="fa-solid fa-envelope"></i><span>arm+3@gmail.com</span></div><span class="contact-separator"></span>
+                <div class="contact-item"><i class="fa-solid fa-phone"></i><span>{{ $memberMobile }}</span></div><span class="contact-separator"></span>
+                <div class="contact-item"><i class="fa-solid fa-envelope"></i><span>{{ $memberEmail }}</span></div><span class="contact-separator"></span>
                 <div class="contact-item"><i class="fa-solid fa-globe"></i><span>www.armayurveda.com</span></div>
             </div>
         </div>
