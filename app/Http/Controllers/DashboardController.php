@@ -19,6 +19,7 @@ use App\Services\RankRewardService;
 use App\Services\SponsorPoolService;
 use App\Services\ZenithPoolService;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -425,9 +426,113 @@ class DashboardController extends Controller
         return view('pages.direct-member');
     }
 
-    public function levelTeam()
+    public function levelTeam(Request $request)
     {
-        return view('pages.level-team');
+        /** @var User $user */
+        $user = Auth::user();
+        $maxLevels = 15;
+        $levelMembers = collect();
+        $sponsorIds = $user->member_id ? [$user->member_id] : [];
+        $seenUserIds = [];
+        $hasMemberProfiles = Schema::hasTable('member_profiles');
+
+        for ($level = 1; $level <= $maxLevels && $sponsorIds !== []; $level++) {
+            $members = User::query()
+                ->whereIn('sponsor_id', $sponsorIds)
+                ->when($hasMemberProfiles, fn ($query) => $query->with('profile'))
+                ->orderBy('id')
+                ->get();
+
+            $nextSponsorIds = [];
+
+            foreach ($members as $member) {
+                if (isset($seenUserIds[$member->id])) {
+                    continue;
+                }
+
+                $seenUserIds[$member->id] = true;
+                if (! $hasMemberProfiles) {
+                    $member->setRelation('profile', null);
+                }
+                $member->setAttribute('team_level', $level);
+                $member->setAttribute('package_type', $this->teamPackageType($member->package_name));
+                $levelMembers->push($member);
+
+                if ($member->member_id) {
+                    $nextSponsorIds[] = $member->member_id;
+                }
+            }
+
+            $sponsorIds = array_values(array_unique($nextSponsorIds));
+        }
+
+        $levelSummary = collect(range(1, $maxLevels))->mapWithKeys(function (int $level) use ($levelMembers) {
+            $members = $levelMembers->where('team_level', $level);
+            $active = $members->where('package_type', 'Zenith')->count();
+
+            return [$level => [
+                'total' => $members->count(),
+                'zenith' => $members->where('package_type', 'Zenith')->count(),
+                'inactive' => $members->where('package_type', 'Inactive')->count(),
+                'active_percentage' => $members->isEmpty() ? 0 : round(($active / $members->count()) * 100, 1),
+            ]];
+        });
+
+        $totals = [
+            'members' => $levelMembers->count(),
+            'zenith' => $levelMembers->where('package_type', 'Zenith')->count(),
+            'inactive' => $levelMembers->where('package_type', 'Inactive')->count(),
+        ];
+        $totals['active'] = $totals['zenith'];
+
+        $filteredMembers = $levelMembers
+            ->when($request->filled('level'), fn ($members) => $members->where('team_level', (int) $request->level))
+            ->when($request->filled('package'), fn ($members) => $members->where('package_type', $request->package))
+            ->when($request->filled('search'), function ($members) use ($request) {
+                $search = strtolower(trim((string) $request->search));
+
+                return $members->filter(fn (User $member) => str_contains(strtolower(implode(' ', [
+                    $member->member_id,
+                    $member->name,
+                    $member->mobile,
+                ])), $search));
+            })
+            ->values();
+
+        $page = max(1, (int) $request->input('page', 1));
+        $perPage = 15;
+        $members = new LengthAwarePaginator(
+            $filteredMembers->forPage($page, $perPage)->values(),
+            $filteredMembers->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        $nonEmptyLevels = $levelSummary->filter(fn (array $summary) => $summary['total'] > 0);
+        $highestLevel = $nonEmptyLevels->keys()->max();
+        $largestLevel = $nonEmptyLevels->sortByDesc('total')->keys()->first();
+        $smallestLevel = $nonEmptyLevels->sortBy('total')->keys()->first();
+
+        return view('pages.level-team', compact(
+            'members',
+            'levelSummary',
+            'totals',
+            'maxLevels',
+            'highestLevel',
+            'largestLevel',
+            'smallestLevel'
+        ));
+    }
+
+    private function teamPackageType(?string $packageName): string
+    {
+        $packageName = strtolower(trim((string) $packageName));
+
+        return match (true) {
+            str_contains($packageName, 'zenith') => 'Zenith',
+            default => 'Inactive',
+        };
     }
 
     public function mainWallet()

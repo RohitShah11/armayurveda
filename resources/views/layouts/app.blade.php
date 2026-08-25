@@ -75,8 +75,8 @@
   <div class="collapse {{ request()->routeIs('team.*') ? 'show':'' }} submenu" id="teamMenu">
     <a href="{{ route('team.add-member') }}" class="{{ request()->routeIs('team.add-member') ? 'active':'' }}">Add Member</a>
     <a href="{{ route('team.direct') }}"     class="{{ request()->routeIs('team.direct')     ? 'active':'' }}">Direct Member</a>
-    {{-- <a href="{{ route('team.level') }}"      class="{{ request()->routeIs('team.level')      ? 'active':'' }}">Level Wise Team</a> --}}
-    <a href="">Level Wise Team</a>
+     <a href="{{ route('team.level') }}"      class="{{ request()->routeIs('team.level')      ? 'active':'' }}">Level Wise Team</a>
+    
   </div>
 
   <a data-bs-toggle="collapse" href="#reportMenu">

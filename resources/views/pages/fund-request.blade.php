@@ -14,11 +14,9 @@ textarea.form-control{height:95px}
 .btn-main{background:var(--primary);color:#fff;border-radius:25px;font-weight:700;padding:10px 24px}
 .btn-main:hover{background:var(--dark);color:#fff}
 .btn-gold{background:var(--gold);color:#fff;border-radius:25px;font-weight:700;padding:10px 24px}
-.account-box{background:linear-gradient(135deg,var(--primary),var(--dark));color:#fff;border-radius:18px;padding:25px;height:100%}
+.account-box{background:linear-gradient(135deg,var(--primary),var(--dark));color:#fff;border-radius:18px;padding:25px;height:auto}
 .account-row{display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.2);padding:12px 0;gap:15px}
 .account-row span:last-child{font-weight:700;text-align:right}
-.qr-box{background:#fff;border-radius:16px;padding:18px;text-align:center;color:#333}
-.qr-box img{width:180px;height:180px;object-fit:cover}
 .table thead th{background:var(--primary);color:#fff;white-space:nowrap}
 .table td{white-space:nowrap;vertical-align:middle}
 .badge-pending{background:#fff3cd;color:#856404}
@@ -28,27 +26,6 @@ textarea.form-control{height:95px}
 @media(max-width:991px){}
 @media(max-width:576px){.account-row{display:block}.account-row span:last-child{text-align:left;display:block;margin-top:5px}}
 
-.qr-payment-img{
-    width:220px;
-    height:220px;
-    max-width:100%;
-    object-fit:contain;
-    display:block;
-    margin:0 auto;
-    padding:10px;
-    background:#fff;
-    border:1px solid #ddd;
-    border-radius:12px;
-}
-
-@media (max-width:576px){
-
-    .qr-payment-img{
-        width:180px;
-        height:180px;
-    }
-
-}
 </style>
 @endpush
 
@@ -100,62 +77,32 @@ textarea.form-control{height:95px}
 
           <div class="account-row">
             <span>Account Name</span>
-            <span>ARM Ayurveda Pvt. Ltd.</span>
+            <span>ARM AYURVEDA PRIVATE LIMITED</span>
           </div>
 
           <div class="account-row">
             <span>Bank Name</span>
-            <span>State Bank of India</span>
+            <span>Ujjivan Small Finance Bank Ltd.</span>
           </div>
 
           <div class="account-row">
             <span>Account Number</span>
-            <span>123456789012</span>
+            <span>3579120040000073</span>
           </div>
 
           <div class="account-row">
             <span>IFSC Code</span>
-            <span>SBIN0001234</span>
+            <span>UJVN0003579</span>
           </div>
 
           <div class="account-row">
             <span>Branch</span>
-            <span>Ashoknagar</span>
-          </div>
-
-          <div class="account-row">
-            <span>UPI ID</span>
-            <span>armayurveda@upi</span>
+            <span>Purba Bardhaman</span>
           </div>
 
           <div class="mt-4 d-flex gap-2 flex-wrap">
-            <button class="btn btn-gold" onclick="copyText('123456789012')"><i class="fa fa-copy"></i> Copy Account</button>
-            <button class="btn btn-light rounded-pill px-4" onclick="copyText('armayurveda@upi')"><i class="fa fa-copy"></i> Copy UPI</button>
+            <button class="btn btn-gold" onclick="copyText('3579120040000073')"><i class="fa fa-copy"></i> Copy Account</button>
           </div>
-
-            <div class="card-box mt-4">
-
-                <h5 class="fw-bold text-center mb-3">
-                    QR Payment
-                </h5>
-
-                <div class="text-center">
-
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=armayurveda@upi"
-                         alt="QR Code"
-                         class="qr-payment-img">
-
-                    <p class="mt-3 mb-1">
-                        <strong>UPI:</strong> armayurveda@upi
-                    </p>
-
-                    <small class="text-muted">
-                        Scan the QR code and complete the payment.
-                    </small>
-
-                </div>
-
-            </div>
         </div>
 
       </div>
