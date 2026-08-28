@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\PackagePurchased;
 use App\Models\EarningWalletTransaction;
 use App\Models\MainWalletTransaction;
 use App\Models\MemberKyc;
@@ -23,7 +24,10 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
+use Throwable;
 
 class DashboardController extends Controller
 {
@@ -266,7 +270,9 @@ class DashboardController extends Controller
 
         $price = (float) $package->price;
 
-        return DB::transaction(function () use ($user, $package, $price) {
+        $packagePurchase = null;
+
+        $response = DB::transaction(function () use ($user, $package, $price, &$packagePurchase) {
             $user = User::query()->lockForUpdate()->findOrFail($user->id);
 
             if (PackagePurchase::where('user_id', $user->id)->exists()) {
@@ -399,6 +405,20 @@ class DashboardController extends Controller
 
             return redirect()->route('package.purchase')->with('success', 'Package purchased successfully.');
         });
+
+        if ($packagePurchase && $user->email) {
+            try {
+                Mail::to($user->email)->send(new PackagePurchased($user->fresh(), $packagePurchase));
+            } catch (Throwable $exception) {
+                Log::error('Unable to send package purchase confirmation email.', [
+                    'user_id' => $user->id,
+                    'package_purchase_id' => $packagePurchase->id,
+                    'exception' => $exception,
+                ]);
+            }
+        }
+
+        return $response;
     }
 
     public function rechargeMobile()

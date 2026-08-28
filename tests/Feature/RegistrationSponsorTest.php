@@ -74,7 +74,8 @@ class RegistrationSponsorTest extends TestCase
 
         Mail::assertSent(WelcomeOnboarding::class, function (WelcomeOnboarding $mail) {
             return $mail->hasTo('new-member@example.com')
-                && $mail->user->member_id === 'ARM1001';
+                && $mail->user->member_id === 'ARM1001'
+                && str_contains($mail->render(), 'Open Your Dashboard');
         });
     }
 

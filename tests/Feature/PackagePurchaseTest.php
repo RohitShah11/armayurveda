@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Mail\PackagePurchased;
 use App\Models\DirectTreeNode;
 use App\Models\EarningWalletTransaction;
 use App\Models\Package;
@@ -10,6 +11,7 @@ use App\Models\SponsorPoolNode;
 use App\Models\User;
 use App\Models\ZenithPoolNode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class PackagePurchaseTest extends TestCase
@@ -35,6 +37,7 @@ class PackagePurchaseTest extends TestCase
 
     public function test_user_can_purchase_zenith_package_directly_from_wallet(): void
     {
+        Mail::fake();
         $zenith = Package::create([
             'name' => 'Zenith Package',
             'slug' => 'zenith-package',
@@ -83,6 +86,12 @@ class PackagePurchaseTest extends TestCase
             'depth' => 1,
         ]);
         $this->assertDatabaseCount('admins', 0);
+
+        Mail::assertSent(PackagePurchased::class, function (PackagePurchased $mail) use ($user) {
+            return $mail->hasTo($user->email)
+                && $mail->purchase->package_name === 'Zenith Package'
+                && str_contains($mail->render(), 'View Your Invoice');
+        });
     }
 
     public function test_package_purchase_page_uses_the_zenith_package_image(): void
