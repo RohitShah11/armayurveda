@@ -20,7 +20,7 @@ class PackagePurchased extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Your ARM Ayurveda package is active');
+        return new Envelope(subject: '🎉 Package Purchase Successful – ARM Ayurveda Pvt. Ltd.');
     }
 
     public function content(): Content

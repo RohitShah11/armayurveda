@@ -89,8 +89,9 @@ class PackagePurchaseTest extends TestCase
 
         Mail::assertSent(PackagePurchased::class, function (PackagePurchased $mail) use ($user) {
             return $mail->hasTo($user->email)
+                && $mail->envelope()->subject === '🎉 Package Purchase Successful – ARM Ayurveda Pvt. Ltd.'
                 && $mail->purchase->package_name === 'Zenith Package'
-                && str_contains($mail->render(), 'View Your Invoice');
+                && str_contains($mail->render(), 'Order/Transaction ID');
         });
     }
 

@@ -19,7 +19,7 @@ class WelcomeOnboarding extends Mailable
 
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Welcome to ARM Ayurveda');
+        return new Envelope(subject: '🎉 Welcome to ARM Ayurveda – Registration Successful');
     }
 
     public function content(): Content
