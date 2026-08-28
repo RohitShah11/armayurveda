@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\WelcomeOnboarding;
 use App\Models\MemberProfile;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Throwable;
 
 class AuthController extends Controller
 {
@@ -112,6 +116,17 @@ class AuthController extends Controller
         });
 
         Auth::login($user);
+
+        if ($user->email) {
+            try {
+                Mail::to($user->email)->send(new WelcomeOnboarding($user));
+            } catch (Throwable $exception) {
+                Log::error('Unable to send registration onboarding email.', [
+                    'user_id' => $user->id,
+                    'exception' => $exception,
+                ]);
+            }
+        }
 
         return redirect()->route('dashboard')->with('success', 'Welcome to ARM Ayurveda!');
     }

@@ -15,7 +15,7 @@ class MemberProfile extends Model
         'address',
         'state',
         'city',
-        'pincode',
+        'pin_code',
         'nominee_name',
         'nominee_relation',
         'profile_photo'

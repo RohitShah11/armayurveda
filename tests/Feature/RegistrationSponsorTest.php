@@ -2,8 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Mail\WelcomeOnboarding;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Tests\TestCase;
 
 class RegistrationSponsorTest extends TestCase
@@ -56,5 +58,37 @@ class RegistrationSponsorTest extends TestCase
         $this->assertDatabaseMissing('users', [
             'mobile' => '9876543210',
         ]);
+    }
+
+    public function test_registration_sends_an_onboarding_email(): void
+    {
+        Mail::fake();
+
+        $this->post(route('register.post'), [
+            'name' => 'New Member',
+            'mobile' => '9876543210',
+            'email' => 'new-member@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ])->assertRedirect(route('dashboard'));
+
+        Mail::assertSent(WelcomeOnboarding::class, function (WelcomeOnboarding $mail) {
+            return $mail->hasTo('new-member@example.com')
+                && $mail->user->member_id === 'ARM1001';
+        });
+    }
+
+    public function test_registration_without_an_email_does_not_send_onboarding_mail(): void
+    {
+        Mail::fake();
+
+        $this->post(route('register.post'), [
+            'name' => 'Mobile Member',
+            'mobile' => '9876543210',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ])->assertRedirect(route('dashboard'));
+
+        Mail::assertNothingSent();
     }
 }
