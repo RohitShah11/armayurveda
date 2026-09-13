@@ -56,18 +56,23 @@ class CatalogController extends Controller
     {
         abort_unless($product->is_active && $product->category?->is_active, 404);
 
+        $profile = request()->user()->profile;
+
         $relatedProducts = Product::where('is_active', true)
             ->where('category_id', $product->category_id)
             ->whereKeyNot($product->id)
             ->latest()->take(4)->get();
 
-        return view('pages.catalog.show', compact('product', 'relatedProducts'));
+        return view('pages.catalog.show', compact('product', 'relatedProducts', 'profile'));
     }
 
     public function purchase(Request $request, Product $product)
     {
         abort_unless($product->is_active && $product->category?->is_active, 404);
-        $data = $request->validate(['quantity' => 'required|integer|min:1|max:99']);
+        $data = $request->validate([
+            'quantity' => 'required|integer|min:1|max:99',
+            'delivery_address' => 'required|string|max:1000',
+        ]);
 
         $order = DB::transaction(function () use ($request, $product, $data) {
             $user = User::lockForUpdate()->findOrFail($request->user()->id);
@@ -86,6 +91,7 @@ class CatalogController extends Controller
                 'user_id' => $user->id, 'product_id' => $lockedProduct->id, 'product_name' => $lockedProduct->name,
                 'unit_price' => $lockedProduct->retail_price, 'quantity' => $data['quantity'], 'total_amount' => $total,
                 'status' => 'Pending', 'payment_status' => 'Paid', 'ordered_at' => now(),
+                'delivery_address' => $data['delivery_address'],
             ]);
             MainWalletTransaction::create([
                 'user_id' => $user->id, 'transaction_type' => 'Debit', 'amount' => $total,

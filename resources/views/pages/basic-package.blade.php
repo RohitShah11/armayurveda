@@ -96,11 +96,7 @@
                 <h5>{{ $package->name }}</h5>
                 <p>{{ $package->description }}</p>
                 <div class="price">₹{{ number_format($package->price, 2) }}</div>
-                <form method="POST" action="{{ route('package.purchase.store') }}">
-                  @csrf
-                  <input type="hidden" name="package_id" value="{{ $package->id }}">
-                  <button class="btn btn-main w-100 mt-3" type="submit">Purchase Now</button>
-                </form>
+                <button class="btn btn-main w-100 mt-3 package-purchase-button" type="button" data-bs-toggle="modal" data-bs-target="#confirmModal" data-package-id="{{ $package->id }}" data-package-name="{{ $package->name }}" data-package-price="{{ number_format($package->price, 2) }}">Purchase Now</button>
               </div>
             </div>
           </div>
@@ -164,11 +160,16 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
 
+      <form method="POST" action="{{ route('package.purchase.store') }}">
+      @csrf
+      <input type="hidden" name="package_id" id="modalPackageId" value="{{ old('package_id') }}">
       <div class="modal-body">
         <p><b>Package:</b> <span id="modalPackage"></span></p>
-        <p><b>Product:</b> <span id="modalProduct"></span></p>
         <p><b>Amount:</b> ₹<span id="modalAmount"></span></p>
-        <p><b>Wallet Balance:</b> ₹15,000</p>
+        <p><b>Wallet Balance:</b> ₹{{ number_format(auth()->user()->main_wallet ?? 0, 2) }}</p>
+        <label class="form-label fw-bold" for="packageDeliveryAddress">Delivery Address</label>
+        <textarea id="packageDeliveryAddress" class="form-control @error('delivery_address') is-invalid @enderror" name="delivery_address" rows="4" maxlength="1000" placeholder="Enter the complete delivery address" required>{{ old('delivery_address', $profile?->address) }}</textarea>
+        @error('delivery_address')<div class="invalid-feedback">{{ $message }}</div>@enderror
         <div class="alert alert-warning mb-0">
           After purchase, this package section will not be shown again.
         </div>
@@ -176,10 +177,28 @@
 
       <div class="modal-footer">
         <button class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
-        <button class="btn btn-main" onclick="purchasePackage()">Purchase</button>
+        <button class="btn btn-main" type="submit">Confirm & Purchase</button>
       </div>
+      </form>
     </div>
   </div>
 </div>
 @endunless
 @endsection
+@push('scripts')
+<script>
+document.querySelectorAll('.package-purchase-button').forEach(function (button) {
+  button.addEventListener('click', function () {
+    document.getElementById('modalPackageId').value = this.dataset.packageId;
+    document.getElementById('modalPackage').textContent = this.dataset.packageName;
+    document.getElementById('modalAmount').textContent = this.dataset.packagePrice;
+  });
+});
+@if($errors->has('delivery_address') && old('package_id'))
+document.addEventListener('DOMContentLoaded', function () {
+  var selected = document.querySelector('[data-package-id="{{ old('package_id') }}"]');
+  if (selected) selected.click();
+});
+@endif
+</script>
+@endpush

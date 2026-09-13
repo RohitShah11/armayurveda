@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\MainWalletTransaction;
 use App\Models\ProductOrder;
 use App\Models\User;
+use App\Services\RepurchaseCommissionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class ProductOrderController extends Controller
 {
@@ -30,6 +32,13 @@ class ProductOrderController extends Controller
         return view('admin.product-orders.index', compact('orders'));
     }
 
+    public function show(ProductOrder $productOrder)
+    {
+        $productOrder->load(['user.profile', 'product.category']);
+
+        return view('admin.product-orders.show', compact('productOrder'));
+    }
+
     public function update(Request $request, ProductOrder $productOrder)
     {
         $data = $request->validate([
@@ -40,8 +49,10 @@ class ProductOrderController extends Controller
         DB::transaction(function () use ($productOrder, $data) {
             $order = ProductOrder::lockForUpdate()->findOrFail($productOrder->id);
 
-            if ($order->status === 'Cancelled' && $data['status'] !== 'Cancelled') {
-                abort(422, 'A cancelled and refunded order cannot be reopened.');
+            if (! in_array($data['status'], $order->availableStatuses(), true)) {
+                throw ValidationException::withMessages([
+                    'status' => "Order status cannot be changed from {$order->status} to {$data['status']}.",
+                ]);
             }
 
             if ($data['status'] === 'Cancelled' && $order->payment_status === 'Paid') {
@@ -61,6 +72,10 @@ class ProductOrderController extends Controller
             $order->status = $data['status'];
             $order->admin_note = $data['admin_note'] ?? null;
             $order->save();
+
+            if ($data['status'] === 'Delivered') {
+                app(RepurchaseCommissionService::class)->distribute($order);
+            }
         });
 
         return back()->with('success', 'Order status updated successfully.');

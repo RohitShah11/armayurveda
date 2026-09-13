@@ -80,6 +80,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('categories', CategoryController::class)->except('show');
         Route::resource('products', ProductController::class)->except('show');
         Route::get('/product-orders', [ProductOrderController::class, 'index'])->name('product-orders.index');
+        Route::get('/product-orders/{productOrder}', [ProductOrderController::class, 'show'])->name('product-orders.show');
         Route::patch('/product-orders/{productOrder}', [ProductOrderController::class, 'update'])->name('product-orders.update');
     });
 });

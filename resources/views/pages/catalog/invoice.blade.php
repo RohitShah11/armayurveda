@@ -11,7 +11,8 @@
 @php
     $order = $productOrder;
     $customer = $order->user;
-    $address = collect([$profile?->address, $profile?->city ?: $customer->city, $profile?->state ?: $customer->state, $profile?->pincode])->filter()->implode(', ');
+    $profileAddress = collect([$profile?->address, $profile?->city ?: $customer->city, $profile?->state ?: $customer->state, $profile?->pincode])->filter()->implode(', ');
+    $deliveryAddress = $productOrder->delivery_address;
     $amountWords = class_exists(NumberFormatter::class)
         ? ucfirst((new NumberFormatter('en_IN', NumberFormatter::SPELLOUT))->format((int) floor((float) $order->total_amount))).' rupees only'
         : 'Rupees '.number_format($order->total_amount, 2).' only';
@@ -24,7 +25,8 @@
     </div></div>
 </header><div class="wave"></div>
 <section class="addresses">
-    @foreach(['Bill To','Ship To'] as $type)<div class="address"><div class="heading">{{ $type }}</div><p><strong>Member Name</strong> {{ $customer->name }}</p><p><strong>Member ID</strong> {{ $customer->member_id ?: '—' }}</p><p><strong>Mobile</strong> {{ $profile?->mobile ?: $customer->mobile ?: '—' }}</p><p><strong>Email</strong> {{ $customer->email ?: '—' }}</p><p><strong>Address</strong> {{ $address ?: 'Not provided' }}</p></div>@endforeach
+    <div class="address"><div class="heading">Bill To</div><p><strong>Member Name</strong> {{ $customer->name }}</p><p><strong>Member ID</strong> {{ $customer->member_id ?: '—' }}</p><p><strong>Mobile</strong> {{ $profile?->mobile ?: $customer->mobile ?: '—' }}</p><p><strong>Email</strong> {{ $customer->email ?: '—' }}</p><p><strong>Address</strong> {{ $profileAddress ?: 'Not provided' }}</p></div>
+    <div class="address"><div class="heading">Ship To</div><p><strong>Member Name</strong> {{ $customer->name }}</p><p><strong>Member ID</strong> {{ $customer->member_id ?: '—' }}</p><p><strong>Mobile</strong> {{ $profile?->mobile ?: $customer->mobile ?: '—' }}</p><p><strong>Email</strong> {{ $customer->email ?: '—' }}</p><p><strong>Address</strong> {{ $deliveryAddress ?: $profileAddress ?: 'Not provided' }}</p></div>
 </section>
 <div class="table-scroll"><table class="items"><thead><tr><th>#</th><th>Product</th><th>HSN</th><th>Qty</th><th>Unit Price</th><th>Taxable</th><th>CGST 2.5%</th><th>SGST 2.5%</th><th>Total</th></tr></thead><tbody><tr><td>1</td><td><strong>{{ $order->product_name }}</strong><br><small>{{ $order->product?->brand }}</small></td><td>{{ $order->product?->hsn_code ?: '—' }}</td><td>{{ $order->quantity }}</td><td>₹{{ number_format($order->unit_price, 2) }}</td><td>₹{{ number_format($taxableAmount, 2) }}</td><td>₹{{ number_format($cgst, 2) }}</td><td>₹{{ number_format($sgst, 2) }}</td><td><strong>₹{{ number_format($order->total_amount, 2) }}</strong></td></tr></tbody></table></div>
 <section class="summary"><div class="words"><strong>Amount in Words</strong><br>{{ $amountWords }}</div><div class="totals"><div><span>Taxable Amount</span><b>₹{{ number_format($taxableAmount, 2) }}</b></div><div><span>CGST (2.5%)</span><b>₹{{ number_format($cgst, 2) }}</b></div><div><span>SGST (2.5%)</span><b>₹{{ number_format($sgst, 2) }}</b></div><div class="grand"><span>Grand Total</span><span>₹{{ number_format($order->total_amount, 2) }}</span></div></div></section>

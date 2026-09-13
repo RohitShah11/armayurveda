@@ -12,7 +12,7 @@
       @if($product->gallery_images)<div class="d-flex flex-wrap gap-2 mt-3">@foreach($product->gallery_images as $gallery)<img class="gallery-thumb" role="button" src="{{ Storage::disk('public')->url($gallery) }}" alt="" onclick="document.getElementById('mainProductImage').src=this.src">@endforeach</div>@endif
     </div>
     <div class="col-lg-7"><span class="badge bg-success">{{ $product->category->name }}</span>@if($product->product_section)<span class="badge bg-warning text-dark">{{ $product->product_section }}</span>@endif<h2 class="fw-bold mt-3">{{ $product->name }}</h2>@if($product->brand)<p class="text-muted mb-2">Brand: {{ $product->brand }}</p>@endif<div class="detail-price">₹{{ number_format($product->retail_price,2) }} @if($product->mrp>$product->retail_price)<small class="text-muted text-decoration-line-through fs-6">MRP ₹{{ number_format($product->mrp,2) }}</small>@endif</div><p class="mt-3">{{ $product->short_description }}</p>
-      <form method="POST" action="{{ route('catalog.purchase', $product) }}" class="border rounded-3 p-3 my-4" onsubmit="return confirm('Confirm this purchase? The amount will be debited from your main wallet.')">@csrf<div class="d-flex flex-wrap align-items-end gap-3"><div><label class="form-label fw-bold">Quantity</label><input id="purchaseQuantity" type="number" class="form-control" style="width:110px" name="quantity" min="1" max="99" value="1" required></div><div><small class="text-muted">Main Wallet Balance</small><div class="fw-bold">₹{{ number_format(auth()->user()->main_wallet ?? 0, 2) }}</div></div><button class="btn btn-main ms-lg-auto"><i class="fa fa-cart-shopping me-1"></i> Purchase Now</button></div><small class="text-muted d-block mt-2">Total is calculated using the current retail price and debited immediately.</small></form>
+      <div class="border rounded-3 p-3 my-4"><div class="d-flex flex-wrap align-items-end gap-3"><div><label class="form-label fw-bold">Quantity</label><input id="purchaseQuantity" type="number" class="form-control" style="width:110px" min="1" max="99" value="{{ old('quantity', 1) }}" required></div><div><small class="text-muted">Main Wallet Balance</small><div class="fw-bold">₹{{ number_format(auth()->user()->main_wallet ?? 0, 2) }}</div></div><button type="button" class="btn btn-main ms-lg-auto" data-bs-toggle="modal" data-bs-target="#deliveryAddressModal"><i class="fa fa-cart-shopping me-1"></i> Purchase Now</button></div><small class="text-muted d-block mt-2">You will confirm your delivery address before the amount is debited.</small></div>
       <div class="row g-3 detail-section"><div class="col-sm-6"><strong>HSN Code</strong><br>{{ $product->hsn_code ?: 'Not specified' }}</div><div class="col-sm-6"><strong>Refund Period</strong><br>{{ $product->refund_days ? $product->refund_days.' days' : 'Not available' }}</div><div class="col-sm-6"><strong>Variants</strong><br>{{ $product->has_variants ? 'Available' : 'No variants' }}</div>@if($product->seller)<div class="col-sm-6"><strong>Seller</strong><br>{{ $product->seller }}</div>@endif</div>
       @if($product->refund_description)<div class="detail-section"><h5>Refund Information</h5><p class="mb-0">{{ $product->refund_description }}</p></div>@endif
     </div>
@@ -20,4 +20,25 @@
   </div></div>
   @if($relatedProducts->isNotEmpty())<h4 class="fw-bold mt-5 mb-3">Related Products</h4><div class="row g-3">@foreach($relatedProducts as $related)<div class="col-sm-6 col-lg-3"><a class="text-decoration-none text-dark" href="{{ route('catalog.show',$related) }}"><div class="customer-panel h-100">@if($related->image)<img class="w-100 rounded mb-3" style="height:150px;object-fit:cover" src="{{ Storage::disk('public')->url($related->image) }}" alt="">@endif<strong>{{ $related->name }}</strong><div class="text-success mt-2">₹{{ number_format($related->retail_price,2) }}</div></div></a></div>@endforeach</div>@endif
 </div>
+
+<div class="modal fade" id="deliveryAddressModal" tabindex="-1" aria-labelledby="deliveryAddressModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered"><div class="modal-content">
+    <form method="POST" action="{{ route('catalog.purchase', $product) }}" onsubmit="return confirm('Confirm this purchase? The amount will be debited from your main wallet.')">
+      @csrf
+      <div class="modal-header"><div><h5 class="modal-title fw-bold" id="deliveryAddressModalLabel">Delivery Address</h5><small class="text-muted">Please confirm where this order should be delivered.</small></div><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div>
+      <div class="modal-body"><input type="hidden" id="modalPurchaseQuantity" name="quantity" value="{{ old('quantity', 1) }}"><label class="form-label fw-bold">Delivery Address</label><textarea class="form-control @error('delivery_address') is-invalid @enderror" name="delivery_address" rows="4" maxlength="1000" placeholder="Enter the complete delivery address" required>{{ old('delivery_address', $profile?->address) }}</textarea>@error('delivery_address')<div class="invalid-feedback">{{ $message }}</div>@enderror</div>
+      <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button><button type="submit" class="btn btn-main"><i class="fa fa-lock me-1"></i> Confirm & Purchase</button></div>
+    </form>
+  </div></div>
+</div>
 @endsection
+@push('scripts')
+<script>
+document.getElementById('deliveryAddressModal').addEventListener('show.bs.modal', function () {
+  document.getElementById('modalPurchaseQuantity').value = document.getElementById('purchaseQuantity').value;
+});
+@if($errors->hasAny(['quantity', 'delivery_address']))
+bootstrap.Modal.getOrCreateInstance(document.getElementById('deliveryAddressModal')).show();
+@endif
+</script>
+@endpush

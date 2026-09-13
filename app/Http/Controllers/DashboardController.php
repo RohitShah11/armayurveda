@@ -234,8 +234,10 @@ class DashboardController extends Controller
             ->orderByDesc('id')
             ->get();
         $hasPurchasedPackage = $purchaseHistory->isNotEmpty();
+        $profile = Schema::hasTable('member_profiles') ? $user?->profile()->first() : null;
 
-        return view('pages.basic-package', compact('packages', 'currentPackage', 'purchaseHistory', 'hasPurchasedPackage'));
+
+        return view('pages.basic-package', compact('packages', 'currentPackage', 'purchaseHistory', 'hasPurchasedPackage', 'profile'));
     }
 
     public function packageInvoice(Request $request, PackagePurchase $packagePurchase)
@@ -253,6 +255,7 @@ class DashboardController extends Controller
     {
         $request->validate([
             'package_id' => ['required', 'exists:packages,id'],
+            'delivery_address' => ['required', 'string', 'max:1000'],
         ]);
 
         $user = Auth::user();
@@ -272,7 +275,7 @@ class DashboardController extends Controller
 
         $packagePurchase = null;
 
-        $response = DB::transaction(function () use ($user, $package, $price, &$packagePurchase) {
+        $response = DB::transaction(function () use ($user, $package, $price, $request, &$packagePurchase) {
             $user = User::query()->lockForUpdate()->findOrFail($user->id);
 
             if (PackagePurchase::where('user_id', $user->id)->exists()) {
@@ -300,6 +303,7 @@ class DashboardController extends Controller
                 'package_name' => $package->name,
                 'package_price' => $price,
                 'status' => 'Completed',
+                'delivery_address' => $request->delivery_address,
                 'purchase_date' => now(),
             ]);
 

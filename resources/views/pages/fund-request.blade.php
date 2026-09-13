@@ -97,7 +97,7 @@ textarea.form-control{height:95px}
 
           <div class="account-row">
             <span>Branch</span>
-            <span>Purba Bardhaman</span>
+            <span>Purba Noapara</span>
           </div>
 
           <div class="mt-4 d-flex gap-2 flex-wrap">

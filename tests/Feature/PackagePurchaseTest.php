@@ -56,6 +56,7 @@ class PackagePurchaseTest extends TestCase
 
         $response = $this->post(route('package.purchase.store'), [
             'package_id' => $zenith->id,
+            'delivery_address' => '12 Ayurveda Road, Ahmedabad',
         ]);
 
         $response->assertRedirect();
@@ -68,6 +69,10 @@ class PackagePurchaseTest extends TestCase
             'user_id' => $user->id,
             'transaction_type' => 'Debit',
             'particular' => 'Package purchase',
+        ]);
+        $this->assertDatabaseHas('package_purchases', [
+            'user_id' => $user->id,
+            'delivery_address' => '12 Ayurveda Road, Ahmedabad',
         ]);
 
         $root = DirectTreeNode::whereNull('parent_id')->first();
@@ -116,6 +121,24 @@ class PackagePurchaseTest extends TestCase
             ->assertSee('alt="Zenith Package"', false);
     }
 
+    public function test_delivery_address_is_required_for_package_purchase(): void
+    {
+        $zenith = Package::create([
+            'name' => 'Zenith Package',
+            'slug' => 'zenith-package-address-required',
+            'price' => 10500,
+            'category' => 'Zenith',
+        ]);
+        $user = User::factory()->create(['main_wallet' => 20000, 'package_name' => null]);
+
+        $this->actingAs($user)
+            ->post(route('package.purchase.store'), ['package_id' => $zenith->id])
+            ->assertSessionHasErrors('delivery_address');
+
+        $this->assertDatabaseMissing('package_purchases', ['user_id' => $user->id]);
+        $this->assertEquals(20000, (float) $user->fresh()->main_wallet);
+    }
+
     public function test_package_purchase_creates_purchase_record_and_distributes_level_commissions(): void
     {
         $zenith = Package::create([
@@ -150,6 +173,7 @@ class PackagePurchaseTest extends TestCase
 
         $response = $this->post(route('package.purchase.store'), [
             'package_id' => $zenith->id,
+            'delivery_address' => '12 Ayurveda Road, Ahmedabad',
         ]);
 
         $response->assertRedirect();
@@ -223,10 +247,12 @@ class PackagePurchaseTest extends TestCase
 
         $this->actingAs($sponsor)->post(route('package.purchase.store'), [
             'package_id' => $zenith->id,
+            'delivery_address' => 'Sponsor Delivery Address',
         ])->assertRedirect();
 
         $this->actingAs($user)->post(route('package.purchase.store'), [
             'package_id' => $zenith->id,
+            'delivery_address' => 'Member Delivery Address',
         ])->assertRedirect();
 
         $sponsorNode = DirectTreeNode::where('user_id', $sponsor->id)->first();
@@ -252,13 +278,13 @@ class PackagePurchaseTest extends TestCase
         ]);
 
         $this->actingAs($user)
-            ->post(route('package.purchase.store'), ['package_id' => $zenith->id])
+            ->post(route('package.purchase.store'), ['package_id' => $zenith->id, 'delivery_address' => 'First Delivery Address'])
             ->assertSessionHas('success');
 
         $balanceAfterFirstPurchase = (float) $user->fresh()->main_wallet;
 
         $this->actingAs($user)
-            ->post(route('package.purchase.store'), ['package_id' => $zenith->id])
+            ->post(route('package.purchase.store'), ['package_id' => $zenith->id, 'delivery_address' => 'Second Delivery Address'])
             ->assertSessionHasErrors('package');
 
         $this->assertSame($balanceAfterFirstPurchase, (float) $user->fresh()->main_wallet);
@@ -287,7 +313,7 @@ class PackagePurchaseTest extends TestCase
         ]);
 
         $this->actingAs($user)
-            ->post(route('package.purchase.store'), ['package_id' => $basic->id])
+            ->post(route('package.purchase.store'), ['package_id' => $basic->id, 'delivery_address' => 'Basic Delivery Address'])
             ->assertSessionHasErrors('package');
 
         $this->assertSame(5000.00, (float) $user->fresh()->main_wallet);

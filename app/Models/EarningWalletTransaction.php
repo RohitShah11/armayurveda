@@ -33,6 +33,11 @@ class EarningWalletTransaction extends Model
         return $this->belongsTo(PackagePurchase::class);
     }
 
+    public function productOrder()
+    {
+        return $this->belongsTo(ProductOrder::class);
+    }
+
     public function commissionLevel(): ?int
     {
         if ($this->level) {

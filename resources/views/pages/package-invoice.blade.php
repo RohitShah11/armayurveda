@@ -13,6 +13,7 @@
 $purchase = $packagePurchase;
 $customer = $purchase->user;
 $address = collect([$profile?->address, $profile?->city ?: $customer->city, $profile?->state ?: $customer->state, $profile?->pincode])->filter()->implode(', ');
+$deliveryAddress = $purchase->delivery_address;
 $products = [
     ['name' => 'Red Aloe Vera Juice', 'size' => '500 ml', 'mrp' => 999.00, 'taxable' => 797.32, 'gst' => 39.87, 'total' => 837.19],
     ['name' => 'ARM Hair Oil', 'size' => '100 ml', 'mrp' => 299.00, 'taxable' => 238.64, 'gst' => 11.93, 'total' => 250.57],
@@ -32,9 +33,8 @@ $products = [
 </header>
 <div class="divider"></div>
 <section class="addresses">
-@foreach(['Bill To', 'Activation For'] as $type)
-    <div class="address"><div class="heading">{{ $type }}</div><p><strong>Member Name</strong><span>{{ $customer->name }}</span></p><p><strong>Member ID</strong><span>{{ $customer->member_id ?: '—' }}</span></p><p><strong>Mobile</strong><span>{{ $profile?->mobile ?: $customer->mobile ?: '—' }}</span></p><p><strong>Email</strong><span>{{ $customer->email ?: '—' }}</span></p><p><strong>Address</strong><span>{{ $address ?: 'Not provided' }}</span></p></div>
-@endforeach
+    <div class="address"><div class="heading">Bill To</div><p><strong>Member Name</strong><span>{{ $customer->name }}</span></p><p><strong>Member ID</strong><span>{{ $customer->member_id ?: '—' }}</span></p><p><strong>Mobile</strong><span>{{ $profile?->mobile ?: $customer->mobile ?: '—' }}</span></p><p><strong>Email</strong><span>{{ $customer->email ?: '—' }}</span></p><p><strong>Address</strong><span>{{ $address ?: 'Not provided' }}</span></p></div>
+    <div class="address"><div class="heading">Ship To</div><p><strong>Member Name</strong><span>{{ $customer->name }}</span></p><p><strong>Member ID</strong><span>{{ $customer->member_id ?: '—' }}</span></p><p><strong>Mobile</strong><span>{{ $profile?->mobile ?: $customer->mobile ?: '—' }}</span></p><p><strong>Email</strong><span>{{ $customer->email ?: '—' }}</span></p><p><strong>Address</strong><span>{{ $deliveryAddress ?: $address ?: 'Not provided' }}</span></p></div>
 </section>
 <div class="table-scroll"><table class="items"><thead><tr><th>#</th><th>Product / Package</th><th>MRP (₹)</th><th>Selling Price<br>(Excl. GST)</th><th>GST 5%</th><th>Selling Price<br>(Incl. GST)</th></tr></thead><tbody>
 @foreach($products as $product)
