@@ -15,20 +15,18 @@ $customer = $purchase->user;
 $address = collect([$profile?->address, $profile?->city ?: $customer->city, $profile?->state ?: $customer->state, $profile?->pincode])->filter()->implode(', ');
 $deliveryAddress = $purchase->delivery_address;
 $products = [
-    ['name' => 'Red Aloe Vera Juice', 'size' => '500 ml', 'mrp' => 999.00, 'taxable' => 797.32, 'gst' => 39.87, 'total' => 837.19],
-    ['name' => 'ARM Hair Oil', 'size' => '100 ml', 'mrp' => 299.00, 'taxable' => 238.64, 'gst' => 11.93, 'total' => 250.57],
-    ['name' => 'ARM Shampoo', 'size' => '200 ml', 'mrp' => 799.00, 'taxable' => 637.69, 'gst' => 31.88, 'total' => 669.57],
-    ['name' => 'ARM Tulsi Drops', 'size' => '30 ml', 'mrp' => 225.00, 'taxable' => 179.58, 'gst' => 8.98, 'total' => 188.56],
-    ['name' => 'Calcium Tablets', 'size' => '30 pcs', 'mrp' => 242.00, 'taxable' => 193.15, 'gst' => 9.66, 'total' => 202.81],
-    ['name' => 'Premium Backpack', 'size' => '', 'mrp' => 1500.00, 'taxable' => 1197.19, 'gst' => 59.86, 'total' => 1257.05],
-    ['name' => 'Multivitamin Tablets', 'size' => '60 pcs', 'mrp' => 999.00, 'taxable' => 797.33, 'gst' => 39.87, 'total' => 837.20],
-    ['name' => 'Dinner Set', 'size' => '8 pcs', 'mrp' => 1500.00, 'taxable' => 1197.19, 'gst' => 59.86, 'total' => 1257.05],
+    ['name' => 'Red Aloe Vera Juice', 'size' => '500 ml', 'mrp' => 999.00, 'taxable' => 860.00, 'gst' => 43.00, 'total' => 903.00],
+    ['name' => 'ARM Hair Oil', 'size' => '100 ml', 'mrp' => 299.00, 'taxable' => 250.00, 'gst' => 12.50, 'total' => 262.50],
+    ['name' => 'ARM Shampoo', 'size' => '200 ml', 'mrp' => 799.00, 'taxable' => 650.00, 'gst' => 32.50, 'total' => 682.50],
+    ['name' => 'ARM Tulsi Drops', 'size' => '30 ml', 'mrp' => 225.00, 'taxable' => 180.00, 'gst' => 9.00, 'total' => 189.00],
+    ['name' => 'Calcium Tablets', 'size' => '30 pcs', 'mrp' => 242.00, 'taxable' => 200.00, 'gst' => 10.00, 'total' => 210.00],
+    ['name' => 'Multivitamin Tablets', 'size' => '60 pcs', 'mrp' => 999.00, 'taxable' => 860.00, 'gst' => 43.00, 'total' => 903.00],
 ];
 @endphp
 <main class="sheet">
 <div class="content">
 <header class="header">
-    <div class="brand"><img class="logo" src="{{ asset('images/arm-ayurveda-logo.png') }}" alt="ARM Ayurveda"><div class="company"><h1>ARM Ayurveda<br>Pvt. Ltd.</h1><div class="tag">Healthy Life, Natural Future</div><div class="contact">Phone: +91 92420 68805<br>Email: armayurveda@gmail.com<br>Ashoknagar, North 24 Parganas,<br>West Bengal</div></div></div>
+    <div class="brand"><img class="logo" src="{{ asset('images/arm-ayurveda-logo.png') }}" alt="ARM Ayurveda"><div class="company"><h1>ARM Ayurveda<br>Pvt. Ltd.</h1><div class="tag">Healthy Life, Natural Future</div><div class="contact">Phone: +91 92420 68805<br>Email: armayurveda@gmail.com<br>Ashoknagar, North 24 Parganas,<br>West Bengal<br><strong>GSTIN: 19ABFCA8774N1ZS</strong></div></div></div>
     <div class="title"><h2>PACKAGE INVOICE</h2><div class="meta"><div class="info-row"><b>Invoice No.</b><span>{{ $invoiceNumber }}</span></div><div class="info-row"><b>Invoice Date</b><span>{{ $purchase->purchase_date?->format('d-m-Y') }}</span></div><div class="info-row"><b>Payment Mode</b><span>Main Wallet</span></div><div class="info-row"><b>Payment Status</b><span class="status">{{ $purchase->status }}</span></div></div></div>
 </header>
 <div class="divider"></div>
@@ -41,7 +39,7 @@ $products = [
 <tr><td>{{ $loop->iteration }}</td><td class="product"><strong>{{ $product['name'] }}</strong>@if($product['size'])<small>{{ $product['size'] }}</small>@endif</td><td>{{ number_format($product['mrp'], 2) }}</td><td>{{ number_format($product['taxable'], 2) }}</td><td>{{ number_format($product['gst'], 2) }}</td><td>{{ number_format($product['total'], 2) }}</td></tr>
 @endforeach
 </tbody></table></div>
-<section class="summary"><div class="words"><strong>Amount in Words</strong><br>Five thousand five hundred rupees only</div><div class="totals"><div><span>Total MRP</span><b>₹6,563.00</b></div><div><span>Total Selling Price (Excl. GST)</span><b>₹5,238.09</b></div><div><span>Total GST @ 5%</span><b>₹261.91</b></div><div class="grand"><span>Grand Total (Incl. GST)</span><span>₹5,500.00</span></div><div class="tax-note">* GST @ 5% (CGST 2.5% + SGST 2.5%)</div></div></section>
+<section class="summary"><div class="words"><strong>Amount in Words</strong><br>Three thousand one hundred fifty rupees only</div><div class="totals"><div><span>Total MRP</span><b>₹{{ number_format(array_sum(array_column($products, 'mrp')), 2) }}</b></div><div><span>Total Selling Price (Excl. GST)</span><b>₹{{ number_format(array_sum(array_column($products, 'taxable')), 2) }}</b></div><div><span>Total GST @ 5%</span><b>₹{{ number_format(array_sum(array_column($products, 'gst')), 2) }}</b></div><div class="grand"><span>Grand Total (Incl. GST)</span><span>₹{{ number_format(array_sum(array_column($products, 'total')), 2) }}</span></div><div class="tax-note">* GST @ 5% (CGST 2.5% + SGST 2.5%)</div></div></section>
 <section class="bottom"><div class="details"><h3>Package Activation Details</h3><div class="info-row"><b>Package</b><span>{{ $purchase->package_name }}</span></div><div class="info-row"><b>Purchase Date</b><span>{{ $purchase->purchase_date?->format('d M Y, h:i A') }}</span></div><div class="info-row"><b>Activation Status</b><span class="status">{{ $purchase->status }}</span></div><div class="info-row"><b>Payment Source</b><span>Main Wallet</span></div></div><div class="thanks"><strong>Thank You!</strong><p>Thank you for choosing ARM Ayurveda.<br>We wish you good health and a better tomorrow.</p></div></section>
 <footer class="footer"><span>www.armayurveda.com</span><span>+91 92420 68805</span><span>armayurveda@gmail.com</span></footer>
 </div>

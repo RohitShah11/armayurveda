@@ -8,7 +8,7 @@
 .page-
 .card-box{background:#fff;border-radius:18px;padding:25px;box-shadow:0 8px 25px rgba(0,0,0,.07)}
 .package-card{background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 8px 25px rgba(0,0,0,.08);height:100%;border:1px solid #eee}
-.package-card img{width:100%;height:210px;background:#fff}
+.package-card img{display:block;width:100%;height:auto;background:#fff}
 .package-
 .package-body h5{color:var(--primary);font-weight:900}
 .price{font-size:24px;font-weight:900;color:var(--primary)}
@@ -90,7 +90,7 @@
           @endphp
           <div class="col-lg-4 col-md-6">
             <div class="package-card">
-              <img src="{{ asset('images/zenith-package.jpeg') }}" alt="{{ $package->name }}">
+              <img src="{{ asset('images/zenith-package-premium.jpeg') }}" alt="{{ $package->name }}" width="1600" height="800">
               <div class="package-body">
                 <span class="badge badge-zenith mb-2">{{ $package->category }} Package</span>
                 <h5>{{ $package->name }}</h5>

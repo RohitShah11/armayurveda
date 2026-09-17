@@ -109,7 +109,7 @@ class AuthController extends Controller
                 'user_id' => $user->id,
                 'state' => $request->state,
                 'city' => $request->city,
-                'pin_code' => $request->pin_code,
+                'pincode' => $request->pin_code,
             ]);
 
             return $user;
