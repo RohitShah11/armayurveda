@@ -584,6 +584,51 @@ textarea.form-control{
 }
 
 
+    .topbar{background:#174d2b;padding:12px 0;color:#fff;font-size:13px;border-bottom:2px solid var(--gold)}
+    .topbar-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px 24px}
+    .topbar-welcome{display:flex;align-items:center;gap:10px;font-weight:600}
+    .topbar-welcome i{color:#f0c76a}
+    .topbar-details{display:flex;align-items:center;flex-wrap:wrap;gap:12px 20px}
+    .topbar-link{display:inline-flex;align-items:center;gap:8px;color:#fff;text-decoration:none;white-space:nowrap}
+    .topbar-link i{color:#f0c76a;font-size:12px}
+    .topbar-link:hover{color:#f0c76a;text-decoration:underline;text-underline-offset:4px}
+    .topbar-link:focus-visible{outline:2px solid #f0c76a;outline-offset:5px;border-radius:3px}
+    .topbar-gst{display:inline-flex;align-items:center;gap:7px;padding:5px 10px;border:1px solid rgba(240,199,106,.5);border-radius:6px;background:rgba(255,255,255,.06);white-space:nowrap;font-size:12px;letter-spacing:.2px}
+    .topbar-gst strong{color:#f0c76a;font-weight:700}
+    @media(max-width:1199px){
+      .topbar-inner{justify-content:center}
+      .topbar-details{justify-content:center}
+    }
+    @media(max-width:575px){
+      .topbar{padding:12px 0;font-size:12px}
+      .topbar-inner{gap:10px}
+      .topbar-welcome{justify-content:center;text-align:center}
+      .topbar-details{width:100%;gap:10px 16px}
+      .topbar-gst{font-size:11px}
+    }
+    .site-footer{background:#123e25;color:#dce8df;padding:0;border-top:3px solid var(--gold);font-size:14px}
+    .footer-main{display:grid;grid-template-columns:1.4fr .8fr 1fr;gap:48px;padding-top:52px;padding-bottom:42px}
+    .footer-brand{display:flex;align-items:center;gap:16px;margin-bottom:18px;color:#fff;text-decoration:none}
+    .footer-logo{width:76px;height:76px;object-fit:contain;background:#fff;border-radius:16px;padding:8px;flex-shrink:0}
+    .footer-brand-name{font-size:21px;font-weight:800;line-height:1.3}
+    .footer-brand-name small{display:block;margin-top:4px;font-size:13px;font-weight:400;color:#c6d9cc}
+    .footer-description{max-width:350px;margin:0 0 20px;line-height:1.8;color:#c6d9cc}
+    .footer-gst{display:inline-flex;flex-wrap:wrap;gap:6px 9px;padding:10px 14px;border:1px solid rgba(240,199,106,.4);border-radius:8px;background:rgba(255,255,255,.04);font-size:13px}
+    .footer-gst strong{color:#f0c76a}
+    .footer-title{margin:4px 0 20px;color:#fff;font-size:16px;font-weight:700}
+    .footer-links{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+    .site-footer a{color:#dce8df;text-decoration:none}
+    .site-footer a:hover{color:#f0c76a}
+    .site-footer a:focus-visible{outline:2px solid #f0c76a;outline-offset:5px;border-radius:3px}
+    .footer-contact{display:grid;gap:16px;margin:0;font-style:normal}
+    .footer-contact-item{display:flex;align-items:flex-start;gap:12px;line-height:1.7}
+    .footer-contact-item i{width:16px;flex-shrink:0;margin-top:5px;color:#f0c76a}
+    .footer-contact-item a{overflow-wrap:anywhere}
+    .footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding-top:20px;padding-bottom:20px;border-top:1px solid rgba(255,255,255,.15);font-size:12px;color:#c6d9cc}
+    .footer-bottom p{margin:0}
+    .footer-bottom a{display:inline-flex;align-items:center;gap:8px}
+    @media(max-width:991px){.footer-main{grid-template-columns:1fr 1fr;gap:32px}.footer-company{grid-column:1 / -1}.footer-description{max-width:520px}}
+    @media(max-width:575px){.footer-main{grid-template-columns:1fr;gap:30px;padding-top:34px;padding-bottom:30px}.footer-company{grid-column:auto}.footer-brand-name{font-size:20px}.footer-links{grid-template-columns:1fr 1fr;gap:14px}.footer-bottom{align-items:flex-start;flex-direction:column;line-height:1.7}}
   </style>
   @stack('styles')
 </head>
@@ -591,9 +636,13 @@ textarea.form-control{
 <body>
 
 <div class="topbar">
-  <div class="container d-flex justify-content-between flex-wrap">
-    <span>Welcome to ARM Ayurveda Pvt. Ltd.</span>
-    <span><i class="fa fa-phone"></i> +91 92420 68805 &nbsp;&nbsp; <i class="fa fa-envelope"></i> armayurveda@gmail.com</span>
+  <div class="container topbar-inner">
+    <span class="topbar-welcome"><i class="fa-solid fa-leaf" aria-hidden="true"></i> Welcome to ARM Ayurveda Pvt. Ltd.</span>
+    <div class="topbar-details">
+      <a class="topbar-link" href="tel:+919242068805"><i class="fa-solid fa-phone" aria-hidden="true"></i> +91 92420 68805</a>
+      <a class="topbar-link" href="mailto:armayurveda@gmail.com"><i class="fa-solid fa-envelope" aria-hidden="true"></i> armayurveda@gmail.com</a>
+      <span class="topbar-gst"><strong>GST No:</strong> 19ABFCA8774N1ZS</span>
+    </div>
   </div>
 </div>
 
@@ -657,10 +706,38 @@ textarea.form-control{
 
 @yield('content')
 
-<footer>
-  <div class="container d-flex justify-content-between flex-wrap">
-    <span>© 2026 ARM Ayurveda Pvt. Ltd. All Rights Reserved.</span>
-    <span>Privacy Policy &nbsp; | &nbsp; Terms & Conditions</span>
+<footer class="site-footer">
+  <div class="container footer-main">
+    <div class="footer-company">
+      <a class="footer-brand" href="{{ route('index') }}">
+        <img class="footer-logo" src="{{ asset('images/logo.png') }}" alt="" width="76" height="76" loading="lazy">
+        <span class="footer-brand-name">ARM Ayurveda<small>Private Limited</small></span>
+      </a>
+      <p class="footer-description">Discover our Ayurvedic products and connect with a community that shares your passion for everyday wellness.</p>
+      <div class="footer-gst"><strong>GST No:</strong> <span class="text-nowrap">19ABFCA8774N1ZS</span></div>
+    </div>
+    <nav aria-label="Footer navigation">
+      <h2 class="footer-title">Explore</h2>
+      <ul class="footer-links">
+        <li><a href="{{ route('index') }}">Home</a></li>
+        <li><a href="{{ route('about') }}">About Us</a></li>
+        <li><a href="{{ route('products') }}">Our Products</a></li>
+        <li><a href="{{ route('plan') }}">Business Plan</a></li>
+        <li><a href="{{ route('contact') }}">Contact Us</a></li>
+      </ul>
+    </nav>
+    <div>
+      <h2 class="footer-title">Get in touch</h2>
+      <address class="footer-contact">
+        <div class="footer-contact-item"><i class="fa-solid fa-phone" aria-hidden="true"></i><a href="tel:+919242068805">+91 92420 68805</a></div>
+        <div class="footer-contact-item"><i class="fa-solid fa-envelope" aria-hidden="true"></i><a href="mailto:armayurveda@gmail.com">armayurveda@gmail.com</a></div>
+        <div class="footer-contact-item"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span>Ashoknagar, North 24 Parganas,<br>West Bengal, India</span></div>
+      </address>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>© {{ date('Y') }} ARM Ayurveda Pvt. Ltd. All Rights Reserved.</p>
+    <a href="{{ route('login') }}">Member Login <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
   </div>
 </footer>
 

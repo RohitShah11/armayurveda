@@ -38,6 +38,7 @@
           <h2>ARM Ayurveda Pvt. Ltd.</h2>
           <p>Healthy living and a stronger business community begin with the right support. Reach us through the channel that works best for you.</p>
           <div class="support-list">
+            <div class="support-item"><i class="fa-solid fa-file-invoice" aria-hidden="true"></i><div><strong>GST No</strong><span class="text-nowrap">19ABFCA8774N1ZS</span></div></div>
             <div class="support-item"><i class="fa-solid fa-clock"></i><div><strong>Business hours</strong><span>Monday–Saturday, 10:00 AM–6:00 PM</span></div></div>
             <div class="support-item"><i class="fa-brands fa-whatsapp"></i><div><strong>WhatsApp support</strong><span>Message us on +91 92420 68805</span></div></div>
             <div class="support-item"><i class="fa-solid fa-location-dot"></i><div><strong>Registered location</strong><span>Ashoknagar, North 24 Parganas, West Bengal</span></div></div>

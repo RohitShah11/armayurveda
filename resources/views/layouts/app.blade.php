@@ -90,6 +90,9 @@
     <!--<a href="{{ route('report.orders') }}"      class="{{ request()->routeIs('report.orders')      ? 'active':'' }}">Orders Report</a>-->
   </div>
 
+  <a href="{{ route('loan-requirement') }}" class="{{ request()->routeIs('loan-requirement') ? 'active' : '' }}"><i class="fa fa-file-invoice-dollar"></i> Loan Requirement</a>
+  <a href="{{ route('hotel-booking') }}" class="{{ request()->routeIs('hotel-booking') ? 'active' : '' }}"><i class="fa fa-bed"></i> Hotel Booking</a>
+
   <a data-bs-toggle="collapse" href="#fundMenu">
     <i class="fa fa-wallet"></i> Fund Request <i class="fa fa-angle-down ms-auto"></i>
   </a>

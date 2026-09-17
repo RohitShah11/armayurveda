@@ -53,6 +53,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     Route::middleware('admin.auth')->group(function () {
+        Route::get('/service-inquiries', [\App\Http\Controllers\Admin\ServiceInquiryController::class, 'index'])->name('service-inquiries.index');
+        Route::get('/service-inquiries/{inquiry}', [\App\Http\Controllers\Admin\ServiceInquiryController::class, 'show'])->name('service-inquiries.show');
+        Route::patch('/service-inquiries/{inquiry}', [\App\Http\Controllers\Admin\ServiceInquiryController::class, 'update'])->name('service-inquiries.update');
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::get('/members', [AdminDashboardController::class, 'members'])->name('members.index');
@@ -87,12 +90,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 // Authenticated routes
 Route::middleware('auth')->group(function () {
+    Route::get('/loan-requirement', [\App\Http\Controllers\ServiceInquiryController::class, 'index'])->defaults('type', 'loan')->name('loan-requirement');
+    Route::post('/loan-requirement', [\App\Http\Controllers\ServiceInquiryController::class, 'store'])->defaults('type', 'loan')->middleware('throttle:10,1')->name('loan-requirement.store');
+    Route::get('/hotel-booking', [\App\Http\Controllers\ServiceInquiryController::class, 'index'])->defaults('type', 'hotel')->name('hotel-booking');
+    Route::post('/hotel-booking', [\App\Http\Controllers\ServiceInquiryController::class, 'store'])->defaults('type', 'hotel')->middleware('throttle:10,1')->name('hotel-booking.store');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::get('/profile/id-card', [ProfileController::class, 'idCard'])->name('profile.id-card');
     Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-    Route::post('/profile', [DashboardController::class, 'updateProfile'])->name('profile.update');
     Route::get('/kyc', [DashboardController::class, 'kyc'])->name('kyc');
     Route::get('/change-password', [ProfileController::class, 'changePassword'])->name('change.password');
     Route::post('/change-password', [ProfileController::class, 'updatePassword'])->name('change.password.update');
