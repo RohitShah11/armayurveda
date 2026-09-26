@@ -16,11 +16,11 @@ $address = collect([$profile?->address, $profile?->city ?: $customer->city, $pro
 $deliveryAddress = $purchase->delivery_address;
 $products = [
     ['name' => 'Red Aloe Vera Juice', 'size' => '500 ml', 'mrp' => 999.00, 'taxable' => 860.00, 'gst' => 43.00, 'total' => 903.00],
-    ['name' => 'ARM Hair Oil', 'size' => '100 ml', 'mrp' => 299.00, 'taxable' => 250.00, 'gst' => 12.50, 'total' => 262.50],
-    ['name' => 'ARM Shampoo', 'size' => '200 ml', 'mrp' => 799.00, 'taxable' => 650.00, 'gst' => 32.50, 'total' => 682.50],
+    ['name' => 'ARM Hair Oil', 'size' => '200 ml', 'mrp' => 598.00, 'taxable' => 500.00, 'gst' => 25.00, 'total' => 525.00],
+    ['name' => 'CALCVIT Tablets', 'size' => '50 pcs', 'mrp' => 950.00, 'taxable' => 800.00, 'gst' => 40.00, 'total' => 840.00],
     ['name' => 'ARM Tulsi Drops', 'size' => '30 ml', 'mrp' => 225.00, 'taxable' => 180.00, 'gst' => 9.00, 'total' => 189.00],
-    ['name' => 'Calcium Tablets', 'size' => '30 pcs', 'mrp' => 242.00, 'taxable' => 200.00, 'gst' => 10.00, 'total' => 210.00],
-    ['name' => 'Multivitamin Tablets', 'size' => '60 pcs', 'mrp' => 999.00, 'taxable' => 860.00, 'gst' => 43.00, 'total' => 903.00],
+    ['name' => 'AccuLiv DS Tablets', 'size' => '60 pcs', 'mrp' => 750.00, 'taxable' => 580.00, 'gst' => 29.00, 'total' => 609.00],
+    ['name' => 'Neem Herbal Soap', 'size' => '100 gm', 'mrp' => 140.00, 'taxable' => 80.00, 'gst' => 4.00, 'total' => 84.00],
 ];
 @endphp
 <main class="sheet">

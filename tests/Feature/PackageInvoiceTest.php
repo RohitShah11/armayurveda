@@ -26,13 +26,19 @@ class PackageInvoiceTest extends TestCase
             ->assertSee('Red Aloe Vera Juice')
             ->assertDontSee('Premium Backpack')
             ->assertDontSee('Dinner Set')
-            ->assertSee('₹3,563.00')
+            ->assertSee('₹3,662.00')
             ->assertSee('₹3,000.00')
             ->assertSee('₹150.00')
             ->assertSee('₹3,150.00')
             ->assertSee('Three thousand one hundred fifty rupees only')
             ->assertSee('19ABFCA8774N1ZS')
-            ->assertSee('Multivitamin Tablets')
+            ->assertSee('ARM Hair Oil')
+            ->assertSee('CALCVIT Tablets')
+            ->assertSee('ARM Tulsi Drops')
+            ->assertSee('AccuLiv DS Tablets')
+            ->assertSee('Neem Herbal Soap')
+            ->assertDontSee('ARM Shampoo')
+            ->assertDontSee('Multivitamin Tablets')
             ->assertSee('Print / Save PDF');
     }
 
