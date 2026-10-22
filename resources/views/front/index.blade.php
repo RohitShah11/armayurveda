@@ -260,11 +260,6 @@
         <h3>Choose the easiest way to reach us</h3>
         <p>Our support team is available Monday to Saturday, from 10:00 AM to 6:00 PM.</p>
         <div class="home-contact-list">
-          <a href="tel:+919242068805" class="home-contact-item">
-            <span class="home-contact-icon"><i class="fa-solid fa-phone-volume"></i></span>
-            <span class="home-contact-copy"><small>Call us</small><strong>+91 92420 68805</strong></span>
-            <i class="fa-solid fa-arrow-right home-contact-arrow"></i>
-          </a>
           <a href="mailto:armayurveda@gmail.com" class="home-contact-item">
             <span class="home-contact-icon"><i class="fa-regular fa-envelope"></i></span>
             <span class="home-contact-copy"><small>Email us</small><strong>armayurveda@gmail.com</strong></span>

@@ -639,7 +639,6 @@ textarea.form-control{
   <div class="container topbar-inner">
     <span class="topbar-welcome"><i class="fa-solid fa-leaf" aria-hidden="true"></i> Welcome to ARM Ayurveda Pvt. Ltd.</span>
     <div class="topbar-details">
-      <a class="topbar-link" href="tel:+919242068805"><i class="fa-solid fa-phone" aria-hidden="true"></i> +91 92420 68805</a>
       <a class="topbar-link" href="mailto:armayurveda@gmail.com"><i class="fa-solid fa-envelope" aria-hidden="true"></i> armayurveda@gmail.com</a>
       <span class="topbar-gst"><strong>GST No:</strong> 19ABFCA8774N1ZS</span>
     </div>
@@ -729,7 +728,6 @@ textarea.form-control{
     <div>
       <h2 class="footer-title">Get in touch</h2>
       <address class="footer-contact">
-        <div class="footer-contact-item"><i class="fa-solid fa-phone" aria-hidden="true"></i><a href="tel:+919242068805">+91 92420 68805</a></div>
         <div class="footer-contact-item"><i class="fa-solid fa-envelope" aria-hidden="true"></i><a href="mailto:armayurveda@gmail.com">armayurveda@gmail.com</a></div>
         <div class="footer-contact-item"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span>Ashoknagar, North 24 Parganas,<br>West Bengal, India</span></div>
       </address>

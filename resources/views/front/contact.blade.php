@@ -17,8 +17,7 @@
         <h1>Let’s start a conversation.</h1>
         <p class="lead">Whether you have a product question, need distributor support, or want to learn about the ARM Ayurveda business opportunity, our team is ready to guide you.</p>
         <div class="hero-actions">
-          <a class="hero-btn primary" href="tel:+919242068805"><i class="fa-solid fa-phone"></i> Call our team</a>
-          <a class="hero-btn secondary" href="mailto:armayurveda@gmail.com"><i class="fa-regular fa-envelope"></i> Send an email</a>
+          <a class="hero-btn primary" href="mailto:armayurveda@gmail.com"><i class="fa-regular fa-envelope"></i> Send an email</a>
         </div>
       </div>
     </div>
@@ -27,9 +26,8 @@
   <section class="contact-main">
     <div class="container">
       <div class="row g-4 contact-cards">
-        <div class="col-lg-4"><article class="contact-card-new"><div class="icon"><i class="fa-solid fa-phone-volume"></i></div><h3>Call us</h3><p>Speak directly with our team for quick assistance.</p><a href="tel:+919242068805">+91 92420 68805 <i class="fa-solid fa-arrow-right"></i></a></article></div>
-        <div class="col-lg-4"><article class="contact-card-new"><div class="icon"><i class="fa-regular fa-envelope"></i></div><h3>Email us</h3><p>Send your enquiry anytime and we will get back to you.</p><a href="mailto:armayurveda@gmail.com">armayurveda@gmail.com <i class="fa-solid fa-arrow-right"></i></a></article></div>
-        <div class="col-lg-4"><article class="contact-card-new"><div class="icon"><i class="fa-solid fa-location-dot"></i></div><h3>Visit us</h3><p>Ashoknagar, North 24 Parganas, West Bengal, India.</p><a href="#location">View location <i class="fa-solid fa-arrow-down"></i></a></article></div>
+        <div class="col-lg-6"><article class="contact-card-new"><div class="icon"><i class="fa-regular fa-envelope"></i></div><h3>Email us</h3><p>Send your enquiry anytime and we will get back to you.</p><a href="mailto:armayurveda@gmail.com">armayurveda@gmail.com <i class="fa-solid fa-arrow-right"></i></a></article></div>
+        <div class="col-lg-6"><article class="contact-card-new"><div class="icon"><i class="fa-solid fa-location-dot"></i></div><h3>Visit us</h3><p>Ashoknagar, North 24 Parganas, West Bengal, India.</p><a href="#location">View location <i class="fa-solid fa-arrow-down"></i></a></article></div>
       </div>
 
       <div class="contact-grid">
@@ -40,7 +38,6 @@
           <div class="support-list">
             <div class="support-item"><i class="fa-solid fa-file-invoice" aria-hidden="true"></i><div><strong>GST No</strong><span class="text-nowrap">19ABFCA8774N1ZS</span></div></div>
             <div class="support-item"><i class="fa-solid fa-clock"></i><div><strong>Business hours</strong><span>Monday–Saturday, 10:00 AM–6:00 PM</span></div></div>
-            <div class="support-item"><i class="fa-brands fa-whatsapp"></i><div><strong>WhatsApp support</strong><span>Message us on +91 92420 68805</span></div></div>
             <div class="support-item"><i class="fa-solid fa-location-dot"></i><div><strong>Registered location</strong><span>Ashoknagar, North 24 Parganas, West Bengal</span></div></div>
           </div>
         </aside>
@@ -55,7 +52,7 @@
             <article class="help-option"><i class="fa-solid fa-chart-line"></i><div><h3>Business plan</h3><p>Understand the opportunity and benefits.</p></div></article>
             <article class="help-option"><i class="fa-solid fa-headset"></i><div><h3>Member support</h3><p>Account, order and distributor assistance.</p></div></article>
           </div>
-          <div class="response-note"><i class="fa-solid fa-circle-check"></i><span>For the fastest response, call during business hours or send us an email with your member ID and enquiry details.</span></div>
+          <div class="response-note"><i class="fa-solid fa-circle-check"></i><span>For the fastest response, send us an email with your member ID and enquiry details.</span></div>
         </section>
       </div>
     </div>
