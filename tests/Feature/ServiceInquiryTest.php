@@ -22,9 +22,14 @@ class ServiceInquiryTest extends TestCase
         return ['full_name' => 'Test Guest', 'mobile' => '9242068805', 'check_in' => now()->addDay()->toDateString(), 'check_out' => now()->addDays(3)->toDateString(), 'guests' => 3, 'rooms' => 2, 'special_request' => 'Early check-in if available'];
     }
 
+    private function solarData(): array
+    {
+        return ['full_name' => 'Test Member', 'mobile' => '9242068805', 'email' => 'member@example.com', 'property_type' => 'Residential', 'roof_type' => 'Concrete / RCC', 'monthly_bill' => '3500.50', 'required_capacity' => '5', 'city' => 'Kolkata', 'address' => '12 Solar Road', 'remarks' => 'Please arrange a site visit'];
+    }
+
     public function test_guests_cannot_view_or_submit_either_form(): void
     {
-        foreach (['loan-requirement', 'hotel-booking'] as $route) {
+        foreach (['loan-requirement', 'hotel-booking', 'solar-panel-inquiry'] as $route) {
             $this->get(route($route))->assertRedirect(route('login'));
             $this->post(route($route.'.store'), [])->assertRedirect(route('login'));
         }
@@ -36,6 +41,34 @@ class ServiceInquiryTest extends TestCase
         $user = User::factory()->create(['member_id' => 'ARM1004']);
         $this->actingAs($user)->get(route('loan-requirement'))->assertOk()->assertSee('Loan Requirement Form')->assertSee('ARM1004');
         $this->get(route('hotel-booking'))->assertOk()->assertSee('Booking Inquiry Form')->assertSee('2,000');
+        $this->get(route('solar-panel-inquiry'))->assertOk()->assertSee('Solar Panel Inquiry Form');
+    }
+
+    public function test_solar_inquiry_is_saved_and_visible_to_admin(): void
+    {
+        $user = User::factory()->create(['member_id' => 'ARM1004']);
+        $this->actingAs($user)->post(route('solar-panel-inquiry.store'), $this->solarData())
+            ->assertRedirect(route('solar-panel-inquiry'))->assertSessionHasNoErrors()->assertSessionHas('success');
+
+        $inquiry = ServiceInquiry::sole();
+        $this->assertSame('solar', $inquiry->type);
+        $this->assertSame('SOL-000001', $inquiry->reference());
+        $this->assertSame('Residential', $inquiry->details['property_type']);
+        $this->assertSame('3500.50', $inquiry->details['monthly_bill']);
+
+        $admin = Admin::create(['name' => 'Admin', 'email' => 'solar@example.com', 'password' => 'password', 'status' => 'Active']);
+        $this->actingAs($admin, 'admin')->get(route('admin.service-inquiries.index', ['type' => 'solar']))
+            ->assertOk()->assertSee('Solar Panel Inquiries')->assertSee($inquiry->reference());
+        $this->get(route('admin.service-inquiries.show', $inquiry))->assertOk()->assertSee('12 Solar Road');
+    }
+
+    public function test_solar_inquiry_validates_required_and_numeric_fields(): void
+    {
+        $this->actingAs(User::factory()->create())->post(route('solar-panel-inquiry.store'), array_replace($this->solarData(), [
+            'property_type' => 'invalid', 'roof_type' => '', 'monthly_bill' => -1, 'required_capacity' => 0, 'address' => '',
+        ]))->assertSessionHasErrors(['property_type', 'roof_type', 'monthly_bill', 'required_capacity', 'address']);
+
+        $this->assertDatabaseCount('service_inquiries', 0);
     }
 
     public function test_loan_is_saved_for_authenticated_member_and_cannot_spoof_status_or_owner(): void

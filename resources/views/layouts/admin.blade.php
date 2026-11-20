@@ -63,6 +63,7 @@
   @endphp
   <a href="{{ route('admin.service-inquiries.index', ['type' => 'loan']) }}" class="{{ $inquiryType === 'loan' ? 'active' : '' }}"><i class="fa fa-file-invoice-dollar"></i>Loan Requests</a>
   <a href="{{ route('admin.service-inquiries.index', ['type' => 'hotel']) }}" class="{{ $inquiryType === 'hotel' ? 'active' : '' }}"><i class="fa fa-bed"></i>Hotel Requests</a>
+  <a href="{{ route('admin.service-inquiries.index', ['type' => 'solar']) }}" class="{{ $inquiryType === 'solar' ? 'active' : '' }}"><i class="fa fa-solar-panel"></i>Solar Panel Inquiries</a>
 
   <a href="{{ route('admin.funds.index') }}" class="{{ request()->routeIs('admin.funds.*') ? 'active' : '' }}">
     <i class="fa fa-wallet"></i>Fund Requests

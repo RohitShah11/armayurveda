@@ -11,7 +11,7 @@ class ServiceInquiryController extends Controller
 {
     public function index(Request $request)
     {
-        $filters = $request->validate(['type' => ['nullable', Rule::in(['loan', 'hotel'])]]);
+        $filters = $request->validate(['type' => ['nullable', Rule::in(['loan', 'hotel', 'solar'])]]);
         $inquiries = ServiceInquiry::with('user')->when($filters['type'] ?? null, fn ($query, $type) => $query->where('type', $type))->latest()->paginate(20)->withQueryString();
 
         return view('admin.service-inquiries.index', compact('inquiries'));

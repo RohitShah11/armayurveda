@@ -106,4 +106,23 @@ class DashboardTest extends TestCase
             ->assertViewHas('totalTeam', 0)
             ->assertViewHas('totalOrders', 0);
     }
+
+    public function test_income_summary_displays_direct_report_cards(): void
+    {
+        $member = User::factory()->create();
+
+        $this->actingAs($member)
+            ->get(route('income.summary'))
+            ->assertOk()
+            ->assertSee('All Income Reports')
+            ->assertSee('Mobile &amp; DTH Recharge Cashback', false)
+            ->assertSee('Rank &amp; Reward', false)
+            ->assertSee(route('income.zenith-team'), false)
+            ->assertSee(route('income.sponsor-pool'), false);
+    }
+
+    public function test_guest_cannot_open_income_summary(): void
+    {
+        $this->get(route('income.summary'))->assertRedirect(route('login'));
+    }
 }

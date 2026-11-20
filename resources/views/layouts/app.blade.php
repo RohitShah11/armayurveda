@@ -45,12 +45,9 @@
     <a href="{{ route('change.password') }}" class="{{ request()->routeIs('change.password') ? 'active':'' }}">Change Password</a>
   </div> -->
 
-  <a data-bs-toggle="collapse" href="#packageMenu">
-    <i class="fa fa-box"></i> Package <i class="fa fa-angle-down ms-auto"></i>
+  <a href="{{ route('package.purchase') }}" class="{{ request()->routeIs('package.*') ? 'active':'' }}">
+    <i class="fa fa-box"></i> Package Purchase
   </a>
-  <div class="collapse {{ request()->routeIs('package.*') ? 'show':'' }} submenu" id="packageMenu">
-    <a href="{{ route('package.purchase') }}" class="{{ request()->routeIs('package.purchase') ? 'active':'' }}">Purchase Package</a>
-  </div>
 
   <a href="{{ route('catalog.index') }}" class="{{ request()->routeIs('catalog.index','catalog.category','catalog.show','catalog.purchase') ? 'active':'' }}">
     <i class="fa fa-cart-arrow-down"></i> Repurchase
@@ -80,7 +77,7 @@
   </div>
 
   <a data-bs-toggle="collapse" href="#reportMenu">
-    <i class="fa fa-chart-column"></i> Report <i class="fa fa-angle-down ms-auto"></i>
+    <i class="fa fa-chart-column"></i> Wallet Ledger <i class="fa fa-angle-down ms-auto"></i>
   </a>
   <div class="collapse {{ request()->routeIs('report.*') ? 'show':'' }} submenu" id="reportMenu">
     <a href="{{ route('report.main-wallet') }}" class="{{ request()->routeIs('report.main-wallet') ? 'active':'' }}">Main Wallet</a>
@@ -92,6 +89,7 @@
 
   <a href="{{ route('loan-requirement') }}" class="{{ request()->routeIs('loan-requirement') ? 'active' : '' }}"><i class="fa fa-file-invoice-dollar"></i> Loan Requirement</a>
   <a href="{{ route('hotel-booking') }}" class="{{ request()->routeIs('hotel-booking') ? 'active' : '' }}"><i class="fa fa-bed"></i> Hotel Booking</a>
+  <a href="{{ route('solar-panel-inquiry') }}" class="{{ request()->routeIs('solar-panel-inquiry') ? 'active' : '' }}"><i class="fa fa-solar-panel"></i> Solar Panel Inquiry</a>
 
   <a data-bs-toggle="collapse" href="#fundMenu">
     <i class="fa fa-wallet"></i> Fund Request <i class="fa fa-angle-down ms-auto"></i>
@@ -109,21 +107,9 @@
     <a href="{{ route('payout.list') }}"    class="{{ request()->routeIs('payout.list')    ? 'active':'' }}">Previous List</a>
   </div>
 
-  <a data-bs-toggle="collapse" href="#incomeMenu">
-    <i class="fa fa-sack-dollar"></i> Income Summary <i class="fa fa-angle-down ms-auto"></i>
+  <a href="{{ route('income.summary') }}" class="{{ request()->routeIs('income.*') ? 'active':'' }}">
+    <i class="fa fa-sack-dollar"></i> Income Summary
   </a>
-  <div class="collapse {{ request()->routeIs('income.*') ? 'show':'' }} submenu" id="incomeMenu">
-    <!--<a href="{{ route('income.startup') }}"            class="{{ request()->routeIs('income.startup')            ? 'active':'' }}">Start Up Package Level Commission</a>-->
-    <a href="{{ route('income.recharge-cashback') }}"  class="{{ request()->routeIs('income.recharge-cashback')  ? 'active':'' }}">Mobile & DTH Recharge Cashback</a>
-    <a href="{{ route('income.zenith-benefit') }}"     class="{{ request()->routeIs('income.zenith-benefit')     ? 'active':'' }}">Zenith Package Return Benefit</a>
-    <a href="{{ route('income.product-repurchase') }}" class="{{ request()->routeIs('income.product-repurchase') ? 'active':'' }}">Product Repurchase Bonus</a>
-    <!--<a href="{{ route('income.zenith-pool') }}"        class="{{ request()->routeIs('income.zenith-pool')        ? 'active':'' }}">Monthly Zenith Pool Income</a>-->
-    <a href="{{ route('income.non-working-pool') }}"   class="{{ request()->routeIs('income.non-working-pool')   ? 'active':'' }}">Non-Working Global Pool Income</a>
-    <a href="{{ route('income.zenith-team') }}"        class="{{ request()->routeIs('income.zenith-team')        ? 'active':'' }}">Zenith Team Package Commission</a>
-    <a href="{{ route('income.sponsor-pool') }}"       class="{{ request()->routeIs('income.sponsor-pool')       ? 'active':'' }}">Sponsor Global Pool Income</a>
-    <a href="{{ route('income.business-expansion') }}" class="{{ request()->routeIs('income.business-expansion') ? 'active':'' }}">Business Expansion Incentive Bonus</a>
-    <a href="{{ route('income.rank-reward') }}"        class="{{ request()->routeIs('income.rank-reward')        ? 'active':'' }}">Rank & Reward</a>
-  </div>
 
   <form method="POST" action="{{ route('logout') }}">
     @csrf

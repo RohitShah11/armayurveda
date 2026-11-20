@@ -628,6 +628,11 @@ class DashboardController extends Controller
         return view('pages.startup-commission');
     }
 
+    public function incomeSummary()
+    {
+        return view('pages.income-summary');
+    }
+
     public function incomeRechargeCashback()
     {
         return view('pages.recharge-cashback');

@@ -94,6 +94,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/loan-requirement', [\App\Http\Controllers\ServiceInquiryController::class, 'store'])->defaults('type', 'loan')->middleware('throttle:10,1')->name('loan-requirement.store');
     Route::get('/hotel-booking', [\App\Http\Controllers\ServiceInquiryController::class, 'index'])->defaults('type', 'hotel')->name('hotel-booking');
     Route::post('/hotel-booking', [\App\Http\Controllers\ServiceInquiryController::class, 'store'])->defaults('type', 'hotel')->middleware('throttle:10,1')->name('hotel-booking.store');
+    Route::get('/solar-panel-inquiry', [\App\Http\Controllers\ServiceInquiryController::class, 'index'])->defaults('type', 'solar')->name('solar-panel-inquiry');
+    Route::post('/solar-panel-inquiry', [\App\Http\Controllers\ServiceInquiryController::class, 'store'])->defaults('type', 'solar')->middleware('throttle:10,1')->name('solar-panel-inquiry.store');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
@@ -140,6 +142,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/payout/list', [PayoutController::class, 'index'])->name('payout.list');
 
     // Income
+    Route::get('/income', [DashboardController::class, 'incomeSummary'])->name('income.summary');
     Route::get('/income/startup', [DashboardController::class, 'incomeStartup'])->name('income.startup');
     Route::get('/income/recharge-cashback', [DashboardController::class, 'incomeRechargeCashback'])->name('income.recharge-cashback');
     Route::get('/income/zenith-benefit', [DashboardController::class, 'incomeZenithBenefit'])->name('income.zenith-benefit');

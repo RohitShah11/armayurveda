@@ -1,5 +1,5 @@
 @php
-  $labels = ['loan_type' => 'Loan type', 'amount' => 'Loan amount (₹)', 'purpose' => 'Purpose', 'preferred_bank' => 'Preferred bank / NBFC', 'city' => 'City / location', 'remarks' => 'Remarks', 'check_in' => 'Check-in date', 'check_out' => 'Check-out date', 'guests' => 'Guests', 'rooms' => 'Rooms', 'special_request' => 'Special request', 'room_rate' => 'Room rate (₹ / day)'];
+  $labels = ['loan_type' => 'Loan type', 'amount' => 'Loan amount (₹)', 'purpose' => 'Purpose', 'preferred_bank' => 'Preferred bank / NBFC', 'property_type' => 'Property type', 'roof_type' => 'Roof type', 'city' => 'City / location', 'address' => 'Installation address', 'monthly_bill' => 'Average monthly electricity bill (₹)', 'required_capacity' => 'Required capacity (kW)', 'remarks' => 'Remarks', 'check_in' => 'Check-in date', 'check_out' => 'Check-out date', 'guests' => 'Guests', 'rooms' => 'Rooms', 'special_request' => 'Special request', 'room_rate' => 'Room rate (₹ / day)'];
 @endphp
 <dl class="inquiry-detail-list">
   <div><dt>Full name</dt><dd>{{ $inquiry->full_name }}</dd></div><div><dt>Mobile number</dt><dd>{{ $inquiry->mobile }}</dd></div><div><dt>Email</dt><dd>{{ $inquiry->email ?: '—' }}</dd></div>
