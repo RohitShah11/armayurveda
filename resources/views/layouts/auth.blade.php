@@ -6,6 +6,7 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 
 <title>@yield('title') | ARM Ayurveda</title>
+<link rel="icon" type="image/png" sizes="64x64" href="{{ asset('images/favicon.png') }}">
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="{{ asset('css/auth.css') }}" rel="stylesheet">
