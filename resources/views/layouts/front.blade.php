@@ -648,8 +648,8 @@ textarea.form-control{
 
 <nav class="navbar navbar-expand-lg bg-white shadow-sm">
   <div class="container">
-    <a class="navbar-brand" href="/">
-      <img src="images/logo.png" class="logo" alt="ARM Ayurveda">
+    <a class="navbar-brand" href="{{ route('index') }}">
+      <img src="{{ asset('images/arm-ayurveda-logo.png') }}" class="logo" alt="ARM Ayurveda" onerror="this.onerror=null;this.src='{{ asset('images/logo.png') }}';">
     </a>
 
     <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#menu">
