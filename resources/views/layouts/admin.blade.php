@@ -93,6 +93,9 @@
   <a href="{{ route('admin.product-orders.index') }}" class="{{ request()->routeIs('admin.product-orders.*') ? 'active' : '' }}">
     <i class="fa fa-cart-shopping"></i>Repurchase Orders
   </a>
+  <a href="{{ route('admin.guest-orders.index') }}" class="{{ request()->routeIs('admin.guest-orders.*') ? 'active' : '' }}">
+    <i class="fa fa-truck-fast"></i>Guest Product Orders
+  </a>
 
   <div class="menu-title">Network &amp; Rewards</div>
 

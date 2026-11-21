@@ -8,11 +8,11 @@
 <link rel="icon" type="image/png" sizes="64x64" href="{{ asset('images/favicon.png') }}">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
-<link href="{{ asset('css/app.css') }}?v=20260804-2" rel="stylesheet">
+<link href="{{ asset('css/app.css') }}?v=20261121-1" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 @stack('styles')
 </head>
-<body>
+<body class="member-shell">
 
 <div class="sidebar" id="sidebar">
   <div class="logo-box">
@@ -57,7 +57,7 @@
     <i class="fa fa-receipt"></i> My Repurchase Orders
   </a>
 
-  <a data-bs-toggle="collapse" href="#rechargeMenu">
+  <a data-bs-toggle="collapse" href="#rechargeMenu" class="{{ request()->routeIs('recharge.*') ? 'active' : '' }}">
     <i class="fa fa-mobile-screen"></i> Recharge <i class="fa fa-angle-down ms-auto"></i>
   </a>
   <div class="collapse {{ request()->routeIs('recharge.*') ? 'show':'' }} submenu" id="rechargeMenu">
@@ -67,7 +67,7 @@
     <a href="">DTH Recharge</a>
   </div>
 
-  <a data-bs-toggle="collapse" href="#teamMenu">
+  <a data-bs-toggle="collapse" href="#teamMenu" class="{{ request()->routeIs('team.*') ? 'active' : '' }}">
     <i class="fa fa-users"></i> My Team <i class="fa fa-angle-down ms-auto"></i>
   </a>
   <div class="collapse {{ request()->routeIs('team.*') ? 'show':'' }} submenu" id="teamMenu">
@@ -77,7 +77,7 @@
     
   </div>
 
-  <a data-bs-toggle="collapse" href="#reportMenu">
+  <a data-bs-toggle="collapse" href="#reportMenu" class="{{ request()->routeIs('report.*') ? 'active' : '' }}">
     <i class="fa fa-chart-column"></i> Wallet Ledger <i class="fa fa-angle-down ms-auto"></i>
   </a>
   <div class="collapse {{ request()->routeIs('report.*') ? 'show':'' }} submenu" id="reportMenu">
@@ -92,7 +92,7 @@
   <a href="{{ route('hotel-booking') }}" class="{{ request()->routeIs('hotel-booking') ? 'active' : '' }}"><i class="fa fa-bed"></i> Hotel Booking</a>
   <a href="{{ route('solar-panel-inquiry') }}" class="{{ request()->routeIs('solar-panel-inquiry') ? 'active' : '' }}"><i class="fa fa-solar-panel"></i> Solar Panel Inquiry</a>
 
-  <a data-bs-toggle="collapse" href="#fundMenu">
+  <a data-bs-toggle="collapse" href="#fundMenu" class="{{ request()->routeIs('fund.*') ? 'active' : '' }}">
     <i class="fa fa-wallet"></i> Fund Request <i class="fa fa-angle-down ms-auto"></i>
   </a>
   <div class="collapse {{ request()->routeIs('fund.*') ? 'show':'' }} submenu" id="fundMenu">
@@ -100,7 +100,7 @@
     <a href="{{ route('fund.report') }}"  class="{{ request()->routeIs('fund.report')  ? 'active':'' }}">Request Record</a>
   </div>
 
-  <a data-bs-toggle="collapse" href="#payoutMenu">
+  <a data-bs-toggle="collapse" href="#payoutMenu" class="{{ request()->routeIs('payout.*') ? 'active' : '' }}">
     <i class="fa fa-money-bill-transfer"></i> Payout <i class="fa fa-angle-down ms-auto"></i>
   </a>
   <div class="collapse {{ request()->routeIs('payout.*') ? 'show':'' }} submenu" id="payoutMenu">

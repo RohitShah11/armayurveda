@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\GuestProductOrderController as AdminGuestProductOrderController;
 use App\Http\Controllers\Admin\PayoutController as AdminPayoutController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductOrderController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BulkEmailController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GuestProductOrderController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\PayoutController;
 use App\Http\Controllers\ProfileController;
@@ -28,6 +30,9 @@ Route::get('/about', function () {
 })->name('about');
 Route::get('/products', [PublicProductController::class, 'index'])->name('products');
 Route::get('/products/{product:slug}', [PublicProductController::class, 'show'])->name('products.show');
+Route::get('/products/{product:slug}/order', [GuestProductOrderController::class, 'create'])->name('guest-orders.create');
+Route::post('/products/{product:slug}/order', [GuestProductOrderController::class, 'store'])->middleware('throttle:5,1')->name('guest-orders.store');
+Route::get('/guest-orders/{guestProductOrder:public_token}/success', [GuestProductOrderController::class, 'success'])->name('guest-orders.success');
 Route::get('/gallery', function () {
     return view('front.gallery');
 })->name('gallery');
@@ -85,6 +90,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/product-orders', [ProductOrderController::class, 'index'])->name('product-orders.index');
         Route::get('/product-orders/{productOrder}', [ProductOrderController::class, 'show'])->name('product-orders.show');
         Route::patch('/product-orders/{productOrder}', [ProductOrderController::class, 'update'])->name('product-orders.update');
+        Route::get('/guest-orders', [AdminGuestProductOrderController::class, 'index'])->name('guest-orders.index');
+        Route::get('/guest-orders/{guestProductOrder}', [AdminGuestProductOrderController::class, 'show'])->name('guest-orders.show');
+        Route::patch('/guest-orders/{guestProductOrder}', [AdminGuestProductOrderController::class, 'update'])->name('guest-orders.update');
+        Route::get('/guest-orders/{guestProductOrder}/proof', [AdminGuestProductOrderController::class, 'proof'])->name('guest-orders.proof');
     });
 });
 
