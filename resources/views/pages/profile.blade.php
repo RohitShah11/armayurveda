@@ -390,7 +390,7 @@ textarea.form-control{height:90px}
 
             <div class="info-row">
                 <span>Joining Date</span>
-                <span>{{ $user->created_at->format('d M Y') }}</span>
+                <span>{{ $user->created_at?->format('d M Y') ?? '-' }}</span>
             </div>
 
             <a href="{{ route('change.password') }}" class="btn btn-main mt-3">
